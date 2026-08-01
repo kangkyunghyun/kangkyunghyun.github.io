@@ -1,0 +1,109 @@
+---
+interface Props {
+	title: string;
+}
+const { title } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{title}</title>
+		<link rel="canonical" href={canonical} />
+		<link rel="icon" href="data:," />
+	</head>
+	<body>
+		<header>
+			<a href="/" class="home">강경현</a>
+			<nav><a href="/about">about</a></nav>
+		</header>
+		<main>
+			<slot />
+		</main>
+	</body>
+</html>
+
+<style is:global>
+	:root {
+		--fg: #1a1a1a;
+		--dim: #6b6b6b;
+		--bg: #fff;
+		--line: #e3e3e3;
+	}
+	@media (prefers-color-scheme: dark) {
+		:root {
+			--fg: #e8e8e8;
+			--dim: #9a9a9a;
+			--bg: #131313;
+			--line: #2e2e2e;
+		}
+	}
+	* {
+		box-sizing: border-box;
+	}
+	body {
+		max-width: 42rem;
+		margin: 0 auto;
+		padding: 3rem 1.25rem 6rem;
+		background: var(--bg);
+		color: var(--fg);
+		font: 16px/1.75 system-ui, -apple-system, 'Apple SD Gothic Neo', sans-serif;
+		word-break: keep-all;
+		overflow-wrap: break-word;
+	}
+	header {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 3rem;
+	}
+	.home {
+		font-weight: 600;
+	}
+	a {
+		color: inherit;
+	}
+	h1,
+	h2,
+	h3 {
+		line-height: 1.35;
+		margin: 2.5rem 0 0.75rem;
+	}
+	time {
+		color: var(--dim);
+		font-size: 0.875rem;
+	}
+	pre {
+		padding: 1rem;
+		border: 1px solid var(--line);
+		border-radius: 6px;
+		overflow-x: auto;
+	}
+	:not(pre) > code {
+		background: var(--line);
+		padding: 0.1em 0.35em;
+		border-radius: 4px;
+		font-size: 0.9em;
+	}
+	img {
+		max-width: 100%;
+		height: auto;
+	}
+	blockquote {
+		margin: 1.5rem 0;
+		padding-left: 1rem;
+		border-left: 3px solid var(--line);
+		color: var(--dim);
+	}
+	table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+	th,
+	td {
+		border: 1px solid var(--line);
+		padding: 0.4rem 0.6rem;
+	}
+</style>
