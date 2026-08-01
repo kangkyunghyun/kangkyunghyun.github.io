@@ -2,6 +2,8 @@
 
 강경현의 기술 블로그 겸 포트폴리오. 개발·기술 회고 위주. Astro + GitHub Pages.
 
+제품·설계·운영 기준은 [spec/](spec/README.md)에 있다. 결정의 근거가 필요하면 [spec/3-2-DESIGN-DECISIONS.md](spec/3-2-DESIGN-DECISIONS.md)를 먼저 본다.
+
 ## 이 블로그의 규칙
 
 - **페이지는 셋뿐이다** — 글 목록(`/`) / 글 상세(`/posts/<파일명>`) / 소개(`/about`, 포트폴리오 겸용). 늘리지 않는다.
