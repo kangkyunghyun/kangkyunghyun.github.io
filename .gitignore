@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# 레이아웃 확인용 더미 (커밋하지 않음)
+src/content/posts/_preview-*.md

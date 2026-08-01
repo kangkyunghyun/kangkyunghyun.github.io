@@ -12,16 +12,62 @@ const { Content } = await render(post);
 const fmt = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'long' });
 ---
 
-<Base title={post.data.title}>
+<Base title={`${post.data.title} — 강경현`}>
 	<article>
-		<h1>{post.data.title}</h1>
-		<time datetime={post.data.date.toISOString()}>{fmt.format(post.data.date)}</time>
+		<header class="head">
+			<time datetime={post.data.date.toISOString()}>
+				{fmt.format(post.data.date)}
+			</time>
+			<h1>{post.data.title}</h1>
+			{
+				post.data.tags.length > 0 && (
+					<ul class="tags">
+						{post.data.tags.map((tag) => (
+							<li>{tag}</li>
+						))}
+					</ul>
+				)
+			}
+		</header>
 		<Content />
 	</article>
+	<a href="/" class="back">← 목록</a>
 </Base>
 
 <style>
-	h1 {
-		margin-top: 0;
+	.head {
+		padding: clamp(3rem, 10vh, 6rem) 0 2.5rem;
+		margin-bottom: 3rem;
+		border-bottom: 1px solid var(--line);
+	}
+	.head h1 {
+		margin: 0.6rem 0 0;
+		font-size: clamp(1.7rem, 4.5vw, 2.6rem);
+		font-weight: 800;
+		letter-spacing: -0.04em;
+	}
+	.tags {
+		display: flex;
+		gap: 0.5rem;
+		margin: 1.25rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+	.tags li {
+		margin: 0;
+		padding: 0.15rem 0.55rem;
+		border: 1px solid var(--line);
+		border-radius: 100px;
+		color: var(--dim);
+		font-size: 0.75rem;
+	}
+	.back {
+		display: inline-block;
+		margin-top: 4rem;
+		padding-top: 2rem;
+		border-top: 1px solid var(--line);
+		width: 100%;
+		color: var(--dim);
+		font-size: 0.875rem;
 	}
 </style>

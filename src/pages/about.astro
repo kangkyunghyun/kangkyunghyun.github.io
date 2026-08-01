@@ -1,42 +1,166 @@
 ---
 import Base from '../layouts/Base.astro';
+
+const projects = [
+	{
+		name: 'LinKHU',
+		desc: '경희대 웹서비스를 한곳에서 쓰게 만든 브라우저 확장. 일 사용자 100명+',
+		stack: 'JavaScript',
+		href: 'https://github.com/kangkyunghyun/LinKHU',
+	},
+	{
+		name: 'WAVI',
+		desc: 'AI 습관관리 서비스 백엔드. 6인 팀 프로젝트',
+		stack: 'Java',
+		href: 'https://github.com/kangkyunghyun/WAVI-BE',
+	},
+];
+
+const now = [
+	['AI·SW 마에스트로', '17기'],
+	['GDG on Campus KHU', '오거나이저'],
+	['경희대 컴퓨터공학과', '2022 —'],
+];
+
+const links = [
+	['GitHub', 'https://github.com/kangkyunghyun'],
+	['이전 블로그 (348편)', 'https://khyunx.tistory.com'],
+];
 ---
 
-<Base title="about — 강경현">
-	<h1>강경현</h1>
-	<p>경희대학교 컴퓨터공학과. 알고리즘과 시스템 보안 쪽을 주로 파고 있습니다.</p>
+<Base title="소개 — 강경현" description="강경현. 경희대 컴퓨터공학과.">
+	<section class="hero">
+		<h1>강경현</h1>
+		<p>
+			경희대학교 컴퓨터공학과 3학년. 알고리즘과 시스템 보안을 주로 파고, 쓸모
+			있는 걸 만들어서 실제로 누가 쓰게 만드는 일을 좋아합니다.
+		</p>
+	</section>
 
-	<h2>지금</h2>
-	<ul>
-		<li>AI·SW 마에스트로 17기</li>
-		<li>GDG on Campus KHU 오거나이저</li>
-		<li>교내 알고리즘·해킹 동아리, 알고리즘 멘토</li>
+	<h2 class="label">지금</h2>
+	<dl class="rows">
+		{
+			now.map(([k, v]) => (
+				<div>
+					<dt>{k}</dt>
+					<dd>{v}</dd>
+				</div>
+			))
+		}
+	</dl>
+
+	<h2 class="label">만든 것</h2>
+	<ul class="projects">
+		{
+			projects.map((p) => (
+				<li>
+					<a href={p.href}>
+						<div class="top">
+							<strong>{p.name}</strong>
+							<span class="stack">{p.stack}</span>
+						</div>
+						<p>{p.desc}</p>
+					</a>
+				</li>
+			))
+		}
 	</ul>
 
-	<h2>만든 것</h2>
-	<ul>
-		<li>
-			<a href="https://github.com/kangkyunghyun/LinKHU">LinKHU</a> — 경희대 웹서비스 통합
-			브라우저 확장. 일 사용자 100명+
-		</li>
-		<li>
-			<a href="https://github.com/kangkyunghyun/WAVI-BE">WAVI-BE</a> — AI 습관관리 서비스
-			백엔드. 6인 팀 프로젝트
-		</li>
-	</ul>
+	<h2 class="label">자격</h2>
+	<dl class="rows">
+		<div><dt>SQLD</dt><dd>2026</dd></div>
+		<div><dt>정보처리기사</dt><dd>2023</dd></div>
+	</dl>
 
-	<h2>기록</h2>
-	<ul>
-		<li>
-			<a href="https://khyunx.tistory.com">khyunx.tistory.com</a> — 2022년부터 쓴 알고리즘·CS
-			기록 348편
-		</li>
-		<li><a href="https://github.com/kangkyunghyun">github.com/kangkyunghyun</a></li>
-	</ul>
-
-	<h2>자격</h2>
-	<ul>
-		<li>SQLD (2026)</li>
-		<li>정보처리기사 (2023)</li>
+	<h2 class="label">링크</h2>
+	<ul class="links">
+		{
+			links.map(([label, href]) => (
+				<li>
+					<a href={href}>{label} ↗</a>
+				</li>
+			))
+		}
 	</ul>
 </Base>
+
+<style>
+	.hero {
+		padding: clamp(4rem, 14vh, 9rem) 0 clamp(3rem, 8vh, 5rem);
+	}
+	.hero h1 {
+		margin: 0 0 1.5rem;
+		font-size: clamp(2.2rem, 7vw, 3.4rem);
+		font-weight: 800;
+		letter-spacing: -0.04em;
+	}
+	.hero p {
+		margin: 0;
+		max-width: 32rem;
+		color: var(--dim);
+	}
+
+	.label {
+		margin: 4rem 0 0;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid var(--fg);
+		font-size: 0.75rem;
+		font-weight: 700;
+		letter-spacing: 0.16em;
+	}
+
+	.rows {
+		margin: 0;
+	}
+	.rows div {
+		display: flex;
+		justify-content: space-between;
+		gap: 1.5rem;
+		padding: 1rem 0;
+		border-bottom: 1px solid var(--line);
+	}
+	.rows dt {
+		font-weight: 500;
+	}
+	.rows dd {
+		margin: 0;
+		color: var(--dim);
+		font-size: 0.875rem;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.projects,
+	.links {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.projects > li > a {
+		display: block;
+		padding: 1.25rem 0;
+		border-bottom: 1px solid var(--line);
+	}
+	.projects .top {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+	.projects .stack {
+		color: var(--dim);
+		font-size: 0.75rem;
+		letter-spacing: 0.04em;
+	}
+	.projects p {
+		margin: 0.35rem 0 0;
+		color: var(--dim);
+		font-size: 0.9375rem;
+	}
+
+	.links li a {
+		display: block;
+		padding: 1rem 0;
+		border-bottom: 1px solid var(--line);
+		font-weight: 500;
+	}
+</style>

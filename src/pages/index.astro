@@ -5,17 +5,32 @@ import Base from '../layouts/Base.astro';
 const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
 	(a, b) => b.data.date.getTime() - a.data.date.getTime(),
 );
-const fmt = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'long' });
+const fmt = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium' });
 ---
 
-<Base title="강경현">
-	{posts.length === 0 && <p>아직 글이 없습니다.</p>}
+<Base
+	title="강경현"
+	description="개발하며 겪은 문제와 결정을 기록합니다. 경희대 컴퓨터공학과."
+>
+	<section class="hero">
+		<h1>개발하며 겪은 문제와<br />그때 내린 결정을 기록합니다.</h1>
+		<p>
+			경희대학교 컴퓨터공학과. 알고리즘과 시스템 보안을 주로 파고 있습니다.
+		</p>
+	</section>
+
+	<h2 class="section-label">글</h2>
+	{posts.length === 0 && <p class="empty">아직 글이 없습니다.</p>}
 	<ul class="posts">
 		{
 			posts.map((post) => (
 				<li>
-					<a href={`/posts/${post.id}`}>{post.data.title}</a>
-					<time datetime={post.data.date.toISOString()}>{fmt.format(post.data.date)}</time>
+					<a href={`/posts/${post.id}`}>
+						<span class="t">{post.data.title}</span>
+						<time datetime={post.data.date.toISOString()}>
+							{fmt.format(post.data.date)}
+						</time>
+					</a>
 				</li>
 			))
 		}
@@ -23,18 +38,59 @@ const fmt = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'long' });
 </Base>
 
 <style>
-	.posts {
-		list-style: none;
-		padding: 0;
+	.hero {
+		padding: clamp(4rem, 14vh, 9rem) 0 clamp(3rem, 8vh, 5rem);
 	}
-	.posts li {
+	.hero h1 {
+		margin: 0 0 1.5rem;
+		font-size: clamp(1.9rem, 5.5vw, 3.1rem);
+		font-weight: 800;
+		letter-spacing: -0.04em;
+		line-height: 1.28;
+	}
+	.hero p {
+		margin: 0;
+		max-width: 30rem;
+		color: var(--dim);
+	}
+
+	.section-label {
+		margin: 0 0 0.5rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid var(--fg);
+		font-size: 0.75rem;
+		font-weight: 700;
+		letter-spacing: 0.16em;
+	}
+
+	.posts {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.posts a {
 		display: flex;
+		align-items: baseline;
 		justify-content: space-between;
-		gap: 1rem;
-		padding: 0.6rem 0;
+		gap: 1.5rem;
+		padding: 1.15rem 0;
 		border-bottom: 1px solid var(--line);
+	}
+	.posts .t {
+		font-weight: 500;
 	}
 	.posts time {
 		flex-shrink: 0;
+	}
+	.empty {
+		padding: 1.5rem 0;
+		color: var(--dim);
+	}
+
+	@media (max-width: 34rem) {
+		.posts a {
+			flex-direction: column;
+			gap: 0.35rem;
+		}
 	}
 </style>
