@@ -36,11 +36,17 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 		{description && <meta name="description" content={description} />}
 		<link rel="canonical" href={canonical} />
 		<link rel="icon" href="data:," />
+		{/* 첫 페인트 전에 테마를 적용해야 화면이 번쩍이지 않는다 */}
+		<script is:inline>
+			const t = localStorage.getItem('theme');
+			if (t === 'light' || t === 'dark')
+				document.documentElement.dataset.theme = t;
+		</script>
 	</head>
 	<body>
 		<header class="site-header">
 			<div class="bar">
-				<a href="/" class="wordmark">강경현</a>
+				<a href="/" class="wordmark">Kyunghyun Kang</a>
 				<nav>
 					{
 						nav.map((item) => {
@@ -57,6 +63,16 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 							);
 						})
 					}
+					<button
+						id="theme-toggle"
+						type="button"
+						class="navlink theme"
+						aria-label="테마 변경"
+					>
+						<span data-theme-icon="system"><Icon name="monitor" size={16} /></span>
+						<span data-theme-icon="light" hidden><Icon name="sun" size={16} /></span>
+						<span data-theme-icon="dark" hidden><Icon name="moon" size={16} /></span>
+					</button>
 				</nav>
 			</div>
 		</header>
@@ -99,6 +115,37 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 			</div>
 			<p class="copy">© 2026 강경현. All rights reserved.</p>
 		</footer>
+
+		<script is:inline>
+			// 시스템 → 라이트 → 다크 → 시스템 순으로 순환한다.
+			// 'system' 은 data-theme 을 지워서 prefers-color-scheme 에 맡긴다.
+			(() => {
+				const ORDER = ['system', 'light', 'dark'];
+				const btn = document.getElementById('theme-toggle');
+				if (!btn) return;
+				const icons = btn.querySelectorAll('[data-theme-icon]');
+				const paint = (mode) => {
+					icons.forEach((el) => {
+						el.hidden = el.dataset.themeIcon !== mode;
+					});
+					btn.title = { system: '시스템', light: '라이트', dark: '다크' }[mode];
+				};
+				let mode = localStorage.getItem('theme') ?? 'system';
+				if (!ORDER.includes(mode)) mode = 'system';
+				paint(mode);
+				btn.addEventListener('click', () => {
+					mode = ORDER[(ORDER.indexOf(mode) + 1) % ORDER.length];
+					if (mode === 'system') {
+						delete document.documentElement.dataset.theme;
+						localStorage.removeItem('theme');
+					} else {
+						document.documentElement.dataset.theme = mode;
+						localStorage.setItem('theme', mode);
+					}
+					paint(mode);
+				});
+			})();
+		</script>
 	</body>
 </html>
 
@@ -118,8 +165,11 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 		--measure: 54rem;
 		--pad: clamp(1rem, 4vw, 1.5rem);
 	}
+	/* 다크 값은 두 번 쓴다. 하나는 OS 설정용(@media 안), 하나는 수동 선택용.
+	   @media 안의 규칙은 밖에서 재사용할 수 없어 합칠 방법이 없다.
+	   :not([data-theme='light']) 가 있어야 OS가 다크여도 수동 라이트가 이긴다 */
 	@media (prefers-color-scheme: dark) {
-		:root {
+		:root:not([data-theme='light']) {
 			--bg: #17171c;
 			--surface: #202127;
 			--fg: #f9fafb;
@@ -129,6 +179,16 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 			--blue: #4593fc;
 			--green: #4ade80;
 		}
+	}
+	:root[data-theme='dark'] {
+		--bg: #17171c;
+		--surface: #202127;
+		--fg: #f9fafb;
+		--fg2: #b0b8c1;
+		--fg3: #6b7684;
+		--line: #2b2d36;
+		--blue: #4593fc;
+		--green: #4ade80;
 	}
 
 	*,
@@ -194,6 +254,29 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 	.navlink.on {
 		background: var(--surface);
 		color: var(--fg);
+	}
+	.navlink.theme {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.4rem 0.55rem;
+		border: 0;
+		background: transparent;
+		font: inherit;
+		cursor: pointer;
+	}
+	.navlink.theme:hover {
+		background: var(--surface);
+	}
+	/* :not([hidden]) 이 없으면 display 가 hidden 속성을 덮어써 아이콘 3개가 다 보인다 */
+	.navlink.theme span:not([hidden]) {
+		display: inline-flex;
+	}
+	.navlink.theme svg {
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 2;
+		stroke-linecap: round;
+		stroke-linejoin: round;
 	}
 
 	main {
