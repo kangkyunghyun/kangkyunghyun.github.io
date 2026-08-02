@@ -38,8 +38,8 @@
 
 | 항목 | 기준 |
 | --- | --- |
-| 가로 넘침 | 390 / 768 / 1440px에서 `scrollWidth - clientWidth`가 0 `MUST` |
-| 본문 대비 | 본문 텍스트 대비 4.5:1 이상 `MUST` |
+| 가로 넘침 | 375 / 768 / 1024 / 1440px에서 `scrollWidth - clientWidth`가 0 `MUST` |
+| 본문 대비 | 모든 텍스트 4.5:1 이상 (24px 이상 또는 18.66px 볼드는 3:1). 라이트·다크 양쪽 `MUST` |
 | 키보드 접근 | 모든 링크에 보이는 포커스 표시 `MUST` |
 | 모션 | `prefers-reduced-motion: reduce`에서 전환 제거 `MUST` |
 | 다크 모드 | OS 설정을 따른다. 별도 토글은 두지 않는다 `SHOULD` |

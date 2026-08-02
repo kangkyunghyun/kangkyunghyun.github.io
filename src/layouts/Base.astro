@@ -157,10 +157,11 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 		--surface: #f9fafb;
 		--fg: #191f28;
 		--fg2: #4e5968;
-		--fg3: #8b95a1;
+		--fg3: #667080;
 		--line: #f2f4f6;
 		--blue: #3182f6;
-		--green: #15803d;
+		--blue-strong: #1b64da;
+		--green: #166534;
 		--r: 18px;
 		--measure: 54rem;
 		--pad: clamp(1rem, 4vw, 1.5rem);
@@ -174,9 +175,10 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 			--surface: #202127;
 			--fg: #f9fafb;
 			--fg2: #b0b8c1;
-			--fg3: #6b7684;
+			--fg3: #8b95a1;
 			--line: #2b2d36;
 			--blue: #4593fc;
+			--blue-strong: #4593fc;
 			--green: #4ade80;
 		}
 	}
@@ -185,9 +187,10 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 		--surface: #202127;
 		--fg: #f9fafb;
 		--fg2: #b0b8c1;
-		--fg3: #6b7684;
+		--fg3: #8b95a1;
 		--line: #2b2d36;
 		--blue: #4593fc;
+		--blue-strong: #4593fc;
 		--green: #4ade80;
 	}
 
@@ -437,7 +440,7 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 
 	/* ── 본문 요소 ───────────────────────────── */
 	article a {
-		color: var(--blue);
+		color: var(--blue-strong);
 		font-weight: 500;
 	}
 	pre {
