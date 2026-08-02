@@ -46,7 +46,7 @@ npm run build    # dist/
 python3 tools/import-tistory.py <글 URL> [슬러그]
 ```
 
-자세한 절차는 [spec/4-CONTENT-OPERATIONS.md](spec/4-CONTENT-OPERATIONS.md)에 있습니다.
+자세한 절차는 [spec/4-1-BLOG-OPERATIONS.md](spec/4-1-BLOG-OPERATIONS.md)에 있습니다.
 
 ## 문서
 
@@ -59,7 +59,8 @@ python3 tools/import-tistory.py <글 URL> [슬러그]
 | [spec/2-REQUIREMENTS.md](spec/2-REQUIREMENTS.md) | 독자·운영자 요구사항, 품질 기준 |
 | [spec/3-1-DESIGN-ARCHITECTURE.md](spec/3-1-DESIGN-ARCHITECTURE.md) | 라우팅, 콘텐츠 스키마, 스타일 토큰 |
 | [spec/3-2-DESIGN-DECISIONS.md](spec/3-2-DESIGN-DECISIONS.md) | 되돌리기 비싼 결정과 재검토 조건 |
-| [spec/4-CONTENT-OPERATIONS.md](spec/4-CONTENT-OPERATIONS.md) | 글·프로젝트 작성, 티스토리 이관 |
+| [spec/4-1-BLOG-OPERATIONS.md](spec/4-1-BLOG-OPERATIONS.md) | 글 작성, 태그, 티스토리 이관 |
+| [spec/4-2-PORTFOLIO-OPERATIONS.md](spec/4-2-PORTFOLIO-OPERATIONS.md) | 이력 정본, 프로젝트 선정과 작성 |
 | [spec/7-DEPLOYMENT.md](spec/7-DEPLOYMENT.md) | 배포와 릴리스 검증 |
 
 작업 규칙(커밋 컨벤션 포함)은 [AGENTS.md](AGENTS.md)에 있습니다.

@@ -54,6 +54,6 @@ Pages 빌드 방식이 `legacy`면 Jekyll로 처리돼 Astro 산출물이 무시
 | 배포는 성공인데 옛 화면 | Pages 빌드 방식이 `legacy` | `workflow`로 변경 |
 | 빌드 실패, 프런트매터 오류 | 스키마에 없는 필드 | [3-1](3-1-DESIGN-ARCHITECTURE.md) §3-1-3 대조 |
 | 로컬에서 CSS 반영 안 됨 | 개발 서버가 이전 CSS를 물고 있음 | `astro dev stop` → `.astro` 삭제 → 재시작 |
-| 글 URL이 404 | 파일명을 바꿨음 | 파일명을 되돌린다(§[4-1](4-CONTENT-OPERATIONS.md)) |
+| 글 URL이 404 | 파일명을 바꿨음 | 파일명을 되돌린다(§[4-1-1](4-1-BLOG-OPERATIONS.md)) |
 
 배포가 깨진 상태를 오래 두지 않는다. 직전 커밋으로 되돌리는 것이 원인 규명보다 우선이다. `SHOULD`
