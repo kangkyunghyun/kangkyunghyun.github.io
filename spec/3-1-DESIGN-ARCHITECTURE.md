@@ -21,15 +21,18 @@
 | Node | `>=22.12.0` |
 
 ```text
-astro.config.mjs                site URL, shiki 듀얼 테마
-src/content.config.ts           posts 컬렉션 정의
-src/content/posts/*.md          글
-src/layouts/Base.astro          공통 셸 + 전역 스타일 전부
-src/components/Timeline.astro   기간-제목-설명 3열 타임라인
-src/pages/index.astro           포트폴리오 (메인)
-src/pages/blog.astro            글 목록
-src/pages/posts/[...slug].astro 글 상세
-.github/workflows/deploy.yml    Pages 배포
+astro.config.mjs                   site URL, shiki 듀얼 테마
+src/content.config.ts              posts / projects 컬렉션 정의
+src/content/posts/*.md             글
+src/content/projects/*.md          프로젝트
+src/layouts/Base.astro             공통 셸 + 전역 스타일 전부
+src/components/Timeline.astro      기간-제목-설명 타임라인
+src/components/Icon.astro          lucide 아이콘 path 모음
+src/pages/index.astro              포트폴리오 (메인)
+src/pages/blog.astro               글 목록
+src/pages/posts/[...slug].astro    글 상세
+src/pages/projects/[...slug].astro 프로젝트 상세
+.github/workflows/deploy.yml       Pages 배포
 ```
 
 전역 스타일은 `Base.astro`의 `<style is:global>` 한 곳에만 둔다. 페이지별 스타일은 각 `.astro` 파일의 스코프 `<style>`에 둔다. CSS 파일을 따로 만들지 않는다. `MUST`
@@ -90,16 +93,22 @@ AS-IS → TO-BE만 본문이 아니라 프런트매터에 있다. 2열 비교를
 
 | 변수 | 라이트 | 다크 | 용도 |
 | --- | --- | --- | --- |
-| `--fg` | `#09090b` | `#fafafa` | 본문 |
-| `--dim` | `#52525b` | `#a1a1aa` | 보조 텍스트, 날짜 |
-| `--bg` | `#fafafa` | `#0c0c0e` | 배경 |
-| `--line` | `#e4e4e7` | `#27272a` | 구분선 |
+| `--fg` | `#191f28` | `#f9fafb` | 본문 |
+| `--fg2` | `#4e5968` | `#b0b8c1` | 보조 텍스트 |
+| `--fg3` | `#8b95a1` | `#6b7684` | 날짜, 라벨 |
+| `--bg` | `#ffffff` | `#17171c` | 배경 |
+| `--surface` | `#f9fafb` | `#202127` | 카드·칩 면 |
+| `--line` | `#f2f4f6` | `#2b2d36` | 구분선 |
+| `--blue` | `#3182f6` | `#4593fc` | 포인트 (링크, 배지, 포커스) |
+| `--r` | `18px` | — | 카드 모서리 |
 | `--measure` | `54rem` | — | 셸 폭 (헤더·메인·푸터 공통) |
 | `--pad` | `clamp(1rem, 4vw, 1.5rem)` | — | 좌우 여백 |
 
 **글 본문은 `--measure`를 따르지 않는다.** 포트폴리오와 목록은 넓은 셸을 쓰지만, 글 상세의 `article`은 `42rem`으로 따로 좁힌다. 한 줄이 길어지면 읽기 속도가 떨어지기 때문이며, 셸 폭을 넓힐 때 본문까지 같이 넓히지 않는다. `MUST`
 
-색은 무채색만 쓴다. 강조는 색이 아니라 굵기와 여백으로 만든다. 브랜드 색을 도입하려면 결정 기록을 남긴다. `SHOULD`
+면과 면은 선이 아니라 **배경색 차이**로 나눈다. 카드에 테두리를 두르지 않는다. 색은 그레이 스케일에 파랑 하나뿐이며, 두 번째 강조색을 도입하려면 결정 기록을 남긴다. `SHOULD`
+
+시각 언어의 출처는 `~/.claude/skills/toss-tech-design`에 함께 든 스크린샷 2장이다. 해당 스킬 본문은 설계 운영 방법론이라 색·타이포 스펙을 담고 있지 않다.
 
 폰트는 시스템 스택(`Pretendard` → `system-ui` → `Apple SD Gothic Neo`)이며 웹폰트를 불러오지 않는다. 근거는 [3-2](3-2-DESIGN-DECISIONS.md) §3-2-4.
 
