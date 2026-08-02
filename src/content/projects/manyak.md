@@ -48,8 +48,6 @@ order: 1
 
 과정은 예비 과정 2개월과 본 과정 6개월로 나뉘고, 본 과정에서는 정규 멘토링과 함께 프로젝트를 개발합니다.
 
-> AI·SW마에스트로는 **과학기술정보통신부**가 주최하고 **정보통신기획평가원**과 **한국정보산업연합회**가 주관하는 AI·SW 인재양성 사업입니다.
-
 ## 구성
 
 | 저장소 | 역할 | 기술 |
@@ -118,3 +116,9 @@ SSE 엔드포인트(`produces=text/event-stream`)에 `Accept: application/json`�
 - **API 타입은 손으로 맞추지 않습니다.** OpenAPI 스펙에서 생성하므로 서버 응답이 바뀌면 프런트 타입 검사가 먼저 깨집니다.
 - **배포 자격증명은 장기 키 대신 GitHub OIDC**로 발급합니다.
 - **디바이스 식별자는 그대로 보내지 않습니다.** pepper를 섞어 해시한 뒤 Amplitude로 전송합니다.
+
+---
+
+이 성과는 2026년도 과학기술정보통신부의 재원으로 정보통신기획평가원의 지원을 받아 수행된 결과물임 (IITP-2026-AI·SW마에스트로)
+
+This work was supported by the Institute of Information &amp; Communications Technology Planning &amp; Evaluation(IITP) grant funded by the Ministry of Science and ICT(MSIT) (IITP-2026-AI·SW Maestro)
