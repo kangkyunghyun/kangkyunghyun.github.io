@@ -4,8 +4,8 @@
     python3 tools/import-tistory.py https://khyunx.tistory.com/382 scsc-2026
 
 원본은 RSS(`/rss`)에서 가져온다. 본문 HTML과 발행일이 그대로 들어 있어
-페이지를 긁는 것보다 깨끗하다. 다만 RSS는 최근 50편만 준다 —
-그보다 오래된 글은 티스토리 관리자의 백업 기능을 써야 한다.
+페이지를 긁는 것보다 깨끗하다. RSS에 없는 오래된 글은 티스토리 페이지의
+`.tt_article_useless_p_margin` 본문 컨테이너를 폴백으로 사용한다.
 
 이미지는 public/images/<슬러그>/ 로 내려받고 경로를 바꾼다.
 외부 호스트에 의존하지 않기 위해서다(spec §4-3).
@@ -76,6 +76,158 @@ def rfc822_to_date(s: str) -> str:
     day, mon, year = m.groups()
     months = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
     return f"{year}-{months.index(mon) + 1:02d}-{int(day):02d}"
+
+
+def page_date(s: str) -> str:
+    """페이지의 ISO 또는 화면 날짜 표기를 YYYY-MM-DD로 바꾼다."""
+    m = re.search(r"(\d{4})-(\d{1,2})-(\d{1,2})", s)
+    if not m:
+        m = re.search(r"(\d{4})\s*[./-]\s*(\d{1,2})\s*[./-]\s*(\d{1,2})", s)
+    if not m:
+        return ""
+    year, month, day = m.groups()
+    return f"{year}-{int(month):02d}-{int(day):02d}"
+
+
+class TistoryPage(HTMLParser):
+    """실제 티스토리 페이지에서 본문과 발행 메타데이터를 뽑는다.
+
+    현재 스킨에서는 ``.article-view`` 바깥에 광고가 있고, 실제 글은
+    ``.tt_article_useless_p_margin.contents_style`` 안에 있다. 오래된 스킨의
+    ``.article_view`` / ``.entry-content``도 함께 인식하되, 클래스 토큰이
+    정확히 일치하는 컨테이너만 본문으로 선택한다.
+    """
+
+    ARTICLE_CLASSES = {"article_view", "entry-content", "tt_article_useless_p_margin"}
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=False)
+        self.article: list[str] = []
+        self.article_tag = ""
+        self.article_depth = 0
+        self.published_time = ""
+        self.date_text: list[str] = []
+        self.date_depth = 0
+        self.article_title: list[str] = []
+        self.article_title_depth = 0
+        self.page_title: list[str] = []
+        self.page_title_depth = 0
+
+    @staticmethod
+    def classes(attrs: list[tuple[str, str | None]]) -> set[str]:
+        return set((dict(attrs).get("class") or "").split())
+
+    def observe(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        a = dict(attrs)
+        if tag == "meta" and a.get("property") == "article:published_time":
+            self.published_time = a.get("content") or ""
+
+        classes = self.classes(attrs)
+        if "date" in classes and not self.date_depth:
+            self.date_depth = 1
+        elif self.date_depth and tag not in VOID:
+            self.date_depth += 1
+
+        if tag == "title" and not self.page_title_depth:
+            self.page_title_depth = 1
+        elif self.page_title_depth and tag not in VOID:
+            self.page_title_depth += 1
+
+        if tag == "h2" and "title-article" in classes and not self.article_title_depth:
+            self.article_title_depth = 1
+        elif self.article_title_depth and tag not in VOID:
+            self.article_title_depth += 1
+
+    def handle_starttag(self, tag, attrs):
+        raw = self.get_starttag_text() or ""
+        self.observe(tag, attrs)
+        if self.article_depth:
+            self.article.append(raw)
+            if tag not in VOID:
+                self.article_depth += 1
+        elif self.classes(attrs) & self.ARTICLE_CLASSES:
+            self.article_tag = tag
+            self.article_depth = 1
+
+    def handle_startendtag(self, tag, attrs):
+        raw = self.get_starttag_text() or ""
+        self.observe(tag, attrs)
+        if self.article_depth:
+            self.article.append(raw)
+
+    def handle_endtag(self, tag):
+        if self.date_depth:
+            self.date_depth -= 1
+        if self.page_title_depth:
+            self.page_title_depth -= 1
+        if self.article_title_depth:
+            self.article_title_depth -= 1
+
+        if not self.article_depth:
+            return
+        if self.article_depth == 1 and tag == self.article_tag:
+            self.article_depth = 0
+            return
+        self.article.append(f"</{tag}>")
+        if self.article_depth > 1:
+            self.article_depth -= 1
+
+    def handle_data(self, data):
+        if self.article_depth:
+            self.article.append(data)
+        if self.date_depth:
+            self.date_text.append(data)
+        if self.article_title_depth:
+            self.article_title.append(data)
+        if self.page_title_depth:
+            self.page_title.append(data)
+
+    def handle_entityref(self, name):
+        raw = f"&{name};"
+        if self.article_depth:
+            self.article.append(raw)
+        if self.date_depth:
+            self.date_text.append(html.unescape(raw))
+        if self.article_title_depth:
+            self.article_title.append(html.unescape(raw))
+        if self.page_title_depth:
+            self.page_title.append(html.unescape(raw))
+
+    def handle_charref(self, name):
+        raw = f"&#{name};"
+        if self.article_depth:
+            self.article.append(raw)
+        if self.date_depth:
+            self.date_text.append(html.unescape(raw))
+        if self.article_title_depth:
+            self.article_title.append(html.unescape(raw))
+        if self.page_title_depth:
+            self.page_title.append(html.unescape(raw))
+
+    def handle_comment(self, data):
+        if self.article_depth:
+            self.article.append(f"<!--{data}-->")
+
+    def item(self, url: str) -> dict:
+        title = "".join(self.article_title).strip() or "".join(self.page_title).strip()
+        date = page_date(self.published_time or "".join(self.date_text))
+        body = "".join(self.article).strip()
+        if not body:
+            raise ValueError("페이지에서 본문 컨테이너를 찾지 못함")
+        if not title:
+            raise ValueError("페이지에서 제목을 찾지 못함")
+        if not date:
+            raise ValueError("페이지에서 발행일을 찾지 못함")
+        return {"title": title, "link": url, "pubDate": date, "body": body}
+
+
+def page_item(url: str) -> dict:
+    """RSS에 없는 글을 페이지 HTML에서 가져온다."""
+    page = fetch(url).decode("utf-8", "replace")
+    parser = TistoryPage()
+    parser.feed(page)
+    parser.close()
+    return parser.item(url)
 
 
 class ToMarkdown(HTMLParser):
@@ -277,9 +429,11 @@ def main() -> int:
     items = rss_items(blog)
     item = next((i for i in items if i["link"].rstrip("/") == url), None)
     if item is None:
-        print(f"RSS 최근 {len(items)}편에 없음: {url}", file=sys.stderr)
-        print("오래된 글은 티스토리 관리 → 데이터 관리에서 백업해야 함.", file=sys.stderr)
-        return 1
+        print(f"RSS 최근 {len(items)}편에 없음: {url}")
+        print("페이지 HTML 폴백 조회: .tt_article_useless_p_margin")
+        item = page_item(url)
+    else:
+        print("RSS 본문 사용")
 
     p = ToMarkdown()
     p.feed(item["body"])
@@ -287,7 +441,9 @@ def main() -> int:
     print(f"제목: {item['title']}")
     body = localize_images(body, p.images, slug)
 
-    date = rfc822_to_date(item["pubDate"])
+    date = rfc822_to_date(item["pubDate"]) or page_date(item["pubDate"])
+    if not date:
+        raise ValueError("발행일을 YYYY-MM-DD로 변환하지 못함")
     title = item["title"].replace('"', "'")
     out = POSTS / f"{slug}.md"
     out.write_text(
@@ -335,6 +491,20 @@ def selftest() -> None:
     assert "더보기" not in md2, md2  # 토글 버튼 제거
     assert "code" in md2, md2  # 접힌 내용은 살아남아야 함
     assert "본문" in md2 and "끝" in md2, md2  # 앞뒤 본문 온전
+
+    # 오래된 글의 페이지 HTML 폴백: 실제 스킨의 본문 컨테이너와 메타 날짜
+    page = TistoryPage()
+    page.feed(
+        '<meta property="article:published_time" content="2023-02-11T23:29:16+09:00">'
+        '<h2 class="title-article">오래된 글</h2>'
+        '<div class="article-view"><div class="tt_article_useless_p_margin contents_style">'
+        '<p>본문 <strong>내용</strong></p></div></div>'
+    )
+    page_item_result = page.item("https://khyunx.tistory.com/42")
+    assert page_item_result["title"] == "오래된 글", page_item_result
+    assert page_item_result["pubDate"] == "2023-02-11", page_item_result
+    assert page_item_result["body"] == "<p>본문 <strong>내용</strong></p>", page_item_result
+
     assert rfc822_to_date("Wed, 21 May 2026 00:59:04 +0900") == "2026-05-21"
     assert rfc822_to_date("Mon, 02 Feb 2026 09:00:00 +0900") == "2026-02-02"
     print("selftest ok")
