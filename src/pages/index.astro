@@ -1,6 +1,12 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Timeline from '../components/Timeline.astro';
+
+// 프로젝트는 src/content/projects/*.md 가 원본이다
+const projects = (
+	await getCollection('projects', ({ data }) => !data.draft)
+).sort((a, b) => a.data.order - b.data.order);
 
 // 출처: github.com/kangkyunghyun 프로필 README
 const education = [
@@ -37,25 +43,6 @@ const activity = [
 		period: '2025.09 — 2026.02',
 		title: 'GDG on Campus 경희대학교',
 		href: 'https://github.com/GDG-on-Campus-KHU',
-	},
-];
-
-const projects = [
-	{
-		period: '2026.02 — 현재',
-		name: 'LinKHU',
-		role: '1인 개발 및 운영',
-		desc: '경희대학교 주요 웹서비스 바로가기 브라우저 확장 프로그램',
-		note: 'DAU 100+',
-		href: 'https://github.com/kangkyunghyun/LinKHU',
-	},
-	{
-		period: '2025.07 — 2025.10',
-		name: 'WAVI',
-		role: '팀장, 백엔드 개발',
-		desc: '실패를 성공으로 만드는 AI 기반 습관 관리 서비스. 6인 팀(Design 1, Backend 2, Frontend 2, AI 1)에서 백엔드 개발과 팀 리딩을 맡았습니다.',
-		note: '6인 팀',
-		href: 'https://github.com/WAVE-WAVI/WAVI-BE',
 	},
 ];
 
@@ -162,16 +149,16 @@ const links = [
 		<div class="projects">
 			{
 				projects.map((p) => (
-					<a href={p.href} class="proj">
+					<a href={`/projects/${p.id}`} class="proj">
 						<span class="head">
 							<span class="name">
-								{p.name}
-								<span class="note">{p.note}</span>
+								{p.data.title}
+								{p.data.badge && <span class="note">{p.data.badge}</span>}
 							</span>
-							<span class="period">{p.period}</span>
+							<span class="period">{p.data.period}</span>
 						</span>
-						<span class="role">{p.role}</span>
-						<span class="desc">{p.desc}</span>
+						<span class="role">{p.data.role}</span>
+						<span class="desc">{p.data.summary}</span>
 					</a>
 				))
 			}

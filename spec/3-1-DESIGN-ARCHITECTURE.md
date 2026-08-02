@@ -41,6 +41,7 @@ src/pages/posts/[...slug].astro 글 상세
 | `/` | 포트폴리오 한 페이지 | `src/pages/index.astro` | 정적 |
 | `/blog` | 글 목록 | `src/pages/blog.astro` | 정적 |
 | `/posts/<파일명>` | 글 상세 | `src/pages/posts/[...slug].astro` | `getStaticPaths`로 글마다 생성 |
+| `/projects/<파일명>` | 프로젝트 상세 | `src/pages/projects/[...slug].astro` | `getStaticPaths`로 프로젝트마다 생성 |
 
 메인의 섹션 순서는 Tech Stacks → Education → Activity → Projects → Awards → Certifications → Links이며, 각 섹션은 푸터 Quick Links가 가리키는 앵커 `id`를 갖는다. 이력 데이터의 출처는 GitHub 프로필 README와 노션 개인 소개 페이지 두 곳이고, 값이 어긋나면 최신 쪽을 쓰되 [3-2](3-2-DESIGN-DECISIONS.md) §3-2-6에 기록한다.
 
@@ -62,6 +63,26 @@ src/pages/posts/[...slug].astro 글 상세
 | `draft` | boolean | 선택 | 기본 `false` |
 
 스키마에 없는 필드를 프런트매터에 쓰면 빌드가 실패한다. 필드를 늘릴 때는 [README](README.md) 변경 원칙 1을 따른다.
+
+### projects 컬렉션
+
+`src/content/projects/**/*.md`. 프로젝트 하나가 마크다운 파일 하나이며, 메인의 Projects 카드와 상세 페이지가 **같은 파일 하나**를 읽는다. 카드용 데이터를 따로 두지 않는다.
+
+| 필드 | 타입 | 필수 | 비고 |
+| --- | --- | --- | --- |
+| `title` | string | 필수 | 상세 페이지 상단 대형 워드마크 |
+| `summary` | string | 필수 | 카드 설명이자 상세 페이지 부제 |
+| `period` | string | 필수 | 표시용 문자열. 날짜 타입이 아니다 |
+| `role` | string | 필수 | 맡은 역할 |
+| `badge` | string | 선택 | 카드의 파란 배지. 한 개만 |
+| `team` | string | 선택 | 팀 구성 |
+| `stack` | string[] | 선택 | 상세 페이지 하단 칩 |
+| `asIs` / `toBe` | string[] | 선택 | 2열 비교. 둘 다 비면 섹션이 통째로 빠진다 |
+| `links` | {label, href}[] | 선택 | 상단 외부 링크 |
+| `order` | number | 선택 | 목록 정렬. 작을수록 위. 기본 99 |
+| `draft` | boolean | 선택 | 기본 `false` |
+
+AS-IS → TO-BE만 본문이 아니라 프런트매터에 있다. 2열 비교를 마크다운으로 쓰면 표가 되어 모바일에서 깨지기 때문이다.
 
 ## 3-1-4 스타일 토큰
 
