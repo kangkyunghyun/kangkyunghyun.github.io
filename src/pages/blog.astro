@@ -29,8 +29,16 @@ const excerptOf = (body = '') => {
 		.filter((l) => l && !/^([#>|\-*]|!\[|\[!|---|https?:\/\/)/.test(l))
 		// 이미지 바로 아래 캡션은 짧다. 요약이 될 만한 길이만 고른다
 		.map(clean)
-		// 링크만 있던 줄은 벗겨내면 URL 문자열만 남는다. 요약이 아니다
-		.find((l) => l.length >= 25 && !/^https?:\/\//.test(l));
+		.find(
+			(l) =>
+				l.length >= 25 &&
+				// 링크만 있던 줄은 벗겨내면 URL 문자열만 남는다
+				!/^https?:\/\//.test(l) &&
+				// 대회 글 머리의 일정 표기는 요약이 아니다
+				!/^(시작|종료|기간|일시|장소)\s*[::]/.test(l) &&
+				// 괄호로만 된 편집 노트도 마찬가지
+				!/^[(（].*[)）]$/.test(l),
+		);
 
 	if (!text) return '';
 	return text.length > 96 ? `${text.slice(0, 96)}…` : text;
@@ -49,6 +57,26 @@ const tags = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
 	<h1>블로그</h1>
 
 	<div class="layout">
+		<aside class="side">
+			<p class="sidetitle">분류</p>
+			<ul>
+				<li>
+					<button type="button" data-tag="" aria-pressed="true">
+						전체<span class="n">{posts.length}</span>
+					</button>
+				</li>
+				{
+					tags.map(([t, n]) => (
+						<li>
+							<button type="button" data-tag={t} aria-pressed="false">
+								{t}
+								<span class="n">{n}</span>
+							</button>
+						</li>
+					))
+				}
+			</ul>
+		</aside>
 		<div class="main">
 			<p class="count" data-count>전체 {posts.length}편</p>
 			{
@@ -88,26 +116,6 @@ const tags = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
 			}
 		</div>
 
-		<aside class="side">
-			<p class="sidetitle">분류</p>
-			<ul>
-				<li>
-					<button type="button" data-tag="" aria-pressed="true">
-						전체<span class="n">{posts.length}</span>
-					</button>
-				</li>
-				{
-					tags.map(([t, n]) => (
-						<li>
-							<button type="button" data-tag={t} aria-pressed="false">
-								{t}
-								<span class="n">{n}</span>
-							</button>
-						</li>
-					))
-				}
-			</ul>
-		</aside>
 	</div>
 </Base>
 
@@ -143,11 +151,15 @@ const tags = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
 		letter-spacing: -0.042em;
 	}
 
-	.layout {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) 9.5rem;
-		gap: 2.5rem;
-		align-items: start;
+	/* 분류는 흐름에서 빼 본문 바깥에 띄운다. 가운데는 목록만 쓴다.
+	   좌표 기준은 Toc 과 같다 — 본문 폭을 바꾸면 둘 다 바꾼다 */
+	.side {
+		position: fixed;
+		top: 6.5rem;
+		left: calc(50% + 28.5rem);
+		width: 11rem;
+		max-height: 70vh;
+		overflow-y: auto;
 	}
 	.count {
 		margin: 0 0.25rem 0.6rem;
@@ -231,10 +243,6 @@ const tags = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
 	}
 
 	/* 분류 */
-	.side {
-		position: sticky;
-		top: 5rem;
-	}
 	.sidetitle {
 		margin: 0 0 0.55rem 0.6rem;
 		color: var(--fg3);
@@ -290,15 +298,13 @@ const tags = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
 		text-align: center;
 	}
 
-	/* 좁은 화면 — 분류를 목록 위 가로줄로 */
-	@media (max-width: 52rem) {
-		.layout {
-			grid-template-columns: minmax(0, 1fr);
-			gap: 1.25rem;
-		}
+	/* 띄울 자리가 없으면 목록 위 가로줄로 되돌린다 */
+	@media (max-width: 84rem) {
 		.side {
 			position: static;
-			order: -1;
+			width: auto;
+			max-height: none;
+			margin-bottom: 1.25rem;
 		}
 		.sidetitle {
 			display: none;

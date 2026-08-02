@@ -61,8 +61,9 @@ const show = items.length >= 3;
 	.toc {
 		position: fixed;
 		top: 6.5rem;
-		/* 가운데 정렬된 본문(44rem)의 오른쪽 바깥에 붙인다 */
-		left: calc(50% + 23rem);
+		/* 가운데 정렬된 본문(--measure)의 오른쪽 '바깥'에 붙인다.
+		   본문 폭을 바꾸면 이 값도 같이 바꿔야 한다 */
+		left: calc(50% + 28.5rem);
 		width: 13rem;
 		max-height: 70vh;
 		overflow-y: auto;
@@ -106,7 +107,7 @@ const show = items.length >= 3;
 	}
 
 	/* 본문(44rem) + 목차(13rem) + 여백이 안 나오는 폭에서는 숨긴다 */
-	@media (max-width: 75rem) {
+	@media (max-width: 84rem) {
 		.toc {
 			display: none;
 		}

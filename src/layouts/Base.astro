@@ -34,7 +34,8 @@ const connect = [
 	},
 	{ icon: 'mail', label: 'Email', href: 'mailto:kyunghyun.dev@gmail.com' },
 ];
-const path = Astro.url.pathname;
+// 빌드 결과가 /blog/ 처럼 끝나므로 끝 슬래시를 떼고 비교한다
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
 // /posts/... 로 들어와도 헤더의 '블로그'가 켜져 있어야 한다
 const inBlog = path === '/blog' || path.startsWith('/posts');
 ---
