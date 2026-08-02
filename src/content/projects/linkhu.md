@@ -1,7 +1,7 @@
 ---
 title: LinKHU
 summary: 경희대학교 웹서비스 117개를 클릭 한 번으로 여는 브라우저 확장
-period: 2026. 02. — 현재
+period: 2026. 2. — 현재
 role: 1인 개발 및 운영
 badge: DAU 100+
 stack: [JavaScript, Chrome Extension, GitHub Actions]

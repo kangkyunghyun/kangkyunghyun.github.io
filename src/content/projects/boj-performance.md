@@ -1,7 +1,7 @@
 ---
 title: BOJ Performance
 summary: 백준 채점 현황에서 내 코드의 성능 위치를 그래프로 보여준 브라우저 확장
-period: 2026. 01. — 2026. 05.
+period: 2026. 1. — 2026. 5.
 role: 1인 개발 및 운영
 badge: 누적 112명
 stack: [JavaScript, Chrome Extension]

@@ -1,7 +1,7 @@
 ---
 title: WAVI
 summary: 실패를 성공으로 만드는 맞춤형 AI 습관 관리 서비스
-period: 2025. 07. — 2025. 10.
+period: 2025. 7. — 2025. 10.
 role: 팀장, 백엔드 개발
 badge: 6인 팀
 logo: wavi.png
