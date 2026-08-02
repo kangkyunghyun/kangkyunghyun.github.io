@@ -109,7 +109,24 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 	<body>
 		<header class="site-header">
 			<div class="bar">
-				<a href="/" class="wordmark">Kyunghyun Kang</a>
+				<a href="/" class="wordmark" aria-label="Kyunghyun Kang">
+					<img
+						class="wordmark-mark"
+						src="/favicon.svg"
+						alt=""
+						width="24"
+						height="24"
+					/>
+					<span>yunghyun</span>
+					<img
+						class="wordmark-mark wordmark-mark-second"
+						src="/favicon.svg"
+						alt=""
+						width="24"
+						height="24"
+					/>
+					<span>ang</span>
+				</a>
 				<nav>
 					{
 						nav.map((item) => {
@@ -299,14 +316,28 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 1.5rem;
+		gap: clamp(0.75rem, 4vw, 1.5rem);
 		max-width: var(--measure);
 		margin: 0 auto;
 	}
 	.wordmark {
+		display: inline-flex;
+		align-items: center;
+		flex: none;
 		font-size: 1.0625rem;
 		font-weight: 700;
 		letter-spacing: -0.03em;
+		line-height: 1;
+		white-space: nowrap;
+	}
+	.wordmark-mark {
+		width: 1.45rem;
+		height: 1.45rem;
+		margin-inline: -0.16rem -0.12rem;
+		flex: none;
+	}
+	.wordmark-mark-second {
+		margin-left: 0.02rem;
 	}
 	.site-header nav {
 		display: flex;
