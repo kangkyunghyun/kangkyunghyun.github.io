@@ -15,59 +15,63 @@ const fmt = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'long' });
 <Base title={`${post.data.title} — 강경현`}>
 	<article>
 		<header class="head">
-			<time datetime={post.data.date.toISOString()}>
-				{fmt.format(post.data.date)}
-			</time>
 			<h1>{post.data.title}</h1>
-			{
-				post.data.tags.length > 0 && (
-					<ul class="tags">
-						{post.data.tags.map((tag) => (
-							<li>{tag}</li>
-						))}
-					</ul>
-				)
-			}
+			<p class="meta">
+				<time datetime={post.data.date.toISOString()}>
+					{fmt.format(post.data.date)}
+				</time>
+				{post.data.tags.map((tag) => <span class="tag">{tag}</span>)}
+			</p>
 		</header>
 		<Content />
 	</article>
-	<a href="/" class="back">← 목록</a>
+
+	<a href="/" class="back">목록으로</a>
 </Base>
 
 <style>
 	.head {
-		padding: clamp(3rem, 10vh, 6rem) 0 2.5rem;
-		margin-bottom: 3rem;
-		border-bottom: 1px solid var(--line);
+		padding: clamp(2.5rem, 8vh, 4rem) 0.25rem 2rem;
 	}
 	.head h1 {
-		margin: 0.6rem 0 0;
-		font-size: clamp(1.7rem, 4.5vw, 2.6rem);
-		font-weight: 800;
-		letter-spacing: -0.04em;
-	}
-	.tags {
-		display: flex;
-		gap: 0.5rem;
-		margin: 1.25rem 0 0;
-		padding: 0;
-		list-style: none;
-	}
-	.tags li {
 		margin: 0;
-		padding: 0.15rem 0.55rem;
-		border: 1px solid var(--line);
-		border-radius: 100px;
-		color: var(--dim);
-		font-size: 0.75rem;
+		font-size: clamp(1.5rem, 4.2vw, 2.1rem);
+		letter-spacing: -0.04em;
+		line-height: 1.42;
 	}
-	.back {
-		display: inline-block;
-		margin-top: 4rem;
-		padding-top: 2rem;
-		border-top: 1px solid var(--line);
-		width: 100%;
-		color: var(--dim);
+	.meta {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin: 0.85rem 0 0;
+		color: var(--fg3);
 		font-size: 0.875rem;
+	}
+	.tag {
+		padding: 0.1rem 0.55rem;
+		border-radius: 999px;
+		background: var(--surface);
+		font-size: 0.8125rem;
+		font-weight: 500;
+	}
+
+	article :global(> p:first-of-type) {
+		margin-top: 0;
+	}
+
+	.back {
+		display: block;
+		margin-top: 3.5rem;
+		padding: 1rem;
+		border-radius: 14px;
+		background: var(--surface);
+		color: var(--fg2);
+		font-size: 0.9375rem;
+		font-weight: 600;
+		text-align: center;
+		transition: background 160ms ease;
+	}
+	.back:hover {
+		background: color-mix(in srgb, var(--fg) 5%, var(--surface));
 	}
 </style>

@@ -1,166 +1,178 @@
 ---
 import Base from '../layouts/Base.astro';
 
-const projects = [
-	{
-		name: 'LinKHU',
-		desc: '경희대 웹서비스를 한곳에서 쓰게 만든 브라우저 확장. 일 사용자 100명+',
-		stack: 'JavaScript',
-		href: 'https://github.com/kangkyunghyun/LinKHU',
-	},
-	{
-		name: 'WAVI',
-		desc: 'AI 습관관리 서비스 백엔드. 6인 팀 프로젝트',
-		stack: 'Java',
-		href: 'https://github.com/kangkyunghyun/WAVI-BE',
-	},
-];
-
 const now = [
 	['AI·SW 마에스트로', '17기'],
 	['GDG on Campus KHU', '오거나이저'],
 	['경희대 컴퓨터공학과', '2022 —'],
 ];
 
+const projects = [
+	{
+		name: 'LinKHU',
+		desc: '경희대 웹서비스를 한곳에서 쓰게 만든 브라우저 확장',
+		note: '일 사용자 100명+',
+		href: 'https://github.com/kangkyunghyun/LinKHU',
+	},
+	{
+		name: 'WAVI',
+		desc: 'AI 습관관리 서비스 백엔드',
+		note: '6인 팀 프로젝트',
+		href: 'https://github.com/kangkyunghyun/WAVI-BE',
+	},
+];
+
+const certs = [
+	['SQLD', '2026'],
+	['정보처리기사', '2023'],
+];
+
 const links = [
-	['GitHub', 'https://github.com/kangkyunghyun'],
-	['이전 블로그 (348편)', 'https://khyunx.tistory.com'],
+	['GitHub', 'github.com/kangkyunghyun', 'https://github.com/kangkyunghyun'],
+	['이전 블로그', 'khyunx.tistory.com · 348편', 'https://khyunx.tistory.com'],
 ];
 ---
 
-<Base title="소개 — 강경현" description="강경현. 경희대 컴퓨터공학과.">
+<Base title="소개 — 강경현" description="강경현. 경희대학교 컴퓨터공학과.">
 	<section class="hero">
 		<h1>강경현</h1>
 		<p>
-			경희대학교 컴퓨터공학과 3학년. 알고리즘과 시스템 보안을 주로 파고, 쓸모
-			있는 걸 만들어서 실제로 누가 쓰게 만드는 일을 좋아합니다.
+			경희대학교 컴퓨터공학과 3학년. 알고리즘과 시스템 보안을 주로 파고, 만든
+			걸 실제로 누가 쓰게 만드는 일을 좋아합니다.
 		</p>
 	</section>
 
-	<h2 class="label">지금</h2>
-	<dl class="rows">
+	<p class="label">지금</p>
+	<div class="card">
 		{
 			now.map(([k, v]) => (
-				<div>
-					<dt>{k}</dt>
-					<dd>{v}</dd>
+				<div class="row">
+					<span class="k">{k}</span>
+					<span class="v">{v}</span>
 				</div>
 			))
 		}
-	</dl>
+	</div>
 
-	<h2 class="label">만든 것</h2>
-	<ul class="projects">
+	<p class="label">만든 것</p>
+	<div class="card">
 		{
 			projects.map((p) => (
-				<li>
-					<a href={p.href}>
-						<div class="top">
-							<strong>{p.name}</strong>
-							<span class="stack">{p.stack}</span>
-						</div>
-						<p>{p.desc}</p>
-					</a>
-				</li>
+				<a href={p.href} class="row proj">
+					<span class="body">
+						<span class="k">
+							{p.name}
+							<span class="note">{p.note}</span>
+						</span>
+						<span class="desc">{p.desc}</span>
+					</span>
+					<span class="chev" aria-hidden="true">
+						›
+					</span>
+				</a>
 			))
 		}
-	</ul>
+	</div>
 
-	<h2 class="label">자격</h2>
-	<dl class="rows">
-		<div><dt>SQLD</dt><dd>2026</dd></div>
-		<div><dt>정보처리기사</dt><dd>2023</dd></div>
-	</dl>
-
-	<h2 class="label">링크</h2>
-	<ul class="links">
+	<p class="label">자격</p>
+	<div class="card">
 		{
-			links.map(([label, href]) => (
-				<li>
-					<a href={href}>{label} ↗</a>
-				</li>
+			certs.map(([k, v]) => (
+				<div class="row">
+					<span class="k">{k}</span>
+					<span class="v">{v}</span>
+				</div>
 			))
 		}
-	</ul>
+	</div>
+
+	<p class="label">링크</p>
+	<div class="card">
+		{
+			links.map(([k, v, href]) => (
+				<a href={href} class="row">
+					<span class="body">
+						<span class="k">{k}</span>
+						<span class="desc">{v}</span>
+					</span>
+					<span class="chev" aria-hidden="true">
+						›
+					</span>
+				</a>
+			))
+		}
+	</div>
 </Base>
 
 <style>
 	.hero {
-		padding: clamp(4rem, 14vh, 9rem) 0 clamp(3rem, 8vh, 5rem);
+		padding: clamp(3rem, 10vh, 5.5rem) 0.25rem clamp(1rem, 3vh, 2rem);
 	}
 	.hero h1 {
-		margin: 0 0 1.5rem;
-		font-size: clamp(2.2rem, 7vw, 3.4rem);
-		font-weight: 800;
-		letter-spacing: -0.04em;
+		margin: 0 0 1rem;
+		font-size: clamp(1.9rem, 6vw, 2.5rem);
+		letter-spacing: -0.042em;
 	}
 	.hero p {
 		margin: 0;
-		max-width: 32rem;
-		color: var(--dim);
-	}
-
-	.label {
-		margin: 4rem 0 0;
-		padding-bottom: 1rem;
-		border-bottom: 1px solid var(--fg);
-		font-size: 0.75rem;
-		font-weight: 700;
-		letter-spacing: 0.16em;
-	}
-
-	.rows {
-		margin: 0;
-	}
-	.rows div {
-		display: flex;
-		justify-content: space-between;
-		gap: 1.5rem;
-		padding: 1rem 0;
-		border-bottom: 1px solid var(--line);
-	}
-	.rows dt {
-		font-weight: 500;
-	}
-	.rows dd {
-		margin: 0;
-		color: var(--dim);
-		font-size: 0.875rem;
-		font-variant-numeric: tabular-nums;
-	}
-
-	.projects,
-	.links {
-		margin: 0;
-		padding: 0;
-		list-style: none;
-	}
-	.projects > li > a {
-		display: block;
-		padding: 1.25rem 0;
-		border-bottom: 1px solid var(--line);
-	}
-	.projects .top {
-		display: flex;
-		align-items: baseline;
-		justify-content: space-between;
-		gap: 1rem;
-	}
-	.projects .stack {
-		color: var(--dim);
-		font-size: 0.75rem;
-		letter-spacing: 0.04em;
-	}
-	.projects p {
-		margin: 0.35rem 0 0;
-		color: var(--dim);
+		max-width: 30rem;
+		color: var(--fg3);
 		font-size: 0.9375rem;
 	}
 
-	.links li a {
-		display: block;
-		padding: 1rem 0;
-		border-bottom: 1px solid var(--line);
-		font-weight: 500;
+	.row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem;
+		padding: 1.05rem 1.25rem;
+	}
+	a.row {
+		transition: background 160ms ease;
+	}
+	a.row:hover {
+		background: color-mix(in srgb, var(--fg) 4%, var(--surface));
+	}
+	.body {
+		display: flex;
+		flex-direction: column;
+		gap: 0.1rem;
+		min-width: 0;
+	}
+	.k {
+		display: flex;
+		align-items: center;
+		gap: 0.45rem;
+		font-weight: 600;
+		letter-spacing: -0.024em;
+	}
+	.note {
+		padding: 0.05rem 0.45rem;
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--blue) 12%, transparent);
+		color: var(--blue);
+		font-size: 0.75rem;
+		font-weight: 600;
+	}
+	.v,
+	.desc {
+		color: var(--fg3);
+		font-size: 0.875rem;
+	}
+	.v {
+		flex-shrink: 0;
+		font-variant-numeric: tabular-nums;
+	}
+	.chev {
+		flex-shrink: 0;
+		color: var(--fg3);
+		font-size: 1.35rem;
+		line-height: 1;
+	}
+
+	@media (max-width: 26rem) {
+		.proj .k {
+			flex-wrap: wrap;
+		}
 	}
 </style>

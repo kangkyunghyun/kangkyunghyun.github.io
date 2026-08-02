@@ -10,87 +10,87 @@ const fmt = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium' });
 
 <Base
 	title="강경현"
-	description="개발하며 겪은 문제와 결정을 기록합니다. 경희대 컴퓨터공학과."
+	description="개발하며 겪은 문제와 그때 내린 결정을 기록합니다."
 >
 	<section class="hero">
 		<h1>개발하며 겪은 문제와<br />그때 내린 결정을 기록합니다.</h1>
-		<p>
-			경희대학교 컴퓨터공학과. 알고리즘과 시스템 보안을 주로 파고 있습니다.
-		</p>
+		<p>경희대학교 컴퓨터공학과. 알고리즘과 시스템 보안을 주로 파고 있습니다.</p>
 	</section>
 
-	<h2 class="section-label">글</h2>
-	{posts.length === 0 && <p class="empty">아직 글이 없습니다.</p>}
-	<ul class="posts">
-		{
-			posts.map((post) => (
-				<li>
-					<a href={`/posts/${post.id}`}>
-						<span class="t">{post.data.title}</span>
-						<time datetime={post.data.date.toISOString()}>
-							{fmt.format(post.data.date)}
-						</time>
+	<p class="label">전체 글 {posts.length}</p>
+	{
+		posts.length === 0 ? (
+			<div class="card empty">아직 글이 없습니다.</div>
+		) : (
+			<div class="card">
+				{posts.map((post) => (
+					<a href={`/posts/${post.id}`} class="row">
+						<span class="body">
+							<span class="t">{post.data.title}</span>
+							<time datetime={post.data.date.toISOString()}>
+								{fmt.format(post.data.date)}
+							</time>
+						</span>
+						<span class="chev" aria-hidden="true">›</span>
 					</a>
-				</li>
-			))
-		}
-	</ul>
+				))}
+			</div>
+		)
+	}
 </Base>
 
 <style>
 	.hero {
-		padding: clamp(4rem, 14vh, 9rem) 0 clamp(3rem, 8vh, 5rem);
+		padding: clamp(3rem, 10vh, 5.5rem) 0.25rem clamp(1rem, 3vh, 2rem);
 	}
 	.hero h1 {
-		margin: 0 0 1.5rem;
-		font-size: clamp(1.9rem, 5.5vw, 3.1rem);
-		font-weight: 800;
+		margin: 0 0 1rem;
+		font-size: clamp(1.6rem, 5.2vw, 2.3rem);
 		letter-spacing: -0.04em;
-		line-height: 1.28;
+		line-height: 1.42;
 	}
 	.hero p {
 		margin: 0;
-		max-width: 30rem;
-		color: var(--dim);
+		max-width: 28rem;
+		color: var(--fg3);
+		font-size: 0.9375rem;
 	}
 
-	.section-label {
-		margin: 0 0 0.5rem;
-		padding-bottom: 1rem;
-		border-bottom: 1px solid var(--fg);
-		font-size: 0.75rem;
-		font-weight: 700;
-		letter-spacing: 0.16em;
-	}
-
-	.posts {
-		margin: 0;
-		padding: 0;
-		list-style: none;
-	}
-	.posts a {
+	.row {
 		display: flex;
-		align-items: baseline;
+		align-items: center;
 		justify-content: space-between;
-		gap: 1.5rem;
-		padding: 1.15rem 0;
-		border-bottom: 1px solid var(--line);
+		gap: 0.75rem;
+		padding: 1.05rem 1.25rem;
+		transition: background 160ms ease;
 	}
-	.posts .t {
-		font-weight: 500;
+	.row:hover {
+		background: color-mix(in srgb, var(--fg) 4%, var(--surface));
 	}
-	.posts time {
+	.body {
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+		min-width: 0;
+	}
+	.t {
+		font-weight: 600;
+		letter-spacing: -0.024em;
+	}
+	time {
+		color: var(--fg3);
+		font-size: 0.8125rem;
+		font-variant-numeric: tabular-nums;
+	}
+	.chev {
 		flex-shrink: 0;
+		color: var(--fg3);
+		font-size: 1.35rem;
+		line-height: 1;
 	}
 	.empty {
-		padding: 1.5rem 0;
-		color: var(--dim);
-	}
-
-	@media (max-width: 34rem) {
-		.posts a {
-			flex-direction: column;
-			gap: 0.35rem;
-		}
+		padding: 2rem 1.25rem;
+		color: var(--fg3);
+		text-align: center;
 	}
 </style>
