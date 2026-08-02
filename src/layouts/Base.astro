@@ -416,8 +416,14 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 	li::marker {
 		color: var(--fg3);
 	}
+	/* 표는 좁은 화면에서 표 안에서만 가로 스크롤되게 한다.
+	   그냥 두면 셀 최소폭 합이 뷰포트를 넘겨 페이지 전체가 밀린다.
+	   마크다운이 만드는 <table>은 감쌀 수 없어 table 자체를 스크롤 상자로 쓴다 */
 	table {
+		display: block;
 		width: 100%;
+		max-width: 100%;
+		overflow-x: auto;
 		border-collapse: collapse;
 		font-size: 0.9375rem;
 	}

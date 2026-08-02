@@ -21,6 +21,8 @@ const projects = defineCollection({
 		role: z.string(),
 		/** 카드에 붙는 파란 배지. 한 개만 */
 		badge: z.string().optional(),
+		/** public/logos/ 아래 파일명. 없으면 로고 자리를 비운다 */
+		logo: z.string().optional(),
 		team: z.string().optional(),
 		stack: z.array(z.string()).default([]),
 		/** AS-IS → TO-BE 2열 비교. 둘 다 비면 섹션이 통째로 안 나온다 */

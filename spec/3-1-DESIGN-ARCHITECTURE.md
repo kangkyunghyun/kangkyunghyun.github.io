@@ -78,6 +78,7 @@ src/pages/projects/[...slug].astro 프로젝트 상세
 | `period` | string | 필수 | 표시용 문자열. 날짜 타입이 아니다 |
 | `role` | string | 필수 | 맡은 역할 |
 | `badge` | string | 선택 | 카드의 파란 배지. 한 개만 |
+| `logo` | string | 선택 | `public/logos/` 아래 파일명 |
 | `team` | string | 선택 | 팀 구성 |
 | `stack` | string[] | 선택 | 상세 페이지 하단 칩 |
 | `asIs` / `toBe` | string[] | 선택 | 2열 비교. 둘 다 비면 섹션이 통째로 빠진다 |

@@ -5,6 +5,7 @@ period: 2026. 01. — 2026. 05.
 role: 1인 개발 및 운영
 badge: 누적 112명
 stack: [JavaScript, Chrome Extension]
+logo: boj-performance.png
 asIs: []
 toBe: []
 links:

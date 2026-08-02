@@ -138,15 +138,29 @@ const links = [
 			{
 				projects.map((p) => (
 					<a href={`/projects/${p.id}`} class="proj">
-						<span class="head">
-							<span class="name">
-								{p.data.title}
-								{p.data.badge && <span class="note">{p.data.badge}</span>}
+						{
+							p.data.logo && (
+								<img
+									class="logo"
+									src={`/logos/${p.data.logo}`}
+									alt=""
+									width="44"
+									height="44"
+									loading="lazy"
+								/>
+							)
+						}
+						<span class="body">
+							<span class="head">
+								<span class="name">
+									{p.data.title}
+									{p.data.badge && <span class="note">{p.data.badge}</span>}
+								</span>
+								<span class="period">{p.data.period}</span>
 							</span>
-							<span class="period">{p.data.period}</span>
+							<span class="role">{p.data.role}</span>
+							<span class="desc">{p.data.summary}</span>
 						</span>
-						<span class="role">{p.data.role}</span>
-						<span class="desc">{p.data.summary}</span>
 					</a>
 				))
 			}
@@ -263,12 +277,26 @@ const links = [
 	}
 	.proj {
 		display: flex;
-		flex-direction: column;
-		gap: 0.2rem;
+		align-items: flex-start;
+		gap: 0.9rem;
 		padding: 1.15rem 1.25rem;
 		border-radius: var(--r);
 		background: var(--surface);
 		transition: background 160ms ease;
+	}
+	.proj .logo {
+		flex-shrink: 0;
+		width: 44px;
+		height: 44px;
+		border-radius: 11px;
+		object-fit: cover;
+	}
+	.proj .body {
+		display: flex;
+		flex-direction: column;
+		gap: 0.2rem;
+		min-width: 0;
+		flex: 1;
 	}
 	.proj:hover {
 		background: color-mix(in srgb, var(--fg) 4%, var(--surface));

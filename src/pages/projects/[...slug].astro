@@ -16,6 +16,17 @@ const hasCompare = d.asIs.length > 0 || d.toBe.length > 0;
 <Base title={`${d.title} — 강경현`} description={d.summary}>
 	<article>
 		<header class="head">
+			{
+				d.logo && (
+					<img
+						class="logo"
+						src={`/logos/${d.logo}`}
+						alt=""
+						width="64"
+						height="64"
+					/>
+				)
+			}
 			<p class="wordmark">{d.title}</p>
 			<h1>{d.summary}</h1>
 			<dl class="meta">
@@ -88,6 +99,14 @@ const hasCompare = d.asIs.length > 0 || d.toBe.length > 0;
 
 	.head {
 		padding: clamp(2.5rem, 8vh, 4rem) 0 2rem;
+	}
+	.head .logo {
+		display: block;
+		width: 64px;
+		height: 64px;
+		margin-bottom: 1rem;
+		border-radius: 16px;
+		object-fit: cover;
 	}
 	.wordmark {
 		margin: 0;
