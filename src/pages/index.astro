@@ -12,33 +12,33 @@ const projects = (
 // 출처: github.com/kangkyunghyun 프로필 README
 const education = [
 	{
-		period: '2022.03 — 현재',
+		period: '2022. 03. — 현재',
 		title: '경희대학교',
 		aside: '컴퓨터공학과',
 		desc: 'GPA 4.09 / 4.5',
 	},
 ];
 
-const experiences = [
+const activity = [
 	{
-		period: '2026.03 — 현재',
+		period: '2026. 03. — 현재',
 		title: 'AI·SW 마에스트로',
-		href: 'https://github.com/AI-SW-Maestro-OSS',
+		href: 'https://swmaestro.ai/',
 	},
 	{
-		period: '2026.03 — 2026.06',
+		period: '2026. 03. — 2026. 06.',
 		title: '경희대학교 알고리즘 멘토',
 	},
 	{
-		period: '2025.09 — 현재',
+		period: '2025. 09. — 현재',
 		title: '경희대학교 해킹 동아리 HacKHU',
 	},
 	{
-		period: '2025.09 — 현재',
+		period: '2025. 09. — 현재',
 		title: '경희대학교 알고리즘 동아리 KHUA',
 	},
 	{
-		period: '2025.09 — 2026.02',
+		period: '2025. 09. — 2026. 02.',
 		title: 'GDG on Campus 경희대학교',
 		href: 'https://github.com/GDG-on-Campus-KHU',
 	},
@@ -46,31 +46,31 @@ const experiences = [
 
 const awards = [
 	{
-		period: '2026.05',
+		period: '2026. 05.',
 		title: '2026 경희대학교 봄 프로그래밍 경시대회',
 		aside: '우수상 (3등)',
 	},
 	{
-		period: '2026.05',
+		period: '2026. 05.',
 		title: '2026 SCSC computer programming contest Div.3',
 		aside: 'Furiosa Prize (4등)',
 	},
 	{
-		period: '2025.10',
+		period: '2025. 10.',
 		title: '2025 경희대학교 가을 프로그래밍 경시대회',
 		aside: '장려상 (4등)',
 	},
 	{
-		period: '2022.09',
+		period: '2022. 09.',
 		title: '2022 경희대학교 동아리 단합 공모전',
 		aside: '장려상 (3등)',
 	},
 ];
 
 const certs = [
-	{ period: '2026.05', title: 'TOPCIT', aside: '수준 4 (672점)' },
-	{ period: '2026.03', title: 'SQLD' },
-	{ period: '2023.04', title: '정보처리기능사' },
+	{ period: '2026. 05.', title: 'TOPCIT', aside: '수준 4 (672점)' },
+	{ period: '2026. 03.', title: 'SQLD' },
+	{ period: '2023. 04.', title: '정보처리기능사' },
 ];
 
 // 출처: 노션 개인 소개 페이지 ▶ Tech Stacks
@@ -132,34 +132,6 @@ const links = [
 		</nav>
 	</section>
 
-	<section id="stacks">
-		<h2>Tech Stacks</h2>
-		<div class="card">
-			{
-				stacks.map(([field, items]) => (
-					<div class="stack">
-						<span class="field">{field}</span>
-						<span class="chips">
-							{(items as string[]).map((s) => (
-								<span class="chip">{s}</span>
-							))}
-						</span>
-					</div>
-				))
-			}
-		</div>
-	</section>
-
-	<section id="education">
-		<h2>Education</h2>
-		<Timeline items={education} />
-	</section>
-
-	<section id="experiences">
-		<h2>Experiences</h2>
-		<Timeline items={experiences} />
-	</section>
-
 	<section id="projects">
 		<h2>Projects</h2>
 		<div class="projects">
@@ -179,6 +151,34 @@ const links = [
 				))
 			}
 		</div>
+	</section>
+
+	<section id="stacks">
+		<h2>Tech Stacks</h2>
+		<div class="card">
+			{
+				stacks.map(([field, items]) => (
+					<div class="stack">
+						<span class="field">{field}</span>
+						<span class="chips">
+							{(items as string[]).map((s) => (
+								<span class="chip">{s}</span>
+							))}
+						</span>
+					</div>
+				))
+			}
+		</div>
+	</section>
+
+	<section id="activity">
+		<h2>Activity</h2>
+		<Timeline items={activity} />
+	</section>
+
+	<section id="education">
+		<h2>Education</h2>
+		<Timeline items={education} />
 	</section>
 
 	<section id="certifications">

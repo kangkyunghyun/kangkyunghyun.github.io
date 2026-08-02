@@ -46,7 +46,7 @@ src/pages/projects/[...slug].astro 프로젝트 상세
 | `/posts/<파일명>` | 글 상세 | `src/pages/posts/[...slug].astro` | `getStaticPaths`로 글마다 생성 |
 | `/projects/<파일명>` | 프로젝트 상세 | `src/pages/projects/[...slug].astro` | `getStaticPaths`로 프로젝트마다 생성 |
 
-메인의 섹션 순서는 Tech Stacks → Education → Experiences → Projects → Certifications → Awards이며, 섹션명과 항목 표기는 **GitHub 프로필 README를 따른다**(Tech Stacks만 노션 출처). 각 섹션은 푸터 Quick Links가 가리키는 앵커 `id`를 갖는다. 외부 링크는 별도 섹션이 아니라 히어로 바로 아래 버튼 줄에 둔다 — 연락 수단은 페이지 끝까지 내려가야 보이면 안 된다. 이력 데이터의 출처는 GitHub 프로필 README와 노션 개인 소개 페이지 두 곳이고, 값이 어긋나면 최신 쪽을 쓰되 [3-2](3-2-DESIGN-DECISIONS.md) §3-2-6에 기록한다.
+메인의 섹션 순서는 Projects → Tech Stacks → Activity → Education → Certifications → Awards다. 프로젝트가 가장 강한 근거라 맨 위에 둔다. 항목 표기는 **GitHub 프로필 README를 따르고**(Tech Stacks만 노션 출처), 날짜는 `YYYY. MM.` 형식으로 통일한다. 섹션명 `Activity`는 나중에 경력이 생겼을 때 `Work Experience`와 구분하려고 유지한다. 각 섹션은 푸터 Quick Links가 가리키는 앵커 `id`를 갖는다. 외부 링크는 별도 섹션이 아니라 히어로 바로 아래 버튼 줄에 둔다 — 연락 수단은 페이지 끝까지 내려가야 보이면 안 된다. 이력 데이터의 출처는 GitHub 프로필 README와 노션 개인 소개 페이지 두 곳이고, 값이 어긋나면 최신 쪽을 쓰되 [3-2](3-2-DESIGN-DECISIONS.md) §3-2-6에 기록한다.
 
 메인은 블로그가 아니라 **포트폴리오**다. 채용·협업 판단에 필요한 것이 한 페이지에 다 있어야 하고(§[2-1](2-REQUIREMENTS.md) U2), 블로그는 헤더에서 한 번 눌러 들어간다. 헤더의 `블로그`는 `/blog`와 `/posts/*` 양쪽에서 활성으로 보여야 한다.
 
