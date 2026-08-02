@@ -5,6 +5,7 @@ period: 2026. 2. — 현재
 role: 1인 개발 및 운영
 badge: DAU 100+
 stack: [JavaScript, Chrome Extension, GitHub Actions]
+live: true
 logo: linkhu.png
 asIs: []
 toBe: []

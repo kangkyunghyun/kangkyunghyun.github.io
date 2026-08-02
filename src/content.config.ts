@@ -21,6 +21,8 @@ const projects = defineCollection({
 		role: z.string(),
 		/** 카드에 붙는 파란 배지. 한 개만 */
 		badge: z.string().optional(),
+		/** 지금 서비스가 살아 있으면 true. 초록 '운영 중' 배지가 붙는다 */
+		live: z.boolean().default(false),
 		/** public/logos/ 아래 파일명. 없으면 로고 자리를 비운다 */
 		logo: z.string().optional(),
 		team: z.string().optional(),

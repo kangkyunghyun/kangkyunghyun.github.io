@@ -154,6 +154,7 @@ const links = [
 							<span class="head">
 								<span class="name">
 									{p.data.title}
+									{p.data.live && <span class="live">운영 중</span>}
 									{p.data.badge && <span class="note">{p.data.badge}</span>}
 								</span>
 								<span class="period">{p.data.period}</span>
@@ -322,6 +323,26 @@ const links = [
 		color: var(--blue);
 		font-size: 0.75rem;
 		font-weight: 600;
+	}
+	/* 운영 상태는 성격이 달라 색을 나눈다 */
+	.live {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+		padding: 0.05rem 0.5rem 0.05rem 0.4rem;
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--green) 12%, transparent);
+		color: var(--green);
+		font-size: 0.75rem;
+		font-weight: 600;
+		white-space: nowrap;
+	}
+	.live::before {
+		content: '';
+		width: 5px;
+		height: 5px;
+		border-radius: 50%;
+		background: currentColor;
 	}
 	.proj .period {
 		flex-shrink: 0;
