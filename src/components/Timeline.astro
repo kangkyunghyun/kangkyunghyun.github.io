@@ -1,0 +1,135 @@
+---
+export interface Item {
+	period: string;
+	title: string;
+	/** 제목 옆에 붙는 보조 표기 (한글명, 역할 등) */
+	aside?: string;
+	desc?: string;
+	href?: string;
+}
+interface Props {
+	items: Item[];
+}
+const { items } = Astro.props;
+---
+
+<ol class="tl">
+	{
+		items.map((it) => (
+			<li>
+				<span class="period">{it.period}</span>
+				<span class="body">
+					<span class="title">
+						{it.href ? (
+							<a href={it.href}>
+								{it.title}
+								<span class="ext" aria-hidden="true">
+									↗
+								</span>
+							</a>
+						) : (
+							it.title
+						)}
+						{it.aside && <span class="aside">{it.aside}</span>}
+					</span>
+					{it.desc && <span class="desc">{it.desc}</span>}
+				</span>
+			</li>
+		))
+	}
+</ol>
+
+<style>
+	.tl {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	li {
+		position: relative;
+		display: grid;
+		grid-template-columns: 10.5rem 1fr;
+		gap: 1.25rem;
+		padding: 0 0 1.9rem 1.25rem;
+		margin: 0;
+	}
+	/* 세로선. 마지막 항목은 점까지만 그린다 */
+	li::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0.6rem;
+		bottom: 0;
+		width: 1px;
+		background: var(--line);
+	}
+	li:last-child {
+		padding-bottom: 0;
+	}
+	li:last-child::before {
+		display: none;
+	}
+	/* 점 */
+	li::after {
+		content: '';
+		position: absolute;
+		left: -3px;
+		top: 0.5rem;
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: var(--fg3);
+	}
+
+	.period {
+		padding-top: 0.1rem;
+		color: var(--fg3);
+		font-size: 0.8125rem;
+		font-variant-numeric: tabular-nums;
+		letter-spacing: -0.01em;
+	}
+	.body {
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+		min-width: 0;
+	}
+	.title {
+		font-size: 1rem;
+		font-weight: 700;
+		letter-spacing: -0.028em;
+	}
+	.title a {
+		color: inherit;
+	}
+	.title a:hover {
+		color: var(--blue);
+	}
+	.ext {
+		margin-left: 0.15rem;
+		color: var(--fg3);
+		font-size: 0.75rem;
+		font-weight: 500;
+	}
+	.aside {
+		margin-left: 0.4rem;
+		color: var(--fg3);
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+	.desc {
+		color: var(--fg2);
+		font-size: 0.9375rem;
+	}
+
+	/* 좁은 화면에서는 기간을 제목 위로 올린다 */
+	@media (max-width: 34rem) {
+		li {
+			grid-template-columns: 1fr;
+			gap: 0.2rem;
+		}
+		.period {
+			padding-top: 0;
+		}
+	}
+</style>

@@ -6,10 +6,12 @@ interface Props {
 const { title, description } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const nav = [
-	{ href: '/', label: '글' },
-	{ href: '/about', label: '소개' },
+	{ href: '/', label: '포트폴리오' },
+	{ href: '/blog', label: '블로그' },
 ];
 const path = Astro.url.pathname;
+// /posts/... 로 들어와도 헤더의 '블로그'가 켜져 있어야 한다
+const inBlog = path === '/blog' || path.startsWith('/posts');
 ---
 
 <!doctype html>
@@ -28,15 +30,19 @@ const path = Astro.url.pathname;
 				<a href="/" class="wordmark">강경현</a>
 				<nav>
 					{
-						nav.map((item) => (
-							<a
-								href={item.href}
-								class:list={['navlink', { on: item.href === path }]}
-								aria-current={item.href === path ? 'page' : undefined}
-							>
-								{item.label}
-							</a>
-						))
+						nav.map((item) => {
+							const on =
+								item.href === '/blog' ? inBlog : item.href === path;
+							return (
+								<a
+									href={item.href}
+									class:list={['navlink', { on }]}
+									aria-current={on ? 'page' : undefined}
+								>
+									{item.label}
+								</a>
+							);
+						})
 					}
 				</nav>
 			</div>

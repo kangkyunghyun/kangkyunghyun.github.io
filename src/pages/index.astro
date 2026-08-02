@@ -1,58 +1,258 @@
 ---
-import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import Timeline from '../components/Timeline.astro';
 
-const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
-	(a, b) => b.data.date.getTime() - a.data.date.getTime(),
-);
-const fmt = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium' });
+// 출처: github.com/kangkyunghyun 프로필 README
+const education = [
+	{
+		period: '2022.03 — 현재',
+		title: '경희대학교',
+		aside: '컴퓨터공학과',
+		desc: 'GPA 4.09 / 4.5',
+	},
+];
+
+const activity = [
+	{
+		period: '2026.03 — 현재',
+		title: 'AI·SW 마에스트로',
+		aside: '17기',
+		href: 'https://github.com/AI-SW-Maestro-OSS',
+	},
+	{
+		period: '2026.03 — 2026.06',
+		title: '경희대학교 알고리즘 멘토',
+	},
+	{
+		period: '2025.09 — 현재',
+		title: 'HacKHU',
+		aside: '경희대 해킹 동아리',
+	},
+	{
+		period: '2025.09 — 현재',
+		title: 'KHUA',
+		aside: '경희대 알고리즘 동아리',
+	},
+	{
+		period: '2025.09 — 2026.02',
+		title: 'GDG on Campus 경희대학교',
+		href: 'https://github.com/GDG-on-Campus-KHU',
+	},
+];
+
+const projects = [
+	{
+		period: '2026.02 — 현재',
+		name: 'LinKHU',
+		role: '1인 개발 및 운영',
+		desc: '경희대학교 주요 웹서비스 바로가기 브라우저 확장 프로그램',
+		note: 'DAU 100+',
+		href: 'https://github.com/kangkyunghyun/LinKHU',
+	},
+	{
+		period: '2025.07 — 2025.10',
+		name: 'WAVI',
+		role: '팀장, 백엔드 개발',
+		desc: '실패를 성공으로 만드는 AI 기반 습관 관리 서비스. 6인 팀(Design 1, Backend 2, Frontend 2, AI 1)에서 백엔드 개발과 팀 리딩을 맡았습니다.',
+		note: '6인 팀',
+		href: 'https://github.com/WAVE-WAVI/WAVI-BE',
+	},
+];
+
+const awards = [
+	{
+		period: '2026.05',
+		title: '2026 경희대학교 봄 프로그래밍 경시대회',
+		aside: '우수상 (3등)',
+	},
+	{
+		period: '2026.05',
+		title: '2026 SCSC computer programming contest Div.3',
+		aside: 'Furiosa Prize (4등)',
+	},
+	{
+		period: '2025.10',
+		title: '2025 경희대학교 가을 프로그래밍 경시대회',
+		aside: '장려상 (4등)',
+	},
+	{
+		period: '2022.09',
+		title: '2022 경희대학교 동아리 단합 공모전',
+		aside: '장려상 (3등)',
+	},
+];
+
+const certs = [
+	{ period: '2026.03', title: 'SQLD' },
+	{ period: '2023.04', title: '정보처리기능사' },
+];
+
+const links = [
+	['GitHub', 'github.com/kangkyunghyun', 'https://github.com/kangkyunghyun'],
+	['이전 블로그', 'khyunx.tistory.com · 348편', 'https://khyunx.tistory.com'],
+];
 ---
 
 <Base
 	title="강경현"
-	description="개발하며 겪은 문제와 그때 내린 결정을 기록합니다."
+	description="경희대학교 컴퓨터공학과. 알고리즘과 시스템 보안을 주로 파고 있습니다."
 >
 	<section class="hero">
-		<h1>개발하며 겪은 문제와<br />그때 내린 결정을 기록합니다.</h1>
-		<p>경희대학교 컴퓨터공학과. 알고리즘과 시스템 보안을 주로 파고 있습니다.</p>
+		<h1>
+			만든 걸 실제로 누가<br />쓰게 만드는 개발자<br /><strong>강경현</strong>입니다.
+		</h1>
+		<p>
+			경희대학교 컴퓨터공학과 3학년. 알고리즘과 시스템 보안을 주로 파고
+			있습니다.
+		</p>
 	</section>
 
-	<p class="label">전체 글 {posts.length}</p>
-	{
-		posts.length === 0 ? (
-			<div class="card empty">아직 글이 없습니다.</div>
-		) : (
-			<div class="card">
-				{posts.map((post) => (
-					<a href={`/posts/${post.id}`} class="row">
-						<span class="body">
-							<span class="t">{post.data.title}</span>
-							<time datetime={post.data.date.toISOString()}>
-								{fmt.format(post.data.date)}
-							</time>
+	<section>
+		<h2>Education</h2>
+		<Timeline items={education} />
+	</section>
+
+	<section>
+		<h2>Activity</h2>
+		<Timeline items={activity} />
+	</section>
+
+	<section>
+		<h2>Projects</h2>
+		<div class="projects">
+			{
+				projects.map((p) => (
+					<a href={p.href} class="proj">
+						<span class="head">
+							<span class="name">
+								{p.name}
+								<span class="note">{p.note}</span>
+							</span>
+							<span class="period">{p.period}</span>
 						</span>
-						<span class="chev" aria-hidden="true">›</span>
+						<span class="role">{p.role}</span>
+						<span class="desc">{p.desc}</span>
 					</a>
-				))}
-			</div>
-		)
-	}
+				))
+			}
+		</div>
+	</section>
+
+	<section>
+		<h2>Awards</h2>
+		<Timeline items={awards} />
+	</section>
+
+	<section>
+		<h2>Certifications</h2>
+		<Timeline items={certs} />
+	</section>
+
+	<section>
+		<h2>Links</h2>
+		<div class="card">
+			{
+				links.map(([label, sub, href]) => (
+					<a href={href} class="row">
+						<span class="body">
+							<span class="k">{label}</span>
+							<span class="v">{sub}</span>
+						</span>
+						<span class="chev" aria-hidden="true">
+							›
+						</span>
+					</a>
+				))
+			}
+		</div>
+	</section>
 </Base>
 
 <style>
 	.hero {
-		padding: clamp(3rem, 10vh, 5.5rem) 0.25rem clamp(1rem, 3vh, 2rem);
+		padding: clamp(3.5rem, 12vh, 6.5rem) 0.25rem clamp(2rem, 6vh, 3.5rem);
 	}
 	.hero h1 {
-		margin: 0 0 1rem;
+		margin: 0 0 1.15rem;
 		font-size: clamp(1.6rem, 5.2vw, 2.3rem);
+		font-weight: 500;
 		letter-spacing: -0.04em;
-		line-height: 1.42;
+		line-height: 1.45;
+	}
+	.hero h1 strong {
+		font-weight: 800;
 	}
 	.hero p {
 		margin: 0;
 		max-width: 28rem;
 		color: var(--fg3);
+		font-size: 0.9375rem;
+	}
+
+	section {
+		margin-bottom: 4rem;
+	}
+	section h2 {
+		margin: 0 0 2rem;
+		font-size: 1.5rem;
+		font-weight: 800;
+		letter-spacing: -0.035em;
+		text-align: center;
+	}
+
+	.projects {
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+	}
+	.proj {
+		display: flex;
+		flex-direction: column;
+		gap: 0.2rem;
+		padding: 1.15rem 1.25rem;
+		border-radius: var(--r);
+		background: var(--surface);
+		transition: background 160ms ease;
+	}
+	.proj:hover {
+		background: color-mix(in srgb, var(--fg) 4%, var(--surface));
+	}
+	.proj .head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 0.75rem;
+	}
+	.proj .name {
+		display: flex;
+		align-items: center;
+		gap: 0.45rem;
+		font-size: 1rem;
+		font-weight: 700;
+		letter-spacing: -0.028em;
+	}
+	.note {
+		padding: 0.05rem 0.45rem;
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--blue) 12%, transparent);
+		color: var(--blue);
+		font-size: 0.75rem;
+		font-weight: 600;
+	}
+	.proj .period {
+		flex-shrink: 0;
+		color: var(--fg3);
+		font-size: 0.8125rem;
+		font-variant-numeric: tabular-nums;
+	}
+	.proj .role {
+		color: var(--fg3);
+		font-size: 0.8125rem;
+		font-weight: 600;
+	}
+	.proj .desc {
+		margin-top: 0.3rem;
+		color: var(--fg2);
 		font-size: 0.9375rem;
 	}
 
@@ -67,20 +267,19 @@ const fmt = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium' });
 	.row:hover {
 		background: color-mix(in srgb, var(--fg) 4%, var(--surface));
 	}
-	.body {
+	.row .body {
 		display: flex;
 		flex-direction: column;
-		gap: 0.15rem;
+		gap: 0.1rem;
 		min-width: 0;
 	}
-	.t {
+	.row .k {
 		font-weight: 600;
 		letter-spacing: -0.024em;
 	}
-	time {
+	.row .v {
 		color: var(--fg3);
-		font-size: 0.8125rem;
-		font-variant-numeric: tabular-nums;
+		font-size: 0.875rem;
 	}
 	.chev {
 		flex-shrink: 0;
@@ -88,9 +287,11 @@ const fmt = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium' });
 		font-size: 1.35rem;
 		line-height: 1;
 	}
-	.empty {
-		padding: 2rem 1.25rem;
-		color: var(--fg3);
-		text-align: center;
+
+	@media (max-width: 30rem) {
+		.proj .head {
+			flex-direction: column;
+			gap: 0.2rem;
+		}
 	}
 </style>

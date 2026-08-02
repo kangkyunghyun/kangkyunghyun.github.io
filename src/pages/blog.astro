@@ -1,0 +1,111 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+	(a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+const fmt = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium' });
+---
+
+<Base
+	title="블로그 — 강경현"
+	description="개발하며 겪은 문제와 그때 내린 결정을 기록합니다."
+>
+	<section class="hero">
+		<h1>블로그</h1>
+		<p>개발하며 겪은 문제와 그때 내린 결정을 기록합니다.</p>
+	</section>
+
+	<p class="label">전체 글 {posts.length}</p>
+	{
+		posts.length === 0 ? (
+			<div class="card empty">아직 글이 없습니다.</div>
+		) : (
+			<div class="card">
+				{posts.map((post) => (
+					<a href={`/posts/${post.id}`} class="row">
+						<span class="body">
+							<span class="t">{post.data.title}</span>
+							<time datetime={post.data.date.toISOString()}>
+								{fmt.format(post.data.date)}
+							</time>
+						</span>
+						<span class="chev" aria-hidden="true">
+							›
+						</span>
+					</a>
+				))}
+			</div>
+		)
+	}
+
+	<p class="prev">
+		알고리즘 풀이와 CS 기록 348편은
+		<a href="https://khyunx.tistory.com">이전 블로그</a>에 그대로 있습니다.
+	</p>
+</Base>
+
+<style>
+	.hero {
+		padding: clamp(3rem, 10vh, 5.5rem) 0.25rem clamp(1rem, 3vh, 2rem);
+	}
+	.hero h1 {
+		margin: 0 0 0.85rem;
+		font-size: clamp(1.9rem, 6vw, 2.5rem);
+		font-weight: 800;
+		letter-spacing: -0.042em;
+	}
+	.hero p {
+		margin: 0;
+		color: var(--fg3);
+		font-size: 0.9375rem;
+	}
+
+	.row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem;
+		padding: 1.05rem 1.25rem;
+		transition: background 160ms ease;
+	}
+	.row:hover {
+		background: color-mix(in srgb, var(--fg) 4%, var(--surface));
+	}
+	.body {
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+		min-width: 0;
+	}
+	.t {
+		font-weight: 600;
+		letter-spacing: -0.024em;
+	}
+	time {
+		color: var(--fg3);
+		font-size: 0.8125rem;
+		font-variant-numeric: tabular-nums;
+	}
+	.chev {
+		flex-shrink: 0;
+		color: var(--fg3);
+		font-size: 1.35rem;
+		line-height: 1;
+	}
+	.empty {
+		padding: 2rem 1.25rem;
+		color: var(--fg3);
+		text-align: center;
+	}
+	.prev {
+		margin: 2rem 0.25rem 0;
+		color: var(--fg3);
+		font-size: 0.875rem;
+	}
+	.prev a {
+		color: var(--blue);
+		font-weight: 500;
+	}
+</style>

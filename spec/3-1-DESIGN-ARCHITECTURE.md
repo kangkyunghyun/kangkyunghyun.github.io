@@ -21,25 +21,28 @@
 | Node | `>=22.12.0` |
 
 ```text
-astro.config.mjs               site URL (canonical 생성에 쓰임)
-src/content.config.ts          posts 컬렉션 정의
-src/content/posts/*.md         글
-src/layouts/Base.astro         공통 셸 + 전역 스타일 전부
-src/pages/index.astro          글 목록
+astro.config.mjs                site URL, shiki 듀얼 테마
+src/content.config.ts           posts 컬렉션 정의
+src/content/posts/*.md          글
+src/layouts/Base.astro          공통 셸 + 전역 스타일 전부
+src/components/Timeline.astro   기간-제목-설명 3열 타임라인
+src/pages/index.astro           포트폴리오 (메인)
+src/pages/blog.astro            글 목록
 src/pages/posts/[...slug].astro 글 상세
-src/pages/about.astro          소개 (포트폴리오)
-.github/workflows/deploy.yml   Pages 배포
+.github/workflows/deploy.yml    Pages 배포
 ```
 
 전역 스타일은 `Base.astro`의 `<style is:global>` 한 곳에만 둔다. 페이지별 스타일은 각 `.astro` 파일의 스코프 `<style>`에 둔다. CSS 파일을 따로 만들지 않는다. `MUST`
 
 ## 3-1-2 라우팅
 
-| URL | 파일 | 생성 |
-| --- | --- | --- |
-| `/` | `src/pages/index.astro` | 정적 |
-| `/about` | `src/pages/about.astro` | 정적 |
-| `/posts/<파일명>` | `src/pages/posts/[...slug].astro` | `getStaticPaths`로 글마다 생성 |
+| URL | 내용 | 파일 | 생성 |
+| --- | --- | --- | --- |
+| `/` | 포트폴리오 한 페이지 | `src/pages/index.astro` | 정적 |
+| `/blog` | 글 목록 | `src/pages/blog.astro` | 정적 |
+| `/posts/<파일명>` | 글 상세 | `src/pages/posts/[...slug].astro` | `getStaticPaths`로 글마다 생성 |
+
+메인은 블로그가 아니라 **포트폴리오**다. 채용·협업 판단에 필요한 것이 한 페이지에 다 있어야 하고(§[2-1](2-REQUIREMENTS.md) U2), 블로그는 헤더에서 한 번 눌러 들어간다. 헤더의 `블로그`는 `/blog`와 `/posts/*` 양쪽에서 활성으로 보여야 한다.
 
 글의 URL 슬러그는 **파일명 그대로**다. 별도 슬러그 필드가 없다. 따라서 파일명을 바꾸면 URL이 바뀌고 기존 링크가 끊긴다. 발행한 글의 파일명은 바꾸지 않는다. `MUST`
 
