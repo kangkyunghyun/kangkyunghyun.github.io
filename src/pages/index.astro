@@ -85,20 +85,38 @@ const stacks = [
 	['Tools', ['Git/GitHub', 'Swagger']],
 ];
 
+// handle 은 실제 주소를 그대로 보여준다. 클릭하지 않아도 읽히게.
 const links = [
-	{ icon: 'github', label: 'GitHub', href: 'https://github.com/kangkyunghyun' },
+	{
+		icon: 'github',
+		label: 'GitHub',
+		handle: '@kangkyunghyun',
+		href: 'https://github.com/kangkyunghyun',
+	},
 	{
 		icon: 'code',
 		label: 'solved.ac',
+		handle: '@kangkh0906',
 		href: 'https://solved.ac/profile/kangkh0906',
 	},
 	{
 		icon: 'linkedin',
 		label: 'LinkedIn',
+		handle: 'in/kangkyunghyun',
 		href: 'https://www.linkedin.com/in/kangkyunghyun/',
 	},
-	{ icon: 'book', label: '이전 블로그', href: 'https://khyunx.tistory.com' },
-	{ icon: 'mail', label: 'Email', href: 'mailto:kyunghyun.dev@gmail.com' },
+	{
+		icon: 'book',
+		label: '이전 블로그',
+		handle: 'khyunx.tistory.com',
+		href: 'https://khyunx.tistory.com',
+	},
+	{
+		icon: 'mail',
+		label: 'Email',
+		handle: 'kyunghyun.dev@gmail.com',
+		href: 'mailto:kyunghyun.dev@gmail.com',
+	},
 ];
 ---
 
@@ -120,7 +138,8 @@ const links = [
 				links.map((l) => (
 					<a href={l.href} class="btn">
 						<Icon name={l.icon} size={15} />
-						{l.label}
+						<span class="lb">{l.label}</span>
+						<span class="hd">{l.handle}</span>
 					</a>
 				))
 			}
@@ -218,18 +237,28 @@ const links = [
 		display: inline-flex;
 		align-items: center;
 		gap: 0.45rem;
-		padding: 0.55rem 1rem;
+		padding: 0.5rem 0.95rem;
 		border-radius: 999px;
 		background: var(--surface);
-		font-size: 0.9375rem;
-		font-weight: 600;
+		font-size: 0.875rem;
 		letter-spacing: -0.02em;
 		transition: background 160ms ease, color 160ms ease;
+	}
+	.btn .lb {
+		font-weight: 700;
+	}
+	.btn .hd {
+		color: var(--fg3);
+		font-weight: 500;
+		transition: color 160ms ease;
 	}
 	.btn:hover {
 		background: var(--blue);
 		color: #fff;
 		opacity: 1;
+	}
+	.btn:hover .hd {
+		color: color-mix(in srgb, #fff 80%, transparent);
 	}
 
 	section {
