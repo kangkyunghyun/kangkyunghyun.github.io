@@ -12,9 +12,31 @@ const { p } = Astro.props;
 const { Content, headings } = await render(p);
 const d = p.data;
 const hasCompare = d.asIs.length > 0 || d.toBe.length > 0;
+const url = new URL(`/projects/${p.id}/`, Astro.site).href;
+const image = d.logo ? `/logos/${d.logo}` : '/og-default.png';
+const schema = {
+	'@context': 'https://schema.org',
+	'@type': 'CreativeWork',
+	name: d.title,
+	description: d.summary,
+	url,
+	image: new URL(image, Astro.site).href,
+	creator: {
+		'@type': 'Person',
+		name: '강경현',
+		url: new URL('/', Astro.site).href,
+	},
+	keywords: d.stack.join(', '),
+};
 ---
 
-<Base title={`${d.title} — 강경현`} description={d.summary}>
+<Base
+	title={`${d.title} — 강경현`}
+	description={d.summary}
+	image={image}
+	imageAlt={`${d.title} 프로젝트`}
+	schema={schema}
+>
 	<Toc headings={headings} />
 	<article>
 		<header class="head">

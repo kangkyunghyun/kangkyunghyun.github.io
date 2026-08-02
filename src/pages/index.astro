@@ -131,11 +131,43 @@ const links = [
 		href: 'mailto:kyunghyun.dev@gmail.com',
 	},
 ];
+const homeUrl = new URL('/', Astro.site).href;
+const schema = {
+	'@context': 'https://schema.org',
+	'@graph': [
+		{
+			'@type': 'WebSite',
+			'@id': `${homeUrl}#website`,
+			name: 'Kyunghyun Kang',
+			alternateName: '강경현',
+			url: homeUrl,
+			inLanguage: 'ko-KR',
+		},
+		{
+			'@type': 'Person',
+			'@id': `${homeUrl}#person`,
+			name: '강경현',
+			alternateName: 'Kyunghyun Kang',
+			url: homeUrl,
+			jobTitle: 'Backend Developer',
+			sameAs: [
+				'https://github.com/kangkyunghyun',
+				'https://www.linkedin.com/in/kangkyunghyun/',
+				'https://www.threads.com/@khyun_x',
+			],
+			affiliation: {
+				'@type': 'CollegeOrUniversity',
+				name: '경희대학교',
+			},
+		},
+	],
+};
 ---
 
 <Base
 	title="강경현"
 	description="경희대학교 컴퓨터공학과. 알고리즘과 시스템 보안을 주로 파고 있습니다."
+	schema={schema}
 >
 	<section class="hero">
 		<h1>강경현</h1>

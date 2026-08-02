@@ -1,58 +1,40 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import { excerptOf, imageOf } from '../lib/content';
 
 const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
 	(a, b) => b.data.date.getTime() - a.data.date.getTime(),
 );
 const fmt = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium' });
 
-/** 본문 첫 이미지를 썸네일로 쓴다. 없으면 자리만 비운다 */
-const thumbOf = (body = '') =>
-	body.match(/!\[[^\]]*\]\((\/images\/[^)\s]+)\)/)?.[1] ?? null;
-
-/** 목록에 보일 한 줄 요약. 본문 첫 문단에서 만든다 */
-const excerptOf = (body = '') => {
-	const clean = (l: string) =>
-		l
-			.replace(/!\[[^\]]*\]\([^)]*\)/g, '')
-			.replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
-			.replace(/[*_`]/g, '')
-			.trim();
-
-	const text = body
-		.replace(/<!--[\s\S]*?-->/g, '')
-		.replace(/```[\s\S]*?```/g, '')
-		.split('\n')
-		.map((l) => l.trim())
-		// 제목·인용·목록·이미지·구분선·맨 URL 줄은 건너뛴다
-		.filter((l) => l && !/^([#>|\-*]|!\[|\[!|---|https?:\/\/)/.test(l))
-		// 이미지 바로 아래 캡션은 짧다. 요약이 될 만한 길이만 고른다
-		.map(clean)
-		.find(
-			(l) =>
-				l.length >= 25 &&
-				// 링크만 있던 줄은 벗겨내면 URL 문자열만 남는다
-				!/^https?:\/\//.test(l) &&
-				// 대회 글 머리의 일정 표기는 요약이 아니다
-				!/^(시작|종료|기간|일시|장소)\s*[::]/.test(l) &&
-				// 괄호로만 된 편집 노트도 마찬가지
-				!/^[(（].*[)）]$/.test(l),
-		);
-
-	if (!text) return '';
-	return text.length > 96 ? `${text.slice(0, 96)}…` : text;
-};
-
 const counts = new Map<string, number>();
 for (const p of posts)
 	for (const t of p.data.tags ?? []) counts.set(t, (counts.get(t) ?? 0) + 1);
 const tags = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+const blogUrl = new URL('/blog/', Astro.site).href;
+const schema = {
+	'@context': 'https://schema.org',
+	'@type': 'CollectionPage',
+	name: '강경현 블로그',
+	description: '개발하며 겪은 문제와 그때 내린 결정을 기록합니다.',
+	url: blogUrl,
+	mainEntity: {
+		'@type': 'ItemList',
+		itemListElement: posts.map((post, index) => ({
+			'@type': 'ListItem',
+			position: index + 1,
+			url: new URL(`/posts/${post.id}/`, Astro.site).href,
+			name: post.data.title,
+		})),
+	},
+};
 ---
 
 <Base
 	title="블로그 — 강경현"
 	description="개발하며 겪은 문제와 그때 내린 결정을 기록합니다."
+	schema={schema}
 >
 	{/* 화면에는 필터 줄이 제목 자리를 대신한다. 문서 구조상 제목은 있어야 한다 */}
 	<h1 class="sr">블로그</h1>
@@ -75,8 +57,8 @@ const tags = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
 			) : (
 				<div class="card list">
 					{posts.map((post) => {
-						const src = thumbOf(post.body);
-						const excerpt = excerptOf(post.body);
+						const src = imageOf(post.body);
+						const excerpt = excerptOf(post.body, 96);
 						return (
 							<a
 								href={`/posts/${post.id}`}

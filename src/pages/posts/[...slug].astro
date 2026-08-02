@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Toc from '../../components/Toc.astro';
+import { excerptOf, imageOf } from '../../lib/content';
 
 export async function getStaticPaths() {
 	const posts = await getCollection('posts', ({ data }) => !data.draft);
@@ -11,9 +12,42 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content, headings } = await render(post);
 const fmt = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'long' });
+const description = excerptOf(post.body) || `${post.data.title}에 관한 강경현의 글입니다.`;
+const image = imageOf(post.body) ?? '/og-default.png';
+const url = new URL(`/posts/${post.id}/`, Astro.site).href;
+const imageUrl = new URL(image, Astro.site).href;
+const schema = {
+	'@context': 'https://schema.org',
+	'@type': 'BlogPosting',
+	headline: post.data.title,
+	description,
+	image: imageUrl,
+	datePublished: post.data.date.toISOString(),
+	keywords: post.data.tags.join(', '),
+	mainEntityOfPage: url,
+	author: {
+		'@type': 'Person',
+		name: '강경현',
+		url: new URL('/', Astro.site).href,
+	},
+	publisher: {
+		'@type': 'Person',
+		name: '강경현',
+		url: new URL('/', Astro.site).href,
+	},
+};
 ---
 
-<Base title={`${post.data.title} — 강경현`}>
+<Base
+	title={`${post.data.title} — 강경현`}
+	description={description}
+	image={image}
+	imageAlt={post.data.title}
+	type="article"
+	publishedTime={post.data.date.toISOString()}
+	tags={post.data.tags}
+	schema={schema}
+>
 	<Toc headings={headings} />
 	<article>
 		<header class="head">
