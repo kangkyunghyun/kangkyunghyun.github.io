@@ -44,8 +44,11 @@ const { items } = Astro.props;
 </ol>
 
 <style>
+	/* 항목이 짧아 컨테이너를 다 못 채운다. 폭을 내용에 맞춰 좁히고
+	   가운데로 모아 위쪽 섹션 제목과 축을 맞춘다 */
 	.tl {
-		margin: 0;
+		max-width: 32rem;
+		margin-inline: auto;
 		padding: 0;
 		list-style: none;
 	}
