@@ -11,15 +11,27 @@ const nav = [
 	{ href: '/', label: '포트폴리오' },
 	{ href: '/blog', label: '블로그' },
 ];
+// external 인 것만 새 탭으로 연다. mailto 와 내부 경로는 같은 탭이다
 const connect = [
-	{ icon: 'github', label: 'GitHub', href: 'https://github.com/kangkyunghyun' },
+	{
+		icon: 'github',
+		label: 'GitHub',
+		href: 'https://github.com/kangkyunghyun',
+		external: true,
+	},
 	{
 		icon: 'linkedin',
 		label: 'LinkedIn',
 		href: 'https://www.linkedin.com/in/kangkyunghyun/',
+		external: true,
 	},
 	{ icon: 'book', label: '블로그', href: '/blog' },
-	{ icon: 'external', label: '이전 블로그', href: 'https://khyunx.tistory.com' },
+	{
+		icon: 'external',
+		label: '이전 블로그',
+		href: 'https://khyunx.tistory.com',
+		external: true,
+	},
 	{ icon: 'mail', label: 'Email', href: 'mailto:kyunghyun.dev@gmail.com' },
 ];
 const path = Astro.url.pathname;
@@ -92,9 +104,16 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 						{
 							connect.map((c) => (
 								<li>
-									<a href={c.href}>
+									<a
+										href={c.href}
+										target={c.external ? '_blank' : undefined}
+										rel={c.external ? 'noopener noreferrer' : undefined}
+									>
 										<Icon name={c.icon} size={15} />
 										{c.label}
+										{c.external && (
+											<span class="ext" aria-label="새 창에서 열림">↗</span>
+										)}
 									</a>
 								</li>
 							))
@@ -347,6 +366,10 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 	}
 	.site-footer li a:hover {
 		color: var(--fg);
+	}
+	.site-footer .ext {
+		color: var(--fg3);
+		font-size: 0.6875rem;
 	}
 	.site-footer svg {
 		width: 15px;

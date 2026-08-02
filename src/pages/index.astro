@@ -94,24 +94,28 @@ const stacks = [
 ];
 
 // handle 은 실제 주소를 그대로 보여준다. 클릭하지 않아도 읽히게.
+// external: 새 탭으로 연다. mailto 는 새 탭을 열면 빈 탭이 남아 제외한다.
 const links = [
 	{
 		icon: 'github',
 		label: 'GitHub',
 		handle: '@kangkyunghyun',
 		href: 'https://github.com/kangkyunghyun',
+		external: true,
 	},
 	{
 		icon: 'linkedin',
 		label: 'LinkedIn',
 		handle: 'in/kangkyunghyun',
 		href: 'https://www.linkedin.com/in/kangkyunghyun/',
+		external: true,
 	},
 	{
 		icon: 'at',
 		label: 'Threads',
 		handle: '@khyun_x',
 		href: 'https://www.threads.com/@khyun_x',
+		external: true,
 	},
 	{
 		icon: 'mail',
@@ -132,10 +136,16 @@ const links = [
 		<nav class="btns" aria-label="외부 링크">
 			{
 				links.map((l) => (
-					<a href={l.href} class="btn">
+					<a
+						href={l.href}
+						class="btn"
+						target={l.external ? '_blank' : undefined}
+						rel={l.external ? 'noopener noreferrer' : undefined}
+					>
 						<Icon name={l.icon} size={15} />
 						<span class="lb">{l.label}</span>
 						<span class="hd">{l.handle}</span>
+						{l.external && <span class="ext" aria-label="새 창에서 열림">↗</span>}
 					</a>
 				))
 			}
@@ -266,6 +276,16 @@ const links = [
 	}
 	.btn:hover .hd {
 		color: color-mix(in srgb, #fff 80%, transparent);
+	}
+	/* 새 창으로 열린다는 표시. 없으면 맥락이 바뀐 걸 알 수 없다 */
+	.btn .ext {
+		margin-left: -0.1rem;
+		color: var(--fg3);
+		font-size: 0.75rem;
+		transition: color 160ms ease;
+	}
+	.btn:hover .ext {
+		color: color-mix(in srgb, #fff 70%, transparent);
 	}
 
 	section {

@@ -21,9 +21,13 @@ const { items } = Astro.props;
 				<span class="body">
 					<span class="title">
 						{it.href ? (
-							<a href={it.href}>
+							<a
+								href={it.href}
+								target="_blank"
+								rel="noopener noreferrer"
+							>
 								{it.title}
-								<span class="ext" aria-hidden="true">
+								<span class="ext" aria-label="새 창에서 열림">
 									↗
 								</span>
 							</a>
