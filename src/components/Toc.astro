@@ -1,7 +1,7 @@
 ---
-// 상세 페이지 본문 오른쪽 여백에 띄우는 목차.
-// 셸(54rem)과 본문(44rem) 사이 여백만으로는 자리가 안 나와서
-// 본문 바깥에 fixed 로 띄우고, 좁은 화면에서는 통째로 숨긴다.
+// 상세 페이지 본문 오른쪽 바깥에 fixed 로 띄우는 목차.
+// 글·프로젝트 상세가 같은 폭(--measure)이라 좌표를 하나로 쓴다.
+// 띄울 자리가 없는 화면에서는 통째로 숨긴다.
 interface Heading {
 	depth: number;
 	slug: string;
@@ -9,10 +9,8 @@ interface Heading {
 }
 interface Props {
 	headings: Heading[];
-	/** 본문 폭이 다른 페이지에서 목차를 당기거나 밀 때 (예: 'calc(50% + 23.5rem)') */
-	left?: string;
 }
-const { headings, left } = Astro.props;
+const { headings } = Astro.props;
 // h2·h3만. 항목이 셋 미만이면 목차가 오히려 소음이라 그리지 않는다
 const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
 const show = items.length >= 3;
@@ -20,7 +18,7 @@ const show = items.length >= 3;
 
 {
 	show && (
-		<nav class="toc" style={left && `--toc-left:${left}`} aria-label="목차">
+		<nav class="toc" aria-label="목차">
 			<p class="cap">목차</p>
 			<ul>
 				{items.map((h) => (
@@ -63,9 +61,9 @@ const show = items.length >= 3;
 	.toc {
 		position: fixed;
 		top: 6.5rem;
-		/* 가운데 정렬된 본문의 오른쪽 '바깥'에 붙인다.
-		   본문 폭이 다른 페이지는 --toc-left 로 덮어쓴다 */
-		left: var(--toc-left, calc(50% + 28.5rem));
+		/* 가운데 정렬된 본문(--measure)의 오른쪽 '바깥'에 붙인다.
+		   본문 폭을 바꾸면 이 값도 같이 바꾼다 */
+		left: calc(50% + 28.5rem);
 		width: 13rem;
 		max-height: 70vh;
 		overflow-y: auto;

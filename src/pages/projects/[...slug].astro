@@ -15,8 +15,7 @@ const hasCompare = d.asIs.length > 0 || d.toBe.length > 0;
 ---
 
 <Base title={`${d.title} — 강경현`} description={d.summary}>
-	{/* 포트폴리오 쪽 본문은 44rem 이라 목차를 그만큼 당긴다 */}
-	<Toc headings={headings} left="calc(50% + 23.5rem)" />
+	<Toc headings={headings} />
 	<article>
 		<header class="head">
 			{
@@ -110,7 +109,7 @@ const hasCompare = d.asIs.length > 0 || d.toBe.length > 0;
 <style>
 	article,
 	.back {
-		max-width: 44rem;
+		max-width: var(--measure);
 		margin-inline: auto;
 	}
 
