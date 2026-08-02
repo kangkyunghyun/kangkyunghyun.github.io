@@ -2,7 +2,6 @@
 title: "2023 KSA Automata Winter Contest 후기"
 date: 2023-02-11
 tags: [대회]
-draft: true
 ---
 
 ## **2023 KSA Automata Winter Contest 후기**

@@ -2,7 +2,6 @@
 title: "구데기컵×solved.ac 콜라보 카페 후기"
 date: 2023-04-29
 tags: [대회]
-draft: true
 ---
 
 ## 구데기컵×solved.ac 콜라보 카페 후기

@@ -2,7 +2,6 @@
 title: "제 11회 SCPC 1차 예선 후기"
 date: 2026-02-08
 tags: [대회]
-draft: true
 ---
 
 ![](/images/scpc-11th-first-round-review/01.png)

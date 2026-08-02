@@ -2,7 +2,6 @@
 title: "2023 ICPC Sinchon Winter Algorithm Camp Contest Open 후기"
 date: 2023-02-19
 tags: [대회]
-draft: true
 ---
 
 ## **2023 ICPC Sinchon Winter Algorithm Camp Contest Open 후기**

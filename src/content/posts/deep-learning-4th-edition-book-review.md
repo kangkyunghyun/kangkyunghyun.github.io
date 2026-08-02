@@ -2,7 +2,6 @@
 title: "『모두의 딥러닝 4판』 후기"
 date: 2026-02-08
 tags: [서평]
-draft: true
 ---
 
 ![](/images/deep-learning-4th-edition-book-review/01.png)

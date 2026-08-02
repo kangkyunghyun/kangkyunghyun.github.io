@@ -2,7 +2,6 @@
 title: "제1회 와쿠(AGCU)컵 후기"
 date: 2023-04-16
 tags: [대회]
-draft: true
 ---
 
 ## 제1회 와쿠(AGCU)컵 후기

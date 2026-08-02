@@ -2,7 +2,6 @@
 title: "UCPC 2025 예선 후기"
 date: 2026-02-08
 tags: [대회]
-draft: true
 ---
 
 ![](/images/ucpc-2025-qualifier-review/01.png)

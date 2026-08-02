@@ -2,7 +2,6 @@
 title: "『세균무기의 스타트업 바운스백』 후기"
 date: 2026-02-08
 tags: [서평]
-draft: true
 ---
 
 ![](/images/startup-bounceback-book-review/01.png)

@@ -2,7 +2,6 @@
 title: "제 2회 고려대학교 MatKor Cup : 2023 Winter Open Contest 후기"
 date: 2023-02-11
 tags: [대회]
-draft: true
 ---
 
 ## **제 2회 고려대학교 MatKor Cup : 2023 Winter Open Contest 후기**
