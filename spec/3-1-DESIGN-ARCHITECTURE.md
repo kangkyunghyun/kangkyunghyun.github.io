@@ -27,12 +27,13 @@ src/content/posts/*.md             글
 src/content/projects/*.md          프로젝트
 src/layouts/Base.astro             공통 셸 + 전역 스타일 전부
 src/components/Timeline.astro      기간-제목-설명 타임라인
-src/components/Icon.astro          lucide 아이콘 path 모음
+src/components/Icon.astro          lucide 아이콘 path 모음 (§3-2-6)
 src/pages/index.astro              포트폴리오 (메인)
 src/pages/blog.astro               글 목록
 src/pages/posts/[...slug].astro    글 상세
 src/pages/projects/[...slug].astro 프로젝트 상세
 .github/workflows/deploy.yml       Pages 배포
+tools/import-tistory.py            티스토리 이관 (표준 라이브러리만)
 ```
 
 전역 스타일은 `Base.astro`의 `<style is:global>` 한 곳에만 둔다. 페이지별 스타일은 각 `.astro` 파일의 스코프 `<style>`에 둔다. CSS 파일을 따로 만들지 않는다. `MUST`
@@ -46,7 +47,7 @@ src/pages/projects/[...slug].astro 프로젝트 상세
 | `/posts/<파일명>` | 글 상세 | `src/pages/posts/[...slug].astro` | `getStaticPaths`로 글마다 생성 |
 | `/projects/<파일명>` | 프로젝트 상세 | `src/pages/projects/[...slug].astro` | `getStaticPaths`로 프로젝트마다 생성 |
 
-메인의 섹션 순서는 Projects → Tech Stacks → Activity → Education → Certifications → Awards다. 프로젝트가 가장 강한 근거라 맨 위에 둔다. 항목 표기는 **GitHub 프로필 README를 따르고**(Tech Stacks만 노션 출처), 날짜는 국립국어원 표기를 따라 `YYYY. M.` 형식으로 쓴다 — 월에 0을 채우지 않는다. 0을 채우는 것은 ISO 8601(`YYYY-MM`)의 규칙이며 점 표기와 섞지 않는다. 섹션명 `Activity`는 나중에 경력이 생겼을 때 `Work Experience`와 구분하려고 유지한다. 각 섹션은 푸터 Quick Links가 가리키는 앵커 `id`를 갖는다. 외부 링크는 별도 섹션이 아니라 히어로 바로 아래 버튼 줄에 둔다 — 연락 수단은 페이지 끝까지 내려가야 보이면 안 된다. 이력 데이터의 출처는 GitHub 프로필 README와 노션 개인 소개 페이지 두 곳이고, 값이 어긋나면 최신 쪽을 쓰되 [3-2](3-2-DESIGN-DECISIONS.md) §3-2-6에 기록한다.
+메인의 섹션 순서는 Projects → Tech Stacks → Activity → Education → Certifications → Awards다. 프로젝트가 가장 강한 근거라 맨 위에 둔다. 항목 표기는 **GitHub 프로필 README를 따르고**(Tech Stacks만 노션 출처), 날짜는 국립국어원 표기를 따라 `YYYY. M.` 형식으로 쓴다 — 월에 0을 채우지 않는다. 0을 채우는 것은 ISO 8601(`YYYY-MM`)의 규칙이며 점 표기와 섞지 않는다. 섹션명 `Activity`는 나중에 경력이 생겼을 때 `Work Experience`와 구분하려고 유지한다. 각 섹션은 푸터 Quick Links가 가리키는 앵커 `id`를 갖는다. 외부 링크는 별도 섹션이 아니라 히어로 바로 아래 버튼 줄에 둔다 — 연락 수단은 페이지 끝까지 내려가야 보이면 안 된다. 이력 데이터의 출처는 GitHub 프로필 README와 노션 개인 소개 페이지 두 곳이고, 우선순위와 어긋날 때의 처리는 [3-2](3-2-DESIGN-DECISIONS.md) §3-2-7에 있다.
 
 메인은 블로그가 아니라 **포트폴리오**다. 채용·협업 판단에 필요한 것이 한 페이지에 다 있어야 하고(§[2-1](2-REQUIREMENTS.md) U2), 블로그는 헤더에서 한 번 눌러 들어간다. 헤더의 `블로그`는 `/blog`와 `/posts/*` 양쪽에서 활성으로 보여야 한다.
 
@@ -115,7 +116,7 @@ AS-IS → TO-BE만 본문이 아니라 프런트매터에 있다. 2열 비교를
 
 면과 면은 선이 아니라 **배경색 차이**로 나눈다. 카드에 테두리를 두르지 않는다. 색은 그레이 스케일에 파랑 하나가 기본이고, 초록은 **운영 여부 표시 전용**이다. 정보 배지(파랑)와 상태 배지(초록)는 성격이 달라 색을 나눈다. 세 번째 강조색을 도입하려면 결정 기록을 남긴다. `SHOULD`
 
-시각 언어의 출처는 `~/.claude/skills/toss-tech-design`에 함께 든 스크린샷 2장이다. 해당 스킬 본문은 설계 운영 방법론이라 색·타이포 스펙을 담고 있지 않다.
+시각 언어의 출처와 참고한 사이트 목록은 [3-2](3-2-DESIGN-DECISIONS.md) §3-2-6에 있다.
 
 폰트는 시스템 스택(`Pretendard` → `system-ui` → `Apple SD Gothic Neo`)이며 웹폰트를 불러오지 않는다. 근거는 [3-2](3-2-DESIGN-DECISIONS.md) §3-2-4.
 
