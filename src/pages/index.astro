@@ -19,11 +19,10 @@ const education = [
 	},
 ];
 
-const activity = [
+const experiences = [
 	{
 		period: '2026.03 — 현재',
 		title: 'AI·SW 마에스트로',
-		aside: '17기',
 		href: 'https://github.com/AI-SW-Maestro-OSS',
 	},
 	{
@@ -32,13 +31,11 @@ const activity = [
 	},
 	{
 		period: '2025.09 — 현재',
-		title: 'HacKHU',
-		aside: '경희대 해킹 동아리',
+		title: '경희대학교 해킹 동아리 HacKHU',
 	},
 	{
 		period: '2025.09 — 현재',
-		title: 'KHUA',
-		aside: '경희대 알고리즘 동아리',
+		title: '경희대학교 알고리즘 동아리 KHUA',
 	},
 	{
 		period: '2025.09 — 2026.02',
@@ -78,11 +75,12 @@ const certs = [
 
 // 출처: 노션 개인 소개 페이지 ▶ Tech Stacks
 const stacks = [
-	['Backend', ['Java', 'Spring Boot']],
-	['Database', ['MySQL']],
+	['Backend', ['Java', 'Kotlin', 'Spring Boot']],
+	['Database', ['MySQL', 'PostgreSQL']],
 	['DevOps', ['AWS', 'GCP', 'Docker', 'GitHub Actions']],
+	['Monitoring', ['Sentry', 'Amplitude']],
 	['Problem Solving', ['C++']],
-	['Tools', ['Git/GitHub', 'Swagger']],
+	['Tools', ['Git/GitHub', 'Jira', 'Swagger']],
 ];
 
 // handle 은 실제 주소를 그대로 보여준다. 클릭하지 않아도 읽히게.
@@ -92,12 +90,6 @@ const links = [
 		label: 'GitHub',
 		handle: '@kangkyunghyun',
 		href: 'https://github.com/kangkyunghyun',
-	},
-	{
-		icon: 'code',
-		label: 'solved.ac',
-		handle: '@kangkh0906',
-		href: 'https://solved.ac/profile/kangkh0906',
 	},
 	{
 		icon: 'linkedin',
@@ -163,9 +155,9 @@ const links = [
 		<Timeline items={education} />
 	</section>
 
-	<section id="activity">
-		<h2>Activity</h2>
-		<Timeline items={activity} />
+	<section id="experiences">
+		<h2>Experiences</h2>
+		<Timeline items={experiences} />
 	</section>
 
 	<section id="projects">
@@ -189,16 +181,15 @@ const links = [
 		</div>
 	</section>
 
-	<section id="awards">
-		<h2>Awards</h2>
-		<Timeline items={awards} />
-	</section>
-
 	<section id="certifications">
 		<h2>Certifications</h2>
 		<Timeline items={certs} />
 	</section>
 
+	<section id="awards">
+		<h2>Awards</h2>
+		<Timeline items={awards} />
+	</section>
 </Base>
 
 <style>
@@ -344,38 +335,6 @@ const links = [
 		background: var(--bg);
 		font-size: 0.8125rem;
 		font-weight: 600;
-	}
-
-	.row {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 0.75rem;
-		padding: 1.05rem 1.25rem;
-		transition: background 160ms ease;
-	}
-	.row:hover {
-		background: color-mix(in srgb, var(--fg) 4%, var(--surface));
-	}
-	.row .body {
-		display: flex;
-		flex-direction: column;
-		gap: 0.1rem;
-		min-width: 0;
-	}
-	.row .k {
-		font-weight: 600;
-		letter-spacing: -0.024em;
-	}
-	.row .v {
-		color: var(--fg3);
-		font-size: 0.875rem;
-	}
-	.chev {
-		flex-shrink: 0;
-		color: var(--fg3);
-		font-size: 1.35rem;
-		line-height: 1;
 	}
 
 	@media (max-width: 30rem) {
