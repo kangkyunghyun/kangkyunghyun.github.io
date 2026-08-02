@@ -1,7 +1,7 @@
 ---
 title: "2026 SCSC computer programming contest Div.3 후기"
 date: 2026-05-21
-tags: [회고, 대회]
+tags: [대회]
 ---
 
 ![대회 최종 스코어보드](/images/scsc-2026-contest/01.png)

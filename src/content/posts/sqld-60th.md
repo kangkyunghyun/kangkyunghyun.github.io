@@ -1,7 +1,7 @@
 ---
 title: "제60회 SQL 개발자(SQLD) 합격 후기"
 date: 2026-03-27
-tags: [회고, 자격증]
+tags: [자격증]
 ---
 
 ![SQLD 합격 점수 확인 화면](/images/sqld-60th/01.jpg)
