@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Timeline from '../components/Timeline.astro';
+import Icon from '../components/Icon.astro';
 
 // 프로젝트는 src/content/projects/*.md 가 원본이다
 const projects = (
@@ -85,19 +86,19 @@ const stacks = [
 ];
 
 const links = [
-	['GitHub', 'github.com/kangkyunghyun', 'https://github.com/kangkyunghyun'],
-	[
-		'solved.ac',
-		'Platinum 2 · 1300+ solved',
-		'https://solved.ac/profile/kangkh0906',
-	],
-	[
-		'LinkedIn',
-		'linkedin.com/in/kangkyunghyun',
-		'https://www.linkedin.com/in/kangkyunghyun/',
-	],
-	['이전 블로그', 'khyunx.tistory.com · 348편', 'https://khyunx.tistory.com'],
-	['Email', 'kyunghyun.dev@gmail.com', 'mailto:kyunghyun.dev@gmail.com'],
+	{ icon: 'github', label: 'GitHub', href: 'https://github.com/kangkyunghyun' },
+	{
+		icon: 'code',
+		label: 'solved.ac',
+		href: 'https://solved.ac/profile/kangkh0906',
+	},
+	{
+		icon: 'linkedin',
+		label: 'LinkedIn',
+		href: 'https://www.linkedin.com/in/kangkyunghyun/',
+	},
+	{ icon: 'book', label: '이전 블로그', href: 'https://khyunx.tistory.com' },
+	{ icon: 'mail', label: 'Email', href: 'mailto:kyunghyun.dev@gmail.com' },
 ];
 ---
 
@@ -114,6 +115,16 @@ const links = [
 			경희대학교 컴퓨터공학과 3학년, 알고리즘과 시스템 보안을 주로 파고
 			있습니다.
 		</p>
+		<nav class="btns" aria-label="외부 링크">
+			{
+				links.map((l) => (
+					<a href={l.href} class="btn">
+						<Icon name={l.icon} size={15} />
+						{l.label}
+					</a>
+				))
+			}
+		</nav>
 	</section>
 
 	<section id="stacks">
@@ -175,24 +186,6 @@ const links = [
 		<Timeline items={certs} />
 	</section>
 
-	<section id="links">
-		<h2>Links</h2>
-		<div class="card">
-			{
-				links.map(([label, sub, href]) => (
-					<a href={href} class="row">
-						<span class="body">
-							<span class="k">{label}</span>
-							<span class="v">{sub}</span>
-						</span>
-						<span class="chev" aria-hidden="true">
-							›
-						</span>
-					</a>
-				))
-			}
-		</div>
-	</section>
 </Base>
 
 <style>
@@ -211,9 +204,32 @@ const links = [
 	}
 	.hero p {
 		margin: 0;
-		max-width: 28rem;
+		max-width: 30rem;
 		color: var(--fg3);
 		font-size: 0.9375rem;
+	}
+	.btns {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-top: 1.75rem;
+	}
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		padding: 0.55rem 1rem;
+		border-radius: 999px;
+		background: var(--surface);
+		font-size: 0.9375rem;
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		transition: background 160ms ease, color 160ms ease;
+	}
+	.btn:hover {
+		background: var(--blue);
+		color: #fff;
+		opacity: 1;
 	}
 
 	section {
