@@ -107,17 +107,17 @@ const links = [
 		</p>
 	</section>
 
-	<section>
+	<section id="education">
 		<h2>Education</h2>
 		<Timeline items={education} />
 	</section>
 
-	<section>
+	<section id="activity">
 		<h2>Activity</h2>
 		<Timeline items={activity} />
 	</section>
 
-	<section>
+	<section id="projects">
 		<h2>Projects</h2>
 		<div class="projects">
 			{
@@ -138,17 +138,17 @@ const links = [
 		</div>
 	</section>
 
-	<section>
+	<section id="awards">
 		<h2>Awards</h2>
 		<Timeline items={awards} />
 	</section>
 
-	<section>
+	<section id="certifications">
 		<h2>Certifications</h2>
 		<Timeline items={certs} />
 	</section>
 
-	<section>
+	<section id="links">
 		<h2>Links</h2>
 		<div class="card">
 			{
@@ -191,6 +191,8 @@ const links = [
 
 	section {
 		margin-bottom: 4rem;
+		/* 앵커로 점프했을 때 sticky 헤더에 제목이 가리지 않게 */
+		scroll-margin-top: 4.5rem;
 	}
 	section h2 {
 		margin: 0 0 2rem;
