@@ -16,7 +16,6 @@ links:
     href: https://chromewebstore.google.com/detail/ihidkmjkpfphgljieecfcikljaopcldp
   - label: GitHub
     href: https://github.com/kangkyunghyun/LinKHU
-order: 3
 ---
 
 ## 서비스

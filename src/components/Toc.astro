@@ -1,0 +1,114 @@
+---
+// 상세 페이지 본문 오른쪽 여백에 띄우는 목차.
+// 셸(54rem)과 본문(44rem) 사이 여백만으로는 자리가 안 나와서
+// 본문 바깥에 fixed 로 띄우고, 좁은 화면에서는 통째로 숨긴다.
+interface Heading {
+	depth: number;
+	slug: string;
+	text: string;
+}
+interface Props {
+	headings: Heading[];
+}
+const { headings } = Astro.props;
+// h2·h3만. 항목이 셋 미만이면 목차가 오히려 소음이라 그리지 않는다
+const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
+const show = items.length >= 3;
+---
+
+{
+	show && (
+		<nav class="toc" aria-label="목차">
+			<p class="cap">목차</p>
+			<ul>
+				{items.map((h) => (
+					<li class:list={[`d${h.depth}`]}>
+						<a href={`#${h.slug}`}>{h.text}</a>
+					</li>
+				))}
+			</ul>
+		</nav>
+	)
+}
+
+<!-- 제목 요소 조회는 반드시 mark() 안에서 한다.
+     스크립트가 본문보다 먼저 실행될 수 있는데, 그때 잡은 참조를 재사용하면
+     전부 null 로 굳어 스크롤해도 영영 갱신되지 않는다.
+     항목이 10개 안팎이라 스로틀 없이 바로 계산해도 부담이 없다 -->
+<script>
+	const toc = document.querySelector('.toc');
+	if (toc) {
+		const links = [...toc.querySelectorAll('a[href^="#"]')].map((a) => ({
+			a,
+			id: decodeURIComponent(a.getAttribute('href').slice(1)),
+		}));
+		const mark = () => {
+			let cur = null;
+			for (const { a, id } of links) {
+				const el = document.getElementById(id);
+				// 헤더 아래 지점을 지난 마지막 제목이 현재 위치다
+				if (el && el.getBoundingClientRect().top <= 88) cur = a;
+			}
+			for (const { a } of links) a.classList.toggle('on', a === cur);
+		};
+		addEventListener('scroll', mark, { passive: true });
+		addEventListener('resize', mark, { passive: true });
+		mark();
+	}
+</script>
+
+<style>
+	.toc {
+		position: fixed;
+		top: 6.5rem;
+		/* 가운데 정렬된 본문(44rem)의 오른쪽 바깥에 붙인다 */
+		left: calc(50% + 23rem);
+		width: 13rem;
+		max-height: 70vh;
+		overflow-y: auto;
+		font-size: 0.8125rem;
+		line-height: 1.5;
+	}
+	.cap {
+		margin: 0 0 0.6rem;
+		color: var(--fg3);
+		font-size: 0.75rem;
+		font-weight: 700;
+	}
+	.toc ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		border-left: 1px solid var(--line);
+	}
+	.toc li {
+		margin: 0;
+	}
+	.toc a {
+		display: block;
+		padding: 0.3rem 0 0.3rem 0.75rem;
+		margin-left: -1px;
+		border-left: 1px solid transparent;
+		color: var(--fg3);
+		transition: color 160ms ease, border-color 160ms ease;
+	}
+	.toc a:hover {
+		color: var(--fg2);
+		opacity: 1;
+	}
+	.toc a.on {
+		border-left-color: var(--blue);
+		color: var(--fg);
+		font-weight: 600;
+	}
+	.toc .d3 a {
+		padding-left: 1.5rem;
+	}
+
+	/* 본문(44rem) + 목차(13rem) + 여백이 안 나오는 폭에서는 숨긴다 */
+	@media (max-width: 75rem) {
+		.toc {
+			display: none;
+		}
+	}
+</style>

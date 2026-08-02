@@ -12,7 +12,6 @@ toBe: []
 links:
   - label: GitHub
     href: https://github.com/WAVE-WAVI/WAVI-BE
-order: 4
 ---
 
 ## 서비스

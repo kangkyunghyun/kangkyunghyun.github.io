@@ -35,7 +35,6 @@ links:
     href: https://www.manyak.app
   - label: GitHub
     href: https://github.com/KIM-N-KANG/manyak-server
-order: 1
 ---
 
 ## 서비스

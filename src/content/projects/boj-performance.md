@@ -3,7 +3,7 @@ title: BOJ Performance
 summary: 백준 채점 현황에서 내 코드의 성능 위치를 그래프로 보여준 브라우저 확장
 period: 2026. 1. — 2026. 5.
 role: 1인 개발 및 운영
-badge: 누적 112명
+badge: 누적 134명
 stack: [JavaScript, Chrome Extension]
 logo: boj-performance.png
 asIs: []
@@ -13,7 +13,6 @@ links:
     href: https://chromewebstore.google.com/detail/boj-performance/bklabnmnfggmenngdnlndikconflcbij
   - label: GitHub
     href: https://github.com/kangkyunghyun/boj-performance
-order: 5
 ---
 
 > 지원 대상 서비스가 종료되어 유지보수를 멈추고 저장소를 아카이브했습니다.
@@ -24,7 +23,7 @@ order: 5
 
 이 확장은 채점 현황 페이지에서 **전체 제출자 분포 안의 내 위치**를 막대 그래프로 보여줬습니다. "상위 15.20% (최근 200건 기준)"처럼 기준을 함께 표시해, 숫자를 해석 가능한 형태로 바꾸는 것이 목적이었습니다.
 
-Chrome 57명, 웨일 54명, Firefox 1명 — 세 스토어 합쳐 **누적 112명**이 설치했습니다.
+세 스토어(Chrome·웨일·Firefox)에 배포했고 **누적 사용자 134명**입니다. 그중 웨일이 90명으로 가장 많았습니다.
 
 ## 만들면서 정한 것
 

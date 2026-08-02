@@ -34,7 +34,6 @@ links:
     href: https://xn--ok0bv8s29khc.kr
   - label: GitHub
     href: https://github.com/kangkyunghyun/ireum-itgi
-order: 2
 ---
 
 ## 서비스

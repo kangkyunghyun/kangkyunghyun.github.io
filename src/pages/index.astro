@@ -4,10 +4,20 @@ import Base from '../layouts/Base.astro';
 import Timeline from '../components/Timeline.astro';
 import Icon from '../components/Icon.astro';
 
-// 프로젝트는 src/content/projects/*.md 가 원본이다
+// 프로젝트는 src/content/projects/*.md 가 원본이다.
+// 정렬은 period 앞머리(`YYYY. M.`)를 읽어 최신순으로 한다 —
+// 수동 순번을 두면 프로젝트가 늘 때마다 손으로 맞춰야 하고 반드시 어긋난다.
+const startedAt = (period: string) => {
+	const m = period.match(/(\d{4})\.\s*(\d{1,2})\./);
+	return m ? Number(m[1]) * 12 + Number(m[2]) : 0;
+};
 const projects = (
 	await getCollection('projects', ({ data }) => !data.draft)
-).sort((a, b) => a.data.order - b.data.order);
+).sort(
+	(a, b) =>
+		startedAt(b.data.period) - startedAt(a.data.period) ||
+		a.data.title.localeCompare(b.data.title),
+);
 
 // 출처: github.com/kangkyunghyun 프로필 README
 const education = [

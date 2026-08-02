@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import Toc from '../../components/Toc.astro';
 
 export async function getStaticPaths() {
 	const projects = await getCollection('projects', ({ data }) => !data.draft);
@@ -8,12 +9,13 @@ export async function getStaticPaths() {
 }
 
 const { p } = Astro.props;
-const { Content } = await render(p);
+const { Content, headings } = await render(p);
 const d = p.data;
 const hasCompare = d.asIs.length > 0 || d.toBe.length > 0;
 ---
 
 <Base title={`${d.title} — 강경현`} description={d.summary}>
+	<Toc headings={headings} />
 	<article>
 		<header class="head">
 			{
@@ -29,6 +31,14 @@ const hasCompare = d.asIs.length > 0 || d.toBe.length > 0;
 			}
 			<p class="wordmark">{d.title}</p>
 			<h1>{d.summary}</h1>
+			{
+				(d.live || d.badge) && (
+					<p class="badges">
+						{d.live && <span class="live">운영 중</span>}
+						{d.badge && <span class="note">{d.badge}</span>}
+					</p>
+				)
+			}
 			<dl class="meta">
 				<div><dt>기간</dt><dd>{d.period}</dd></div>
 				<div><dt>역할</dt><dd>{d.role}</dd></div>
@@ -120,6 +130,40 @@ const hasCompare = d.asIs.length > 0 || d.toBe.length > 0;
 		font-size: clamp(1.25rem, 3.4vw, 1.6rem);
 		letter-spacing: -0.035em;
 	}
+	.badges {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+		margin: 0.9rem 0 0;
+	}
+	.note {
+		padding: 0.1rem 0.55rem;
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--blue) 12%, transparent);
+		color: var(--blue-strong);
+		font-size: 0.8125rem;
+		font-weight: 600;
+	}
+	.live {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+		padding: 0.1rem 0.6rem 0.1rem 0.45rem;
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--green) 12%, transparent);
+		color: var(--green);
+		font-size: 0.8125rem;
+		font-weight: 600;
+		white-space: nowrap;
+	}
+	.live::before {
+		content: '';
+		width: 5px;
+		height: 5px;
+		border-radius: 50%;
+		background: currentColor;
+	}
+
 	.meta {
 		display: flex;
 		flex-wrap: wrap;

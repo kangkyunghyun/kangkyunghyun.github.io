@@ -33,8 +33,6 @@ const projects = defineCollection({
 		links: z
 			.array(z.object({ label: z.string(), href: z.string() }))
 			.default([]),
-		/** 목록 정렬용. 작을수록 위 */
-		order: z.number().default(99),
 		draft: z.boolean().default(false),
 	}),
 });
