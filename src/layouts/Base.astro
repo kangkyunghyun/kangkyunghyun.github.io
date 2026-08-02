@@ -92,12 +92,22 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 								>이전 블로그
 							</a>
 						</li>
+						<li>
+							<a href="mailto:kyunghyun.dev@gmail.com">
+								<svg viewBox="0 0 24 24" aria-hidden="true"
+									><rect width="20" height="16" x="2" y="4" rx="2"
+									></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"
+									></path></svg
+								>Email
+							</a>
+						</li>
 					</ul>
 				</div>
 
 				<div>
 					<h2>Quick Links</h2>
 					<ul>
+						<li><a href="/#stacks">Tech Stacks</a></li>
 						<li><a href="/#activity">Activity</a></li>
 						<li><a href="/#projects">Projects</a></li>
 						<li><a href="/#awards">Awards</a></li>
@@ -122,7 +132,7 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 		--line: #f2f4f6;
 		--blue: #3182f6;
 		--r: 18px;
-		--measure: 42rem;
+		--measure: 54rem;
 		--pad: clamp(1rem, 4vw, 1.5rem);
 	}
 	@media (prefers-color-scheme: dark) {
@@ -173,7 +183,7 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 		align-items: center;
 		justify-content: space-between;
 		gap: 1.5rem;
-		max-width: 56rem;
+		max-width: var(--measure);
 		margin: 0 auto;
 	}
 	.wordmark {

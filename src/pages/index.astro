@@ -83,13 +83,29 @@ const awards = [
 ];
 
 const certs = [
+	{ period: '2026.05', title: 'TOPCIT', aside: '수준 4 (672점)' },
 	{ period: '2026.03', title: 'SQLD' },
 	{ period: '2023.04', title: '정보처리기능사' },
 ];
 
+// 출처: 노션 개인 소개 페이지 ▶ Tech Stacks
+const stacks = [
+	['Backend', ['Java', 'Spring Boot']],
+	['Database', ['MySQL']],
+	['DevOps', ['AWS', 'GCP', 'Docker', 'GitHub Actions']],
+	['Problem Solving', ['C++']],
+	['Tools', ['Git/GitHub', 'Swagger']],
+];
+
 const links = [
 	['GitHub', 'github.com/kangkyunghyun', 'https://github.com/kangkyunghyun'],
+	[
+		'solved.ac',
+		'Platinum 2 · 1300+ solved',
+		'https://solved.ac/profile/kangkh0906',
+	],
 	['이전 블로그', 'khyunx.tistory.com · 348편', 'https://khyunx.tistory.com'],
+	['Email', 'kyunghyun.dev@gmail.com', 'mailto:kyunghyun.dev@gmail.com'],
 ];
 ---
 
@@ -102,9 +118,28 @@ const links = [
 			만든 걸 실제로 누가<br />쓰게 만드는 개발자<br /><strong>강경현</strong>입니다.
 		</h1>
 		<p>
-			경희대학교 컴퓨터공학과 3학년. 알고리즘과 시스템 보안을 주로 파고
+			아이디어를 실제 서비스로 구현하고 사용자에게 전달하는 과정을 즐깁니다.
+			경희대학교 컴퓨터공학과 3학년, 알고리즘과 시스템 보안을 주로 파고
 			있습니다.
 		</p>
+	</section>
+
+	<section id="stacks">
+		<h2>Tech Stacks</h2>
+		<div class="card">
+			{
+				stacks.map(([field, items]) => (
+					<div class="stack">
+						<span class="field">{field}</span>
+						<span class="chips">
+							{(items as string[]).map((s) => (
+								<span class="chip">{s}</span>
+							))}
+						</span>
+					</div>
+				))
+			}
+		</div>
 	</section>
 
 	<section id="education">
@@ -258,6 +293,31 @@ const links = [
 		font-size: 0.9375rem;
 	}
 
+	.stack {
+		display: grid;
+		grid-template-columns: 9rem 1fr;
+		align-items: baseline;
+		gap: 1rem;
+		padding: 1rem 1.25rem;
+	}
+	.field {
+		color: var(--fg3);
+		font-size: 0.8125rem;
+		font-weight: 700;
+	}
+	.chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.35rem;
+	}
+	.chip {
+		padding: 0.15rem 0.6rem;
+		border-radius: 999px;
+		background: var(--bg);
+		font-size: 0.8125rem;
+		font-weight: 600;
+	}
+
 	.row {
 		display: flex;
 		align-items: center;
@@ -294,6 +354,10 @@ const links = [
 		.proj .head {
 			flex-direction: column;
 			gap: 0.2rem;
+		}
+		.stack {
+			grid-template-columns: 1fr;
+			gap: 0.5rem;
 		}
 	}
 </style>

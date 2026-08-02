@@ -30,6 +30,14 @@ const fmt = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'long' });
 </Base>
 
 <style>
+	/* 셸은 넓지만 글 본문은 좁게 유지한다.
+	   한 줄이 길어지면 읽기가 나빠져서 폭을 같이 늘리지 않는다 */
+	article,
+	.back {
+		max-width: 42rem;
+		margin-inline: auto;
+	}
+
 	.head {
 		padding: clamp(2.5rem, 8vh, 4rem) 0.25rem 2rem;
 	}

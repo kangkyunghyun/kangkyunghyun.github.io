@@ -42,6 +42,8 @@ src/pages/posts/[...slug].astro 글 상세
 | `/blog` | 글 목록 | `src/pages/blog.astro` | 정적 |
 | `/posts/<파일명>` | 글 상세 | `src/pages/posts/[...slug].astro` | `getStaticPaths`로 글마다 생성 |
 
+메인의 섹션 순서는 Tech Stacks → Education → Activity → Projects → Awards → Certifications → Links이며, 각 섹션은 푸터 Quick Links가 가리키는 앵커 `id`를 갖는다. 이력 데이터의 출처는 GitHub 프로필 README와 노션 개인 소개 페이지 두 곳이고, 값이 어긋나면 최신 쪽을 쓰되 [3-2](3-2-DESIGN-DECISIONS.md) §3-2-6에 기록한다.
+
 메인은 블로그가 아니라 **포트폴리오**다. 채용·협업 판단에 필요한 것이 한 페이지에 다 있어야 하고(§[2-1](2-REQUIREMENTS.md) U2), 블로그는 헤더에서 한 번 눌러 들어간다. 헤더의 `블로그`는 `/blog`와 `/posts/*` 양쪽에서 활성으로 보여야 한다.
 
 글의 URL 슬러그는 **파일명 그대로**다. 별도 슬러그 필드가 없다. 따라서 파일명을 바꾸면 URL이 바뀌고 기존 링크가 끊긴다. 발행한 글의 파일명은 바꾸지 않는다. `MUST`
@@ -71,8 +73,10 @@ src/pages/posts/[...slug].astro 글 상세
 | `--dim` | `#52525b` | `#a1a1aa` | 보조 텍스트, 날짜 |
 | `--bg` | `#fafafa` | `#0c0c0e` | 배경 |
 | `--line` | `#e4e4e7` | `#27272a` | 구분선 |
-| `--measure` | `44rem` | — | 본문 폭 |
-| `--pad` | `clamp(1.25rem, 5vw, 2.5rem)` | — | 좌우 여백 |
+| `--measure` | `54rem` | — | 셸 폭 (헤더·메인·푸터 공통) |
+| `--pad` | `clamp(1rem, 4vw, 1.5rem)` | — | 좌우 여백 |
+
+**글 본문은 `--measure`를 따르지 않는다.** 포트폴리오와 목록은 넓은 셸을 쓰지만, 글 상세의 `article`은 `42rem`으로 따로 좁힌다. 한 줄이 길어지면 읽기 속도가 떨어지기 때문이며, 셸 폭을 넓힐 때 본문까지 같이 넓히지 않는다. `MUST`
 
 색은 무채색만 쓴다. 강조는 색이 아니라 굵기와 여백으로 만든다. 브랜드 색을 도입하려면 결정 기록을 남긴다. `SHOULD`
 
