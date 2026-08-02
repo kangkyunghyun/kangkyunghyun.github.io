@@ -86,30 +86,113 @@ const schema = {
 				</div>
 			)
 		}
+
+		<nav class="pagination" aria-label="글 목록 페이지" data-pagination hidden>
+			<button type="button" data-page-prev aria-label="이전 페이지">←</button>
+			<span class="page-numbers" data-page-numbers></span>
+			<button type="button" data-page-next aria-label="다음 페이지">→</button>
+		</nav>
 </Base>
 
 <script>
+	const PAGE_SIZE = 10;
 	const rows = [...document.querySelectorAll<HTMLElement>('.row')];
 	const btns = [...document.querySelectorAll<HTMLButtonElement>('[data-tag]')];
 	const count = document.querySelector('[data-count]');
+	const list = document.querySelector('.list');
+	const pagination = document.querySelector<HTMLElement>('[data-pagination]');
+	const pageNumbers = document.querySelector<HTMLElement>('[data-page-numbers]');
+	const prev = document.querySelector<HTMLButtonElement>('[data-page-prev]');
+	const next = document.querySelector<HTMLButtonElement>('[data-page-next]');
+	let activeTag = '';
+	let currentPage = 1;
 
-	const apply = (tag: string) => {
-		let shown = 0;
-		for (const r of rows) {
-			const ok = !tag || (r.dataset.tags ?? '').split(' ').includes(tag);
-			r.classList.toggle('off', !ok);
-			// 구분선은 DOM 순서로 그려지므로 첫 '보이는' 행에서 직접 끈다
-			r.toggleAttribute('data-first', ok && shown === 0);
-			if (ok) shown++;
-		}
-		for (const b of btns)
-			b.setAttribute('aria-pressed', String(b.dataset.tag === tag));
-		if (count) count.textContent = `${tag || '전체'} ${shown}편`;
+	const readUrl = () => {
+		const params = new URLSearchParams(location.search);
+		const tag = params.get('tag') ?? '';
+		activeTag = btns.some((button) => button.dataset.tag === tag) ? tag : '';
+		const page = Number.parseInt(params.get('page') ?? '1', 10);
+		currentPage = Number.isFinite(page) && page > 0 ? page : 1;
 	};
 
-	for (const b of btns)
-		b.addEventListener('click', () => apply(b.dataset.tag ?? ''));
-	apply('');
+	const writeUrl = (mode: 'push' | 'replace') => {
+		const url = new URL(location.href);
+		if (activeTag) url.searchParams.set('tag', activeTag);
+		else url.searchParams.delete('tag');
+		if (currentPage > 1) url.searchParams.set('page', String(currentPage));
+		else url.searchParams.delete('page');
+		history[`${mode}State`]({}, '', url);
+	};
+
+	const render = (urlMode?: 'push' | 'replace') => {
+		const filtered = rows.filter(
+			(row) =>
+				!activeTag || (row.dataset.tags ?? '').split(' ').includes(activeTag),
+		);
+		const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+		currentPage = Math.min(currentPage, totalPages);
+		const visible = new Set(
+			filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
+		);
+
+		for (const row of rows) {
+			row.classList.toggle('off', !visible.has(row));
+			row.removeAttribute('data-first');
+		}
+		filtered.find((row) => visible.has(row))?.setAttribute('data-first', '');
+
+		for (const button of btns)
+			button.setAttribute(
+				'aria-pressed',
+				String(button.dataset.tag === activeTag),
+			);
+		if (count) count.textContent = `${activeTag || '전체'} ${filtered.length}편`;
+
+		if (pagination && pageNumbers && prev && next) {
+			pagination.hidden = totalPages <= 1;
+			prev.disabled = currentPage === 1;
+			next.disabled = currentPage === totalPages;
+			pageNumbers.replaceChildren();
+			for (let page = 1; page <= totalPages; page++) {
+				const button = document.createElement('button');
+				button.type = 'button';
+				button.textContent = String(page);
+				button.setAttribute('aria-label', `${page}페이지`);
+				if (page === currentPage) button.setAttribute('aria-current', 'page');
+				button.addEventListener('click', () => moveTo(page));
+				pageNumbers.append(button);
+			}
+		}
+
+		if (urlMode) writeUrl(urlMode);
+	};
+
+	const moveTo = (page: number) => {
+		currentPage = page;
+		render('push');
+		list?.scrollIntoView({
+			behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
+				? 'auto'
+				: 'smooth',
+			block: 'start',
+		});
+	};
+
+	for (const button of btns)
+		button.addEventListener('click', () => {
+			activeTag = button.dataset.tag ?? '';
+			currentPage = 1;
+			render('push');
+		});
+	prev?.addEventListener('click', () => moveTo(currentPage - 1));
+	next?.addEventListener('click', () => moveTo(currentPage + 1));
+	addEventListener('popstate', () => {
+		readUrl();
+		render();
+	});
+
+	readUrl();
+	render('replace');
 </script>
 
 <style>
@@ -238,6 +321,51 @@ const schema = {
 		object-fit: cover;
 	}
 
+	.pagination,
+	.page-numbers {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.35rem;
+	}
+	.pagination {
+		margin-top: 1.5rem;
+	}
+	.pagination[hidden] {
+		display: none;
+	}
+	.pagination button {
+		display: grid;
+		place-items: center;
+		min-width: 2.35rem;
+		height: 2.35rem;
+		padding: 0 0.65rem;
+		border: 1px solid var(--line);
+		border-radius: 10px;
+		background: var(--surface);
+		color: var(--fg2);
+		font: inherit;
+		font-size: 0.875rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition:
+			background 140ms ease,
+			color 140ms ease,
+			border-color 140ms ease;
+	}
+	.pagination button:hover:not(:disabled) {
+		border-color: var(--fg3);
+		color: var(--fg);
+	}
+	.pagination button[aria-current='page'] {
+		border-color: var(--fg);
+		background: var(--fg);
+		color: var(--bg);
+	}
+	.pagination button:disabled {
+		opacity: 0.35;
+		cursor: default;
+	}
 
 	.empty {
 		padding: 2rem 1.25rem;
