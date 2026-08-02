@@ -54,69 +54,56 @@ const tags = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
 	title="블로그 — 강경현"
 	description="개발하며 겪은 문제와 그때 내린 결정을 기록합니다."
 >
-	<h1>블로그</h1>
+	{/* 화면에는 필터 줄이 제목 자리를 대신한다. 문서 구조상 제목은 있어야 한다 */}
+	<h1 class="sr">블로그</h1>
 
-	<div class="layout">
-		<aside class="side">
-			<p class="sidetitle">분류</p>
-			<ul>
-				<li>
-					<button type="button" data-tag="" aria-pressed="true">
-						전체<span class="n">{posts.length}</span>
-					</button>
-				</li>
-				{
-					tags.map(([t, n]) => (
-						<li>
-							<button type="button" data-tag={t} aria-pressed="false">
-								{t}
-								<span class="n">{n}</span>
-							</button>
-						</li>
-					))
-				}
-			</ul>
-		</aside>
-		<div class="main">
-			<p class="count" data-count>전체 {posts.length}편</p>
-			{
-				posts.length === 0 ? (
-					<div class="card empty">아직 글이 없습니다.</div>
-				) : (
-					<div class="card list">
-						{posts.map((post) => {
-							const src = thumbOf(post.body);
-							const excerpt = excerptOf(post.body);
-							return (
-								<a
-									href={`/posts/${post.id}`}
-									class="row"
-									data-tags={(post.data.tags ?? []).join(' ')}
-								>
-									<span class="body">
-										<span class="meta">
-											{(post.data.tags ?? []).map((t) => (
-												<span class="tag">{t}</span>
-											))}
-											<time datetime={post.data.date.toISOString()}>
-												{fmt.format(post.data.date)}
-											</time>
-										</span>
-										<span class="t">{post.data.title}</span>
-										{excerpt && <span class="ex">{excerpt}</span>}
-									</span>
-									<span class="thumb">
-										{src && <img src={src} alt="" loading="lazy" />}
-									</span>
-								</a>
-							);
-						})}
-					</div>
-				)
-			}
-		</div>
+	<nav class="filters" aria-label="분류">
+		<button type="button" data-tag="" aria-pressed="true">전체</button>
+		{
+			tags.map(([t]) => (
+				<button type="button" data-tag={t} aria-pressed="false">
+					{t}
+				</button>
+			))
+		}
+	</nav>
 
-	</div>
+		<p class="count" data-count>전체 {posts.length}편</p>
+		{
+			posts.length === 0 ? (
+				<div class="card empty">아직 글이 없습니다.</div>
+			) : (
+				<div class="card list">
+					{posts.map((post) => {
+						const src = thumbOf(post.body);
+						const excerpt = excerptOf(post.body);
+						return (
+							<a
+								href={`/posts/${post.id}`}
+								class="row"
+								data-tags={(post.data.tags ?? []).join(' ')}
+							>
+								<span class="body">
+									<span class="meta">
+										{(post.data.tags ?? []).map((t) => (
+											<span class="tag">{t}</span>
+										))}
+										<time datetime={post.data.date.toISOString()}>
+											{fmt.format(post.data.date)}
+										</time>
+									</span>
+									<span class="t">{post.data.title}</span>
+									{excerpt && <span class="ex">{excerpt}</span>}
+								</span>
+								<span class="thumb">
+									{src && <img src={src} alt="" loading="lazy" />}
+								</span>
+							</a>
+						);
+					})}
+				</div>
+			)
+		}
 </Base>
 
 <script>
@@ -144,23 +131,50 @@ const tags = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
 </script>
 
 <style>
-	h1 {
-		margin: clamp(3rem, 10vh, 5.5rem) 0.25rem clamp(1.25rem, 3vh, 1.75rem);
-		font-size: clamp(1.9rem, 6vw, 2.5rem);
-		font-weight: 800;
-		letter-spacing: -0.042em;
+	/* 시각적으로만 숨긴다. 스크린 리더에는 제목이 남아야 한다 */
+	.sr {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: -1px;
+		padding: 0;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
 	}
 
-	/* 분류는 흐름에서 빼 본문 바깥에 띄운다. 가운데는 목록만 쓴다.
-	   좌표 기준은 Toc 과 같다 — 본문 폭을 바꾸면 둘 다 바꾼다 */
-	.side {
-		position: fixed;
-		top: 6.5rem;
-		left: calc(50% + 28.5rem);
-		width: 11rem;
-		max-height: 70vh;
-		overflow-y: auto;
+	/* 분류 — 목록 위 한 줄. 활성 하나만 채우고 나머지는 담백하게 둔다 */
+	.filters {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+		margin: clamp(2.5rem, 8vh, 4rem) 0 1.5rem;
+		padding-bottom: 1.25rem;
+		border-bottom: 1px solid var(--line);
 	}
+	.filters button {
+		padding: 0.45rem 0.95rem;
+		border: 0;
+		border-radius: 999px;
+		background: none;
+		color: var(--fg3);
+		font: inherit;
+		font-size: 0.9375rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition:
+			background 140ms ease,
+			color 140ms ease;
+	}
+	.filters button:hover {
+		background: var(--line);
+		color: var(--fg);
+	}
+	.filters button[aria-pressed='true'] {
+		background: var(--fg);
+		color: var(--bg);
+	}
+
 	.count {
 		margin: 0 0.25rem 0.6rem;
 		color: var(--fg3);
@@ -242,55 +256,6 @@ const tags = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
 		object-fit: cover;
 	}
 
-	/* 분류 */
-	.sidetitle {
-		margin: 0 0 0.55rem 0.6rem;
-		color: var(--fg3);
-		font-size: 0.8125rem;
-		font-weight: 600;
-	}
-	.side ul {
-		margin: 0;
-		padding: 0;
-		list-style: none;
-		display: flex;
-		flex-direction: column;
-		gap: 0.1rem;
-	}
-	.side button {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 0.5rem;
-		width: 100%;
-		padding: 0.4rem 0.6rem;
-		border: 0;
-		border-radius: 8px;
-		background: none;
-		color: var(--fg2);
-		font: inherit;
-		font-size: 0.9375rem;
-		text-align: left;
-		cursor: pointer;
-		transition:
-			background 140ms ease,
-			color 140ms ease;
-	}
-	.side button:hover {
-		background: var(--line);
-		color: var(--fg);
-	}
-	.side button[aria-pressed='true'] {
-		background: var(--line);
-		color: var(--fg);
-		font-weight: 700;
-	}
-	.n {
-		color: var(--fg3);
-		font-size: 0.8125rem;
-		font-variant-numeric: tabular-nums;
-		font-weight: 500;
-	}
 
 	.empty {
 		padding: 2rem 1.25rem;
@@ -299,27 +264,6 @@ const tags = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
 	}
 
 	/* 띄울 자리가 없으면 목록 위 가로줄로 되돌린다 */
-	@media (max-width: 84rem) {
-		.side {
-			position: static;
-			width: auto;
-			max-height: none;
-			margin-bottom: 1.25rem;
-		}
-		.sidetitle {
-			display: none;
-		}
-		.side ul {
-			flex-direction: row;
-			overflow-x: auto;
-			padding-bottom: 0.2rem;
-		}
-		.side button {
-			width: auto;
-			flex-shrink: 0;
-			border: 1px solid var(--line);
-		}
-	}
 	@media (max-width: 34rem) {
 		.row {
 			grid-template-columns: minmax(0, 1fr) 5.25rem;
