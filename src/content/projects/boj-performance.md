@@ -17,6 +17,10 @@ toBe:
 links:
   - label: Chrome Web Store
     href: https://chromewebstore.google.com/detail/boj-performance/bklabnmnfggmenngdnlndikconflcbij
+  - label: 웨일 스토어
+    href: https://store.whale.naver.com/detail/clhhbjiamhmgpehbmmacbppbiiijccpd
+  - label: Firefox Add-ons
+    href: https://addons.mozilla.org/ko/firefox/addon/boj-performance
   - label: GitHub
     href: https://github.com/kangkyunghyun/boj-performance
 ---
