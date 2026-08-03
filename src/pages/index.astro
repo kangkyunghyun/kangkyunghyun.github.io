@@ -18,6 +18,7 @@ const projects = (
 		startedAt(b.data.period) - startedAt(a.data.period) ||
 		a.data.title.localeCompare(b.data.title),
 );
+const statusLabels = { live: '운영 중', paused: '운영 중단' } as const;
 
 // 출처: github.com/kangkyunghyun 프로필 README
 const education = [
@@ -214,7 +215,11 @@ const schema = {
 							<span class="head">
 								<span class="name">
 									{p.data.title}
-									{p.data.live && <span class="live">운영 중</span>}
+									{p.data.status && (
+										<span class:list={['status', p.data.status]}>
+											{statusLabels[p.data.status]}
+										</span>
+									)}
 									{p.data.badge && <span class="note">{p.data.badge}</span>}
 								</span>
 								<span class="period">{p.data.period}</span>
@@ -409,24 +414,30 @@ const schema = {
 		font-weight: 600;
 	}
 	/* 운영 상태는 성격이 달라 색을 나눈다 */
-	.live {
+	.status {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.3rem;
 		padding: 0.05rem 0.5rem 0.05rem 0.4rem;
 		border-radius: 999px;
-		background: color-mix(in srgb, var(--green) 12%, transparent);
-		color: var(--green);
 		font-size: 0.75rem;
 		font-weight: 600;
 		white-space: nowrap;
 	}
-	.live::before {
+	.status::before {
 		content: '';
 		width: 5px;
 		height: 5px;
 		border-radius: 50%;
 		background: currentColor;
+	}
+	.status.live {
+		background: color-mix(in srgb, var(--green) 12%, transparent);
+		color: var(--green);
+	}
+	.status.paused {
+		background: color-mix(in srgb, var(--fg3) 12%, transparent);
+		color: var(--fg3);
 	}
 	.proj .period {
 		flex-shrink: 0;

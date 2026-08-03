@@ -14,6 +14,7 @@ const d = p.data;
 const hasCompare = d.asIs.length > 0 || d.toBe.length > 0;
 const url = new URL(`/projects/${p.id}/`, Astro.site).href;
 const image = d.logo ? `/logos/${d.logo}` : '/og-default.png';
+const statusLabels = { live: '운영 중', paused: '운영 중단' } as const;
 const schema = {
 	'@context': 'https://schema.org',
 	'@type': 'CreativeWork',
@@ -54,9 +55,11 @@ const schema = {
 			<p class="wordmark">{d.title}</p>
 			<h1>{d.summary}</h1>
 			{
-				(d.live || d.badge) && (
+				(d.status || d.badge) && (
 					<p class="badges">
-						{d.live && <span class="live">운영 중</span>}
+						{d.status && (
+							<span class:list={['status', d.status]}>{statusLabels[d.status]}</span>
+						)}
 						{d.badge && <span class="note">{d.badge}</span>}
 					</p>
 				)
@@ -172,24 +175,30 @@ const schema = {
 		font-size: 0.875rem;
 		font-weight: 600;
 	}
-	.live {
+	.status {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.3rem;
 		padding: 0.1rem 0.6rem 0.1rem 0.45rem;
 		border-radius: 999px;
-		background: color-mix(in srgb, var(--green) 12%, transparent);
-		color: var(--green);
 		font-size: 0.875rem;
 		font-weight: 600;
 		white-space: nowrap;
 	}
-	.live::before {
+	.status::before {
 		content: '';
 		width: 5px;
 		height: 5px;
 		border-radius: 50%;
 		background: currentColor;
+	}
+	.status.live {
+		background: color-mix(in srgb, var(--green) 12%, transparent);
+		color: var(--green);
+	}
+	.status.paused {
+		background: color-mix(in srgb, var(--fg3) 12%, transparent);
+		color: var(--fg3);
 	}
 
 	.meta {

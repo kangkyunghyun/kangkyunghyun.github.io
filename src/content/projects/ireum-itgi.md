@@ -3,7 +3,7 @@ title: 이름잇기
 summary: 법원 출생신고 통계로 하는 실제 이름 끝말잇기 게임
 period: 2026. 7. — 현재
 role: 1인 개발 및 운영
-live: true
+status: live
 draft: true
 logo: ireum-itgi.png
 stack:

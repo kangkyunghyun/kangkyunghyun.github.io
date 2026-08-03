@@ -4,7 +4,7 @@ summary: 나만의 스토리를 만들고 채팅으로 이어나가는 AI 스토
 period: 2026. 6. — 현재
 role: 백엔드·인프라
 badge: AI·SW 마에스트로
-live: true
+status: live
 logo: manyak.png
 team: 3인
 stack:

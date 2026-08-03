@@ -80,7 +80,7 @@ tools/import-tistory.py            티스토리 이관 (표준 라이브러리�
 | `role` | string | 필수 | 맡은 역할 |
 | `badge` | string | 선택 | 카드의 파란 배지. 한 개만 |
 | `logo` | string | 선택 | `public/logos/` 아래 파일명 |
-| `live` | boolean | 선택 | 서비스 운영 여부. 초록 `운영 중` 배지 |
+| `status` | `live` \| `paused` | 선택 | 서비스 운영 상태. `운영 중`은 초록, `운영 중단`은 회색 배지 |
 | `team` | string | 선택 | 팀 구성 |
 | `stack` | string[] | 선택 | 상세 페이지 하단 칩 |
 | `asIs` / `toBe` | string[] | 선택 | 2열 비교. 둘 다 비면 섹션이 통째로 빠진다 |
@@ -104,7 +104,7 @@ AS-IS → TO-BE만 본문이 아니라 프런트매터에 있다. 2열 비교를
 | `--line` | `#f2f4f6` | `#33363f` | 구분선 |
 | `--blue` | `#3182f6` | `#4593fc` | 면·테두리·포커스 링 |
 | `--blue-strong` | `#1b64da` | `#4593fc` | **파랑 글자 전용.** 본문 링크와 배지 텍스트 |
-| `--green` | `#166534` | `#4ade80` | 운영 중 상태 배지 전용 |
+| `--green` | `#166534` | `#4ade80` | 운영 중 상태 배지 전용. 운영 중단은 그레이 스케일 사용 |
 
 테마는 **시스템·라이트·다크 3단**이다. `localStorage.theme`에 `light`/`dark`를 저장하고 `<html data-theme>`로 적용하며, 시스템일 때는 둘 다 지워 `prefers-color-scheme`에 맡긴다. 다크 토큰 블록이 두 벌인 것은 의도된 중복이다 — `@media` 안의 규칙은 밖에서 재사용할 수 없다. `@media` 쪽에는 `:not([data-theme='light'])`가 반드시 있어야 OS가 다크여도 수동 라이트가 이긴다. `MUST`
 
