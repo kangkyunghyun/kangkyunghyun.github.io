@@ -2,14 +2,21 @@
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Toc from '../../components/Toc.astro';
-import { excerptOf, imageOf } from '../../lib/content';
+import { excerptOf, imageOf, sortPosts } from '../../lib/content';
 
 export async function getStaticPaths() {
-	const posts = await getCollection('posts', ({ data }) => !data.draft);
-	return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+	const posts = sortPosts(await getCollection('posts', ({ data }) => !data.draft));
+	return posts.map((post, index) => ({
+		params: { slug: post.id },
+		props: {
+			post,
+			previousPost: posts[index - 1],
+			nextPost: posts[index + 1],
+		},
+	}));
 }
 
-const { post } = Astro.props;
+const { post, previousPost, nextPost } = Astro.props;
 const { Content, headings } = await render(post);
 const fmt = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'long' });
 const description = excerptOf(post.body) || `${post.data.title}에 관한 강경현의 글입니다.`;
@@ -62,6 +69,24 @@ const schema = {
 		<Content />
 	</article>
 
+	{
+		(previousPost || nextPost) && (
+			<nav class="post-nav" aria-label="이전 글과 다음 글">
+				{previousPost && (
+					<a href={`/posts/${previousPost.id}`} rel="prev">
+						<span class="direction">← 이전 글</span>
+						<span class="post-title">{previousPost.data.title}</span>
+					</a>
+				)}
+				{nextPost && (
+					<a href={`/posts/${nextPost.id}`} rel="next" class="next">
+						<span class="direction">다음 글 →</span>
+						<span class="post-title">{nextPost.data.title}</span>
+					</a>
+				)}
+			</nav>
+		)
+	}
 	<a href="/blog" class="back">목록으로</a>
 </Base>
 
@@ -69,6 +94,7 @@ const schema = {
 	/* 셸은 넓지만 글 본문은 좁게 유지한다.
 	   한 줄이 길어지면 읽기가 나빠져서 폭을 같이 늘리지 않는다 */
 	article,
+	.post-nav,
 	.back {
 		max-width: var(--measure);
 		margin-inline: auto;
@@ -103,9 +129,48 @@ const schema = {
 		margin-top: 0;
 	}
 
+	.post-nav {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.75rem;
+		margin-top: 3.5rem;
+	}
+	.post-nav a {
+		display: flex;
+		min-width: 0;
+		min-height: 5.75rem;
+		flex-direction: column;
+		justify-content: center;
+		gap: 0.35rem;
+		padding: 1rem;
+		border-radius: 14px;
+		background: var(--surface);
+		color: var(--fg2);
+		transition: background 160ms ease;
+	}
+	.post-nav a:hover,
+	.back:hover {
+		background: color-mix(in srgb, var(--fg) 5%, var(--surface));
+	}
+	.post-nav .next {
+		grid-column: 2;
+		text-align: right;
+	}
+	.direction {
+		color: var(--fg3);
+		font-size: 0.8125rem;
+		font-weight: 600;
+	}
+	.post-title {
+		overflow-wrap: anywhere;
+		font-size: 0.9375rem;
+		font-weight: 600;
+		line-height: 1.5;
+	}
+
 	.back {
 		display: block;
-		margin-top: 3.5rem;
+		margin-top: 0.75rem;
 		padding: 1rem;
 		border-radius: 14px;
 		background: var(--surface);
@@ -115,7 +180,14 @@ const schema = {
 		text-align: center;
 		transition: background 160ms ease;
 	}
-	.back:hover {
-		background: color-mix(in srgb, var(--fg) 5%, var(--surface));
+
+	@media (max-width: 40rem) {
+		.post-nav {
+			grid-template-columns: 1fr;
+		}
+		.post-nav .next {
+			grid-column: auto;
+			text-align: left;
+		}
 	}
 </style>

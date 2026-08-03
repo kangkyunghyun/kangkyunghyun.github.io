@@ -1,11 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import { excerptOf, imageOf } from '../lib/content';
+import { excerptOf, imageOf, sortPosts } from '../lib/content';
 
-const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
-	(a, b) => b.data.date.getTime() - a.data.date.getTime(),
-);
+const posts = sortPosts(await getCollection('posts', ({ data }) => !data.draft));
 const fmt = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium' });
 
 const counts = new Map<string, number>();

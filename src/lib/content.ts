@@ -1,3 +1,13 @@
+import type { CollectionEntry } from 'astro:content';
+
+/** 글 목록과 상세 이동 링크에서 같은 순서를 사용한다. */
+export const sortPosts = (posts: CollectionEntry<'posts'>[]) =>
+	[...posts].sort(
+		(a, b) =>
+			b.data.date.getTime() - a.data.date.getTime() ||
+			a.id.localeCompare(b.id),
+	);
+
 /** 마크다운 본문에서 목록과 메타 태그에 쓸 첫 문단을 뽑는다. */
 export const excerptOf = (body = '', maxLength = 160) => {
 	const clean = (line: string) =>
