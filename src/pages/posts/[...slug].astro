@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import ImageLightbox from '../../components/ImageLightbox.astro';
 import Toc from '../../components/Toc.astro';
 import { excerptOf, imageOf, sortPosts } from '../../lib/content';
 
@@ -68,6 +69,7 @@ const schema = {
 		</header>
 		<Content />
 	</article>
+	<ImageLightbox />
 
 	{
 		(previousPost || nextPost) && (

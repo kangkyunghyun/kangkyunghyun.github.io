@@ -1,0 +1,115 @@
+<dialog class="image-lightbox" aria-label="확대 이미지">
+	<button type="button" class="close" aria-label="확대 이미지 닫기">
+		<svg
+			viewBox="0 0 24 24"
+			width="24"
+			height="24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+			stroke-linecap="round"
+			aria-hidden="true"
+		>
+			<path d="M18 6 6 18M6 6l12 12"></path>
+		</svg>
+	</button>
+	<img class="image" alt="" />
+</dialog>
+
+<script>
+	const dialog = document.querySelector<HTMLDialogElement>('.image-lightbox');
+	const fullImage = dialog?.querySelector<HTMLImageElement>('.image');
+	const closeButton = dialog?.querySelector<HTMLButtonElement>('.close');
+	let trigger: HTMLImageElement | null = null;
+
+	if (dialog && fullImage && closeButton) {
+		const close = () => dialog.close();
+		const open = (image: HTMLImageElement) => {
+			trigger = image;
+			fullImage.src = image.currentSrc || image.src;
+			fullImage.alt = image.alt;
+			dialog.showModal();
+			document.documentElement.classList.add('lightbox-open');
+		};
+
+		for (const image of document.querySelectorAll<HTMLImageElement>('article img')) {
+			image.dataset.lightbox = '';
+			image.tabIndex = 0;
+			image.setAttribute('role', 'button');
+			image.setAttribute('aria-label', image.alt ? `${image.alt} 확대` : '이미지 확대');
+			image.addEventListener('click', (event) => {
+				event.preventDefault();
+				open(image);
+			});
+			image.addEventListener('keydown', (event) => {
+				if (event.key !== 'Enter' && event.key !== ' ') return;
+				event.preventDefault();
+				open(image);
+			});
+		}
+
+		closeButton.addEventListener('click', close);
+		dialog.addEventListener('click', (event) => {
+			if (event.target === dialog) close();
+		});
+		dialog.addEventListener('close', () => {
+			document.documentElement.classList.remove('lightbox-open');
+			fullImage.removeAttribute('src');
+			trigger?.focus();
+			trigger = null;
+		});
+	}
+</script>
+
+<style>
+	:global(article img[data-lightbox]) {
+		cursor: zoom-in;
+	}
+	:global(html.lightbox-open) {
+		overflow: hidden;
+	}
+	.image-lightbox {
+		width: 100vw;
+		max-width: none;
+		height: 100dvh;
+		max-height: none;
+		margin: 0;
+		padding: clamp(1rem, 4vw, 2.5rem);
+		border: 0;
+		background: transparent;
+	}
+	.image-lightbox[open] {
+		display: grid;
+		place-items: center;
+	}
+	.image-lightbox::backdrop {
+		background: rgb(0 0 0 / 82%);
+		backdrop-filter: blur(4px);
+	}
+	.image {
+		max-width: 100%;
+		max-height: calc(100dvh - 2rem);
+		border-radius: 10px;
+		object-fit: contain;
+		box-shadow: 0 1.25rem 4rem rgb(0 0 0 / 35%);
+	}
+	.close {
+		position: fixed;
+		top: max(1rem, env(safe-area-inset-top));
+		right: max(1rem, env(safe-area-inset-right));
+		z-index: 1;
+		display: grid;
+		width: 3rem;
+		height: 3rem;
+		padding: 0;
+		place-items: center;
+		border: 0;
+		border-radius: 999px;
+		background: rgb(25 31 40 / 80%);
+		color: #fff;
+		cursor: pointer;
+	}
+	.close:hover {
+		background: rgb(25 31 40 / 100%);
+	}
+</style>
