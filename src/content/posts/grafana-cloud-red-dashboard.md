@@ -104,6 +104,8 @@ with resource attributes {service.name=manyak-server-local}
 
 Grafana의 범용 OpenTelemetry 연결 마법사에서는 “traces를 찾지 못했다”는 메시지가 나왔다. 이번 구성은 메트릭 Registry만 연결했으므로 정상적인 결과다. 메트릭, 로그, 트레이스는 모두 관측 데이터지만 서로 다른 종류이며 하나를 보냈다고 나머지도 자동 전송되지는 않는다.
 
+![메트릭만 연결한 상태에서 트레이스를 찾지 못했다는 OpenTelemetry 연결 검사 화면](/images/grafana-cloud-red-dashboard/08-traces-not-found.png)
+
 ## Grafana Explore에서 JVM 메트릭 확인하기
 
 전송을 시작한 뒤 Grafana Explore의 메트릭 선택창에서 `jvm`을 검색하자 `jvm_memory_used_bytes`, `jvm_classes_loaded` 같은 메트릭이 나타났다.
@@ -131,6 +133,8 @@ http_server_requests_milliseconds_bucket
 ```
 
 데이터가 사라진 것이 아니라 내보내는 형식에 따라 기본 단위가 달라진 것이다. 메트릭 탐색기에서 실제 이름을 확인하지 않고 로컬에서 보던 `seconds` 이름을 그대로 입력하면 `No data`가 나온다.
+
+![seconds 단위의 메트릭 이름으로 조회해 No data가 나온 화면](/images/grafana-cloud-red-dashboard/09-seconds-no-data.png)
 
 누적 요청 수는 아래 쿼리로 확인했다.
 
@@ -303,6 +307,8 @@ clamp_min(
 `clamp_min()`은 분모가 0이 되지 않도록 최소값을 지정한다. 조건은 `IS ABOVE 5`, 평가 주기는 1분, Pending period는 5분, Keep firing for는 1분으로 설정했다. 짧은 순간의 오류 때문에 바로 알림이 발생하지 않고, 5분 동안 문제가 이어질 때만 firing 상태가 된다.
 
 알림에는 `service=manyak-server-local`, `environment=local`, `severity=warning` 라벨을 붙였다. 이메일 Contact point도 연결하고 RED 대시보드의 5xx 패널을 링크했다. 규칙을 저장한 직후에는 아직 평가되지 않아 `Unknown`이었지만 첫 평가가 끝난 뒤 `Normal`로 바뀌었다.
+
+![첫 평가가 끝난 뒤 Normal 상태가 된 5xx 오류율 알림 규칙](/images/grafana-cloud-red-dashboard/10-alert-rule-normal.png)
 
 이번에는 실제 이메일 발송까지 강제로 시험하지 않았다. 운영에 적용할 때는 통제된 5xx 응답을 발생시켜 `Normal → Pending → Firing → Normal` 전환과 수신 메시지를 끝까지 검증해야 한다.
 
