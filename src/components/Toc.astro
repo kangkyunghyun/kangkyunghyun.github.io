@@ -1,5 +1,5 @@
 ---
-// 상세 페이지 본문 오른쪽 바깥에 fixed 로 띄우는 목차.
+// 상세 페이지 본문 오른쪽 바깥에 띄우는 목차.
 // 글·프로젝트 상세가 같은 폭(--measure)이라 좌표를 하나로 쓴다.
 // 띄울 자리가 없는 화면에서는 통째로 숨긴다.
 interface Heading {
@@ -59,14 +59,13 @@ const show = items.length >= 3;
 
 <style>
 	.toc {
-		position: fixed;
+		/* 긴 목차도 내부 스크롤 없이 문서와 함께 이어지게 한다 */
+		position: absolute;
 		top: 6.5rem;
 		/* 가운데 정렬된 본문(--measure)의 오른쪽 '바깥'에 붙인다.
 		   본문 폭을 바꾸면 이 값도 같이 바꾼다 */
 		left: calc(50% + 28.5rem);
 		width: 13rem;
-		max-height: 70vh;
-		overflow-y: auto;
 		font-size: 0.8125rem;
 		line-height: 1.5;
 	}
