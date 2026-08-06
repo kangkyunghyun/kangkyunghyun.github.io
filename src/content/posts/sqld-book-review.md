@@ -7,7 +7,7 @@ tags: [서평]
 
 [https://product.kyobobook.co.kr/detail/S000217937565](https://product.kyobobook.co.kr/detail/S000217937565)
 
-## 들어가며
+## 책을 읽은 계기
 
 SQL 개발자(SQLD) 자격증 취득은 막연한 목표였고, 졸업할 때쯤 도전해야겠다고 계획하고 있었다. 그러다 우연히 이기적 SQLD 도서의 서평단 모집 공고를 보게 되었고, 운 좋게 선발되어 예상보다 빠르게 시험 접수와 공부를 시작하게 되었다.
 

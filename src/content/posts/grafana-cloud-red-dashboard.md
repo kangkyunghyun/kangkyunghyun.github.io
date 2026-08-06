@@ -8,7 +8,7 @@ tags: [백엔드, 모니터링]
 
 이 글에서 사용한 환경은 Java 21, Kotlin 2.2.21, Spring Boot 4.0.6, Micrometer 1.16.5다. 애플리케이션은 IntelliJ에서 실행했고 PostgreSQL과 Redis는 Docker Compose로 띄웠다.
 
-## 이번 구성에서는 Prometheus 서버를 따로 설치하지 않았다
+## Prometheus 서버 없는 구성
 
 `/actuator/prometheus`가 열렸다고 해서 Prometheus 서버가 설치된 것은 아니다. 이 주소는 애플리케이션이 현재 가지고 있는 메트릭을 Prometheus 텍스트 형식으로 보여주는 출구다. 서버를 재시작하면 누적값이 초기화되고, 이 엔드포인트만으로는 과거 값을 조회하거나 그래프를 만들 수 없다.
 
@@ -26,7 +26,7 @@ Spring Boot
 
 따라서 Prometheus 형식과 PromQL은 그대로 사용하지만, 로컬에 독립적인 Prometheus 프로세스는 실행하지 않는다. Grafana Cloud 안의 Prometheus 호환 저장소가 장기 보관과 조회를 담당한다.
 
-## OTLP Registry와 Spring Boot OpenTelemetry 모듈 추가하기
+## OTLP Registry와 Spring Boot OpenTelemetry 모듈
 
 `build.gradle.kts`의 `dependencies` 블록에는 앞서 추가한 Prometheus Registry와 함께 OTLP Registry를 추가했다.
 
@@ -52,7 +52,7 @@ Prometheus Registry는 `/actuator/prometheus`에서 원문을 확인하는 역�
 
 Spring Boot의 의존성 관리가 각각 Micrometer OTLP Registry 1.16.5와 Spring Boot OpenTelemetry 4.0.6을 선택했다. 버전을 직접 적지 않으면 현재 Spring Boot 버전과 맞는 조합을 사용할 수 있다.
 
-## 전송 주기와 히스토그램 설정하기
+## 전송 주기와 히스토그램 설정
 
 로컬 프로필 설정인 `src/main/resources/application-local.yml`에는 다음 내용을 두었다.
 
@@ -76,7 +76,7 @@ management:
 
 실무에서는 전송 주기를 무조건 짧게 잡지 않는다. 주기가 짧으면 변화가 빠르게 보이지만 네트워크 요청과 저장할 표본이 늘어난다. 이번에는 로컬 실습에서 그래프가 움직이는 모습을 빠르게 확인하려고 10초를 사용했다.
 
-## 인증 정보는 IntelliJ 환경변수로 주입하기
+## 환경변수로 주입한 인증 정보
 
 Grafana Cloud의 OpenTelemetry 설정 화면에서 OTLP 엔드포인트와 API 토큰을 발급했다. 값은 코드나 YAML에 적지 않고 IntelliJ 실행 설정의 환경변수에 저장했다.
 
@@ -90,7 +90,7 @@ OTEL_SERVICE_NAME=manyak-server-local
 
 API 토큰은 비밀번호와 같다. 저장소, 블로그 본문, 스크린샷에 포함하면 안 된다. IntelliJ 실행 설정도 프로젝트 파일로 공유하지 않고 사용자 로컬 설정으로만 보관했다. 실습용으로 넓은 권한의 토큰을 만들었다면 이후 `metrics:write`처럼 필요한 범위만 가진 토큰으로 교체하는 편이 안전하다.
 
-## 메트릭 전송 로그 확인하기
+## 메트릭 전송 로그
 
 Gradle 프로젝트를 다시 불러오고 애플리케이션을 재시작하자 다음 로그가 나타났다.
 
@@ -106,7 +106,7 @@ Grafana의 범용 OpenTelemetry 연결 마법사에서는 “traces를 찾지 �
 
 ![메트릭만 연결한 상태에서 트레이스를 찾지 못했다는 OpenTelemetry 연결 검사 화면](/images/grafana-cloud-red-dashboard/08-traces-not-found.png)
 
-## Grafana Explore에서 JVM 메트릭 확인하기
+## Grafana Explore의 JVM 메트릭
 
 전송을 시작한 뒤 Grafana Explore의 메트릭 선택창에서 `jvm`을 검색하자 `jvm_memory_used_bytes`, `jvm_classes_loaded` 같은 메트릭이 나타났다.
 
@@ -122,7 +122,7 @@ jvm_memory_used_bytes{service_name="manyak-server-local"}
 
 그래프가 여러 선으로 나뉘는 이유는 `area`와 `id` 라벨이 다르기 때문이다. 같은 `jvm_memory_used_bytes`라도 Eden Space, Old Gen, Metaspace는 서로 다른 시계열로 저장된다.
 
-## OTLP에서는 HTTP 시간 단위가 milliseconds로 보였다
+## OTLP의 HTTP 시간 단위
 
 로컬 `/actuator/prometheus`에서는 HTTP 메트릭 이름이 `http_server_requests_seconds_*`였다. Grafana Cloud로 OTLP 전송한 뒤에는 다음 이름으로 조회됐다.
 
@@ -149,7 +149,7 @@ http_server_requests_milliseconds_count{
 
 카운터는 애플리케이션 시작 후 요청이 몇 번 발생했는지를 나타낸다. 운영 대시보드에서는 누적값보다 최근에 얼마나 빠르게 증가하는지가 더 유용하다.
 
-## rate와 increase로 카운터의 변화를 읽기
+## rate와 increase의 차이
 
 `rate()`는 지정한 구간에서 카운터가 초당 얼마나 증가했는지 계산한다.
 
@@ -177,7 +177,7 @@ increase(
 
 예를 들어 `rate()`의 최고점이 약 `0.74 req/s`이고 같은 구간의 `increase()`가 약 44라면 두 값은 모순되지 않는다. `0.74 × 60초`가 약 44건이기 때문이다.
 
-## 평균 응답시간과 p95 계산하기
+## 평균 응답시간과 p95
 
 평균 응답시간은 처리 시간의 증가량을 요청 수 증가량으로 나눈 값이다.
 
@@ -221,7 +221,7 @@ histogram_quantile(
 
 `sum by (le)`는 여러 시계열의 버킷을 상한값인 `le` 기준으로 합친다. `histogram_quantile(0.95, ...)`는 그 누적 분포에서 95번째 백분위 응답시간을 추정한다. 결과가 8ms라면 최근 5분 요청의 약 95%가 8ms 안에 끝났다는 의미다.
 
-## RED 대시보드 만들기
+## RED 대시보드
 
 RED는 Rate, Errors, Duration의 앞글자를 딴 서버 모니터링 관점이다. 요청이 얼마나 들어오는지, 그중 얼마나 실패하는지, 처리에는 얼마나 걸리는지를 함께 본다.
 
@@ -271,7 +271,7 @@ or vector(0)
 
 대시보드의 시간 범위는 최근 15분, 자동 새로고침은 10초로 설정했다. 터미널에서 health 엔드포인트를 반복 호출하자 요청률과 p95 패널이 움직였고, 5xx를 만들지 않았기 때문에 오류율은 0%를 유지했다.
 
-## 5xx 오류율 알림 만들기
+## 5xx 오류율 알림
 
 대시보드는 사람이 보고 있을 때만 이상을 발견할 수 있다. Grafana Alerting에 “최근 5분의 5xx 오류율이 5%를 넘는 상태가 5분 동안 지속되면 알림”이라는 규칙을 추가했다.
 
@@ -312,7 +312,7 @@ clamp_min(
 
 이번에는 실제 이메일 발송까지 강제로 시험하지 않았다. 운영에 적용할 때는 통제된 5xx 응답을 발생시켜 `Normal → Pending → Firing → Normal` 전환과 수신 메시지를 끝까지 검증해야 한다.
 
-## 운영에 적용하기 전에 확인할 점
+## 운영 적용 전 점검
 
 현재 `/actuator/prometheus`는 로컬 프로필에서만 노출된다. OTLP push 방식에서는 Grafana Cloud가 이 주소에 접근할 필요가 없으므로 운영에서 공개할 이유도 없다. 운영에 Prometheus pull 방식을 도입한다면 관리망, 방화벽 또는 인증으로 엔드포인트 접근을 제한해야 한다.
 

@@ -28,7 +28,7 @@ tags: [백엔드, 모니터링]
 - Micrometer Prometheus Registry 1.16.5
 - Gradle Kotlin DSL
 
-## 기존 도구로는 서버 런타임 상태를 알기 어려웠다
+## 기존 도구의 한계
 
 프로젝트에는 이미 여러 관측 도구가 있었다.
 
@@ -50,7 +50,7 @@ Prometheus로 확인하려던 서버 메트릭은 아래와 같았다.
 
 기존 도구로 볼 수 없었던 서버 런타임 상태를 관측하는 것이 목표였다.
 
-## Prometheus는 메트릭을 저장하고 Grafana는 시각화한다
+## Prometheus와 Grafana의 역할
 
 서버를 자동차에 비유하면 메트릭을 이해하기 쉽다. 자동차의 계기판은 속도, 엔진 온도, 연료량을 보여준다. 서버에도 현재 상태를 보여주는 계기판이 필요하다.
 
@@ -81,7 +81,7 @@ Grafana
 
 이번 단계에서는 Prometheus 서버를 설치하지 않았다. 먼저 Spring Boot가 측정하는 메트릭을 Prometheus 형식으로 꺼내 보는 것부터 시작했다.
 
-## Actuator와 Micrometer가 메트릭을 외부로 노출한다
+## Actuator와 Micrometer의 역할
 
 Spring Boot Actuator는 애플리케이션 내부 상태를 외부에 보여주는 관리 기능을 제공한다. 프로젝트에는 이미 다음 의존성이 있었다.
 
@@ -117,7 +117,7 @@ Actuator와 Micrometer
 Prometheus 형식의 메트릭
 ```
 
-## Prometheus Registry를 추가한다
+## Prometheus Registry
 
 `build.gradle.kts`의 `dependencies` 블록에 Prometheus Registry를 추가했다.
 
@@ -142,7 +142,7 @@ BUILD SUCCESSFUL
 
 이제 애플리케이션 내부의 측정값을 Prometheus 형식으로 변환할 수 있다.
 
-## 로컬 환경에서만 Prometheus 엔드포인트를 노출한다
+## 로컬 전용 Prometheus 엔드포인트
 
 운영 환경에 곧바로 `/actuator/prometheus`를 공개하지 않고, 먼저 로컬 환경에서 내용을 확인하기로 했다. 공통 설정인 `application.yml`은 그대로 두고 `application-local.yml`에만 다음 설정을 추가했다.
 
@@ -166,7 +166,7 @@ application-local.yml
 
 `application-local.yml`의 `include` 값이 공통 설정을 덮어쓰므로 로컬에서는 `health`, `info`, `prometheus`를 노출한다. 운영 환경은 공통 설정의 `health`, `info`만 사용하므로 영향을 받지 않는다.
 
-## Spring Security에서 인증 없이 접근하도록 허용한다
+## Spring Security의 무인증 허용
 
 Actuator가 엔드포인트를 노출해도 Spring Security가 요청을 차단할 수 있다. 이 프로젝트는 일부 공개 경로를 먼저 허용하고 나머지 요청에는 인증을 요구한다.
 
@@ -188,7 +188,7 @@ Actuator가 엔드포인트를 노출해도 Spring Security가 요청을 차단�
 
 운영 설정에는 `prometheus`가 노출 목록에 없다. 따라서 Spring Security가 경로를 허용하더라도 운영 환경에는 접근할 엔드포인트가 생성되지 않는다.
 
-## IntelliJ가 새 의존성을 반영하지 않아 엔드포인트가 나타나지 않았다
+## IntelliJ 의존성 반영 문제
 
 Gradle 컴파일은 성공했지만 IntelliJ에서 처음 실행했을 때는 다음 로그가 나왔다.
 
@@ -215,7 +215,7 @@ Started ManyakApplicationKt
 
 `build.gradle.kts`에 의존성을 추가한 뒤에는 Gradle 빌드뿐 아니라 IDE의 Gradle 동기화 상태도 확인해야 한다.
 
-## Prometheus 형식의 메트릭 원문을 확인한다
+## Prometheus 메트릭 원문
 
 서버를 실행한 상태에서 다음 요청을 보냈다.
 

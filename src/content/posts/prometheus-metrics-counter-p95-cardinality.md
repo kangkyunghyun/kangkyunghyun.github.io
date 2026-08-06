@@ -14,7 +14,7 @@ tags: [백엔드, 모니터링]
 - Gradle 9.5.1
 - Micrometer Prometheus Registry 1.16.5
 
-## HELP, TYPE, 측정값으로 메트릭 한 줄 읽기
+## 메트릭 한 줄의 HELP, TYPE, 측정값
 
 처음 확인한 메트릭은 다음과 같았다.
 
@@ -26,7 +26,7 @@ application_ready_time_seconds{main_application_class="com.knk.manyak.ManyakAppl
 
 세 줄은 하나의 메트릭을 설명한다.
 
-### HELP는 메트릭의 의미를 설명한다
+### HELP와 메트릭 설명
 
 ```text
 # HELP application_ready_time_seconds Time taken for the application to be ready to service requests
@@ -36,7 +36,7 @@ application_ready_time_seconds{main_application_class="com.knk.manyak.ManyakAppl
 
 `application_ready_time_seconds`는 애플리케이션이 요청을 받을 준비를 마칠 때까지 걸린 시간을 초 단위로 나타낸다.
 
-### TYPE은 측정값의 종류를 나타낸다
+### TYPE과 측정값 종류
 
 ```text
 # TYPE application_ready_time_seconds gauge
@@ -51,7 +51,7 @@ application_ready_time_seconds{main_application_class="com.knk.manyak.ManyakAppl
 - 현재 사용 중인 데이터베이스 연결 수
 - 남은 디스크 공간
 
-### 마지막 줄에는 라벨과 값이 들어 있다
+### 라벨과 값
 
 ```text
 application_ready_time_seconds{main_application_class="com.knk.manyak.ManyakApplicationKt"} 4.886
@@ -69,7 +69,7 @@ application_ready_time_seconds{main_application_class="com.knk.manyak.ManyakAppl
 
 애플리케이션이 요청을 받을 준비를 마치는 데 약 4.886초가 걸렸다는 뜻이다.
 
-## 라벨 조합 하나가 시계열 하나를 만든다
+## 시계열을 만드는 라벨 조합
 
 라벨은 같은 메트릭을 더 세부적으로 구분하는 이름표다. 앞선 예시에서는 다음 라벨이 애플리케이션의 메인 클래스를 나타낸다.
 
@@ -85,7 +85,7 @@ Prometheus는 메트릭 이름이 같더라도 라벨 조합이 다르면 별개
 
 시계열은 시간에 따라 쌓이는 하나의 측정값 흐름이다. 이 규칙은 뒤에서 살펴볼 카디널리티와 직접 연결된다.
 
-## 카운터로 HTTP 요청 횟수 읽기
+## HTTP 요청 카운터
 
 HTTP 요청 메트릭을 확인하기 위해 서버의 health 엔드포인트를 한 번 호출했다.
 
@@ -138,7 +138,7 @@ http_server_requests_seconds_count{...} 4
 
 HTTP 요청 수, 오류 수, 타임아웃 수, 처리한 작업 수처럼 누적 횟수를 기록할 때 카운터를 사용한다. 카운터는 일반적으로 감소하지 않지만 애플리케이션을 재시작하면 메모리에 있던 값이 초기화돼 0부터 다시 시작할 수 있다.
 
-## rate로 카운터의 증가 속도 구하기
+## rate와 카운터 증가 속도
 
 누적 요청 수만으로는 현재 서버가 얼마나 바쁜지 판단하기 어렵다. 한 달 동안 천천히 쌓인 100만 건과 한 시간 만에 몰린 100만 건은 서버에 주는 부하가 다르다.
 
@@ -156,7 +156,7 @@ rate(http_server_requests_seconds_count[5m])
 
 이 값이 초당 요청 수(Requests Per Second, RPS)의 기초가 된다.
 
-## count, sum, max로 응답 시간 이해하기
+## count, sum, max와 응답 시간
 
 HTTP 요청 시간은 다음 세 값으로 노출됐다.
 
@@ -211,7 +211,7 @@ _max   = 0.0080355
 
 p95가 800ms라면 요청 100건 중 약 95건은 800ms 이내에 처리됐고, 약 5건은 그보다 오래 걸렸다고 해석할 수 있다.
 
-## 히스토그램 버킷으로 p95 계산 재료 만들기
+## p95 계산을 위한 히스토그램 버킷
 
 처음에는 다음 메트릭이 존재하지 않았다.
 
@@ -250,7 +250,7 @@ http_server_requests_seconds_bucket{...,le="0.009786708"} 1
 
 따라서 측정한 요청은 6.99ms보다 오래 걸렸고 8.39ms 이내에 끝났다고 추정할 수 있다.
 
-### 히스토그램 버킷은 누적된다
+### 히스토그램 버킷의 누적
 
 8.39ms 이하인 요청은 9.79ms 이하인 요청에도 포함된다. 그래서 다음 두 버킷의 값이 모두 1이다.
 
@@ -296,7 +296,7 @@ histogram_quantile(
 
 아직 Prometheus나 Grafana Cloud에 데이터를 저장하지 않았기 때문에 이 PromQL을 직접 실행하지는 않았다. 현재는 p95 계산에 필요한 버킷을 만드는 단계다.
 
-## 히스토그램이 늘리는 시계열 수 확인하기
+## 히스토그램의 시계열 수
 
 히스토그램은 응답 시간 분포를 보여주는 대신 많은 시계열을 만든다. health 요청의 버킷 수를 다음 명령어로 확인했다.
 
@@ -329,7 +329,7 @@ status="200", outcome="SUCCESS"
 status="500", outcome="SERVER_ERROR"
 ```
 
-## 카디널리티가 커지면 시계열도 늘어난다
+## 카디널리티와 시계열 수
 
 현재 메트릭 원문에서 실제 측정값 줄 수를 세었다.
 
@@ -389,7 +389,7 @@ URI, 상태 코드, HTTP 방식 등의 조합까지 더해지면 시계열 수�
 
 사용자와 스토리 단위 분석은 데이터베이스, Amplitude, Langfuse가 담당한다. Prometheus는 서버 전체의 요청 속도, 오류율, 자원 상태를 관측하도록 역할을 나누는 편이 적절하다.
 
-## 다음 단계: 메트릭을 외부 저장소에 쌓기
+## 외부 저장소로의 메트릭 전송
 
 현재 `/actuator/prometheus`는 애플리케이션이 가진 메트릭의 현재 스냅숏만 보여준다.
 
