@@ -1,6 +1,6 @@
 ---
 title: "Spring Boot 메트릭을 Grafana Cloud로 보내고 RED 대시보드 만들기"
-date: 2026-08-04
+date: 2026-08-05
 tags: [백엔드, 모니터링]
 ---
 
