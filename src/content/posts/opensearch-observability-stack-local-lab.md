@@ -34,6 +34,51 @@ OpenTelemetry Collector는 애플리케이션이 보낸 텔레메트리의 진�
 
 실습 당시 주요 버전은 OpenSearch와 OpenSearch Dashboards 3.8.0, OpenTelemetry Collector Contrib 0.156.0, Data Prepper 2.16.0 SNAPSHOT 계열이었다. 버전에 따라 메트릭 이름이나 UI 위치가 달라질 수 있으므로, 아래 화면과 다른 결과가 나오면 먼저 이미지 버전을 비교하는 편이 좋다.
 
+## OpenSearch부터 단독으로 시작하기
+
+전체 스택을 한 번에 올릴 수도 있지만, 이번에는 데이터가 도착하는 역순으로 구성 요소를 하나씩 실행했다. 가장 아래에서 데이터를 저장하는 OpenSearch가 준비됐는지 먼저 확인해야 이후 Data Prepper 오류를 저장소 문제와 구분할 수 있기 때문이다.
+
+저장소 루트에서 OpenSearch만 시작했다.
+
+```bash
+docker compose up -d opensearch
+```
+
+이미지를 내려받고 컨테이너가 시작되더라도 OpenSearch 프로세스가 즉시 요청을 받을 수 있는 것은 아니다. Compose 상태에서 health check가 통과할 때까지 기다렸다.
+
+```bash
+docker compose ps opensearch
+```
+
+`STATUS`가 `Up ... (healthy)`로 바뀐 다음 9200 포트의 cluster health API를 직접 호출했다. 아래 명령은 `.env`의 `OPENSEARCH_PASSWORD` 값을 현재 셸에도 같은 이름으로 export했다고 가정한다. Compose는 `.env`를 자동으로 읽지만, 터미널에서 실행하는 `curl`은 그렇지 않다는 점에 주의해야 한다.
+
+```bash
+curl -sk \
+  -u "admin:${OPENSEARCH_PASSWORD}" \
+  'https://localhost:9200/_cluster/health?pretty'
+```
+
+여기서 확인하는 것은 세 가지다. 호스트의 9200 포트가 컨테이너까지 연결되는지, 자체 서명 인증서를 사용하는 HTTPS 연결이 가능한지, 설정한 관리자 계정으로 OpenSearch API를 호출할 수 있는지다. `-k`는 로컬 개발용 자체 서명 인증서 검증을 생략하고, `-s`는 진행률 출력을 숨긴다.
+
+응답의 `status`는 `yellow`였다. 이 구성은 OpenSearch 노드가 하나인데 일부 인덱스의 replica 수는 1이므로, 복제본 shard를 배치할 두 번째 노드가 없다. Primary shard가 활성화되고 `timed_out`이 `false`라면 실습을 진행할 수 있다. 데이터까지 사용할 수 없는 `red` 상태와는 다르다.
+
+OpenSearch가 준비된 것을 확인한 뒤 Data Prepper를 시작했다.
+
+```bash
+docker compose up -d data-prepper
+docker compose ps -a opensearch data-prepper
+```
+
+Data Prepper의 OTLP 포트가 TCP 연결을 받는지도 확인했다.
+
+```bash
+nc -vz localhost 21890
+```
+
+`Connection to localhost port 21890 ... succeeded!`는 호스트에서 컨테이너 포트까지 TCP 연결이 된다는 뜻이다. 아직 Data Prepper의 OpenSearch sink가 초기화됐거나 실제 trace가 저장됐다는 증거는 아니다. 그 상태는 로그와 OpenSearch 인덱스를 별도로 확인해야 한다.
+
+컨테이너는 모두 실행 중이었지만 Data Prepper 로그에서는 곧 `Request execution cancelled`가 반복되기 시작했다. 이제 OpenSearch API 자체는 동작한다는 사실을 알고 있으므로, 다음 단계에서는 Data Prepper 컨테이너 내부의 DNS, 인증, sink 설정과 초기화 시점을 차례로 점검했다.
+
 ## Data Prepper의 `Request execution cancelled` 추적하기
 
 처음 Data Prepper를 실행했을 때 OpenSearch sink 초기화가 약 200ms 간격으로 계속 실패했다.
@@ -67,7 +112,7 @@ docker compose exec data-prepper \
   'https://opensearch:9200/_cluster/health?pretty'
 ```
 
-응답은 `yellow`였고 노드와 primary shard는 정상적으로 활성화돼 있었다. 단일 노드 환경에서 replica 수가 1이면 복제본을 배치할 두 번째 노드가 없기 때문에 `yellow`가 자연스럽다. 서비스가 죽은 `red`와는 의미가 다르다.
+컨테이너 내부에서도 앞서 호스트에서 확인한 것과 같은 cluster health 응답이 돌아왔다. 이 호출의 목적은 `yellow` 상태를 다시 판정하는 것이 아니라, Compose 네트워크와 컨테이너에 전달된 자격 증명으로 OpenSearch에 접근할 수 있는지 확인하는 데 있다.
 
 Data Prepper가 실제로 읽은 파이프라인 설정도 확인했다.
 
