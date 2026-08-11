@@ -1,5 +1,5 @@
 ---
-title: "Grafana Cloud 알림 규칙 만들기 — 기준선 없이 시작하는 법"
+title: "Grafana Cloud에서 기준선 없이 알림 규칙 만들기"
 date: 2026-08-09
 tags: [백엔드, 모니터링]
 ---

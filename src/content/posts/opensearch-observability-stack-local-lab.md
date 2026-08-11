@@ -1,5 +1,5 @@
 ---
-title: "OpenSearch Observability Stack 로컬 실습 — 트레이스부터 알림까지"
+title: "OpenSearch Observability Stack을 로컬에서 실행하고 트레이스와 알림 확인하기"
 date: 2026-08-10
 tags: [백엔드, 모니터링]
 ---
@@ -11,6 +11,10 @@ tags: [백엔드, 모니터링]
 ## 전체 데이터 흐름부터 잡기
 
 이번 구성에서 가장 먼저 이해해야 할 점은 트레이스·로그와 메트릭이 서로 다른 저장 경로를 사용한다는 것이다.
+
+![OpenSearch Observability Stack의 데이터 수집 및 저장 구조](/images/opensearch-observability-stack-local-lab/00-architecture.png)
+
+[공식 저장소의 아키텍처 그림](https://github.com/opensearch-project/observability-stack)은 이 분기를 한눈에 보여준다. 애플리케이션과 AI 에이전트가 보낸 로그·트레이스·메트릭은 OTLP gRPC 4317 또는 HTTP 4318 포트로 Collector에 들어온다. Collector는 로그와 트레이스를 Data Prepper와 OpenSearch로 보내고, 메트릭은 Compose에서 `prometheus`라는 서비스 이름으로 실행되는 Cortex에 보낸다. Data Prepper도 처리한 트레이스에서 요청률·오류율·지연 시간(RED) 메트릭을 만들어 Cortex에 전달한다. Dashboards는 OpenSearch의 로그·트레이스 분석과 Cortex의 인프라·애플리케이션 메트릭을 한 UI에서 보여준다.
 
 ```text
 예제 에이전트 / Canary

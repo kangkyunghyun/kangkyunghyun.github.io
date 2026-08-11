@@ -1,5 +1,5 @@
 ---
-title: "OpenSearch Observability Stack 실습 — Astronomy Shop 주문 추적부터 결제 장애 원인 분석까지"
+title: "OpenSearch Observability Stack에서 Astronomy Shop 주문과 결제 장애 추적하기"
 date: 2026-08-11
 tags: [백엔드, 모니터링]
 ---
@@ -48,6 +48,14 @@ checkout (주문 전체 조율)
 반면 OpenSearch, Data Prepper, OpenTelemetry Collector, Cortex, Kafka, PostgreSQL, flagd 같은 컨테이너는 애플리케이션의 비즈니스 기능을 담당하지 않는다. 애플리케이션을 지원하거나 텔레메트리를 저장·전달·조회하는 인프라 구성 요소다. `docker compose ps`에 컨테이너가 많이 보인다고 해서 모두 같은 종류의 서비스인 것은 아니다.
 
 ## 스택 실행과 수동 요청 준비
+
+Astronomy Shop은 OpenSearch Observability Stack의 기본 예제가 아니라 선택해서 추가하는 구성이다. [공식 저장소의 안내](https://github.com/opensearch-project/observability-stack#running-with-opentelemetry-demo)에 따라 `.env`에서 다음 항목의 주석을 해제하면 Compose가 OpenTelemetry Demo 서비스도 함께 읽는다.
+
+```text
+INCLUDE_COMPOSE_OTEL_DEMO=docker-compose.otel-demo.yml
+```
+
+공식 README는 Demo 실행에 약 2GB의 메모리가 추가로 필요하며, 코어 스택과 함께 실행할 호스트에는 최소 8GB RAM을 권장한다. Demo를 켜면 웹 스토어는 `/`, 부하 생성기 화면은 `/loadgen/`, Feature Flag 화면은 `/feature` 경로로 모두 8080 포트에 열린다.
 
 전체 예제를 실행했다.
 
