@@ -1,6 +1,6 @@
 ---
 title: "Fluent Bit으로 ECS FireLens와 같은 경로의 컨테이너 로그 수집"
-date: "2026-08-20T03:00:00Z"
+date: "2026-08-19T03:00:00Z"
 tags: [백엔드, 모니터링]
 ---
 

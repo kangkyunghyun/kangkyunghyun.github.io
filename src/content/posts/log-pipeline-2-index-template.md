@@ -1,6 +1,6 @@
 ---
 title: "OpenSearch 인덱스 템플릿에서 keyword와 text를 나누는 기준"
-date: "2026-08-20T02:00:00Z"
+date: "2026-08-19T02:00:00Z"
 tags: [백엔드, 모니터링]
 ---
 
