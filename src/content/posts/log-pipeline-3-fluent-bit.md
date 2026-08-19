@@ -75,9 +75,9 @@ manyak-logs-local-test               16
 
 이제 `dummy` 자리에 진짜 앱 로그를 넣어야 한다. 여기서 걸림돌이 둘이었다.
 
-**1. 앱이 컨테이너가 아니다.** 평소 개발은 `docker compose up -d`(postgres·redis) + `./gradlew bootRun`이다. Fluent Bit의 본업은 컨테이너 로그 수집인데 수집할 컨테이너가 없다.
+**1. 앱이 컨테이너가 아니다.** 평소 개발은 `docker compose up -d`(postgres, redis) + `./gradlew bootRun`이다. Fluent Bit의 본업은 컨테이너 로그 수집인데 수집할 컨테이너가 없다.
 
-**2. 로컬 로그가 JSON이 아니다.** `logback-spring.xml`을 보면 JSON은 `prod`·`dev` 프로파일에만 붙는다. `local`은 사람이 읽는 평문 패턴이다.
+**2. 로컬 로그가 JSON이 아니다.** `logback-spring.xml`을 보면 JSON은 `prod`, `dev` 프로파일에만 붙고 `local`은 사람이 읽는 평문 패턴이다.
 
 2번부터 풀었다. `jsonlog`라는 프로파일을 하나 더해 평소엔 지금처럼 평문이고 필요할 때만 JSON이 되게 했다.
 
@@ -105,7 +105,7 @@ manyak-logs-local-test               16
 set -a; source .env; set +a; SPRING_PROFILES_ACTIVE=local,jsonlog ./gradlew bootRun
 ```
 
-> `set -a`는 이후 만드는 변수를 자동으로 export한다. `source .env`는 그 파일 내용을 현재 셸에서 실행한다. `docker compose`는 `.env`를 자동으로 읽지만 **Gradle은 읽지 않아서** 이렇게 넣어 줘야 한다.
+> `set -a`는 이후 만드는 변수를 자동으로 export하고 `source .env`는 그 파일 내용을 현재 셸에서 실행한다. `docker compose`는 `.env`를 자동으로 읽지만 **Gradle은 읽지 않아서** 이렇게 넣어 줘야 한다.
 
 ```json
 {"@timestamp":"2026-08-19T21:48:38.662891+09:00","@version":"1","message":"The following 2 profiles are active: \"local\", \"jsonlog\"","logger_name":"com.knk.manyak.ManyakApplicationKt","thread_name":"restartedMain","level":"INFO","level_value":20000,"service":"manyak-server"}
@@ -124,7 +124,7 @@ JSON 줄: 50      평문 줄: 0
 
 1번은 앱을 컨테이너로 띄워서 풀었다. 여기서 **어떻게 띄우느냐**가 중요하다.
 
-운영은 ECS Fargate이고 로그는 FireLens로 나간다. FireLens의 실체는 Fluent Bit이다. 경로는 이렇다.
+운영은 ECS Fargate이고 로그는 FireLens로 나간다. FireLens의 실체는 Fluent Bit이고 경로는 이렇다.
 
 ```text
 앱 컨테이너 stdout → 도커 로그 드라이버 → Fluent Bit 사이드카
@@ -157,7 +157,7 @@ JSON 줄: 50      평문 줄: 0
 
 설계상 정한 것들.
 
-**`profiles: ["app"]`**. 평소 `up -d`에는 뜨지 않는다. 일상 개발·테스트는 종전대로 `bootRun`을 쓴다. 파이프라인을 확인할 때만 `--profile app`으로 켠다.
+**`profiles: ["app"]`**. 평소 `up -d`에는 뜨지 않는다. 일상 개발과 테스트는 종전대로 `bootRun`을 쓰고 파이프라인을 확인할 때만 `--profile app`으로 켠다.
 
 **이미지를 빌드하지 않는다**. 루트 Dockerfile은 컨테이너 안에서 Gradle 빌드를 다시 돌려 느리다. 로컬에서 만든 jar를 그대로 얹으면 `./gradlew bootJar`가 1초이고 컨테이너 기동은 수 초다.
 
@@ -257,7 +257,7 @@ manyak-logs-local-2026.08.19        146
 }
 ```
 
-`log` 문자열이 필드로 펼쳐졌다. 도커 메타데이터도 남았다.
+`log` 문자열이 필드로 펼쳐졌고 도커 메타데이터도 남았다.
 
 ## 이 파이프라인을 만드는 이유
 
@@ -355,7 +355,7 @@ curl -s "localhost:9200/manyak-logs-local-*/_count?q=request_id:req_nofb"
 {"log": "  .   ____          _            __ _ _", "container_name": "/manyak-app", ...}
 ```
 
-기동당 20줄 남짓이다. **버려지지 않고 `log` 필드를 단 채 통과한다.** 파서가 까다롭게 굴다 로그를 잃는 것보다 낫다. 관측 시스템에서 유실은 최악이다.
+기동당 20줄 남짓이고 **버려지지 않고 `log` 필드를 단 채 통과한다.** 파서가 까다롭게 굴다 로그를 잃는 것보다 낫다. 관측 시스템에서 유실은 최악이다.
 
 그런데 방금 본 것처럼 정작 유실은 다른 데서 났다. 파서가 아니라 **전송 계층**에서.
 

@@ -18,7 +18,7 @@ Fluent Bit만으로도 OpenSearch에 넣을 수 있다. 그럼 왜 하나를 더
 |---|---|---|
 | 언어 | C | Rust |
 | 자리 | **에이전트**. 앱 옆에 붙는다 | **집계**. 중앙에 하나 |
-| 개수 | 서버·태스크마다 하나씩 (많음) | 하나 또는 소수 |
+| 개수 | 서버나 태스크마다 하나씩 (많음) | 하나 또는 소수 |
 | 최적화 | 극단적으로 가벼움 | 변환 능력 + 디스크 버퍼 |
 
 나누는 이유는 셋이다.
@@ -92,7 +92,7 @@ sinks:
 
 몇 가지 짚을 것.
 
-**`.pipeline = "vector"`**. 이 레코드가 Vector를 지났다는 표시다. 앞 글에서 "Fluent Bit이 정말 경로에 있나"를 증명할 때 쓴 것과 같은 수법이다. 나중에 이 필드의 유무만 보면 경로를 확인할 수 있다.
+**`.pipeline = "vector"`**. 이 레코드가 Vector를 지났다는 표시다. 앞 글에서 "Fluent Bit이 정말 경로에 있나"를 증명할 때 쓴 것과 같은 수법으로 나중에 이 필드의 유무만 보면 경로를 확인할 수 있다.
 
 **`api_version: v7`**. OpenSearch는 Elasticsearch 7.10에서 갈라져 나왔다. `auto`로 두면 3.8.0이라는 버전 문자열을 ES 8로 오인해 요청 형식이 어긋날 수 있다.
 
@@ -320,7 +320,7 @@ OpenSearch 진영에는 Data Prepper라는 도구가 있다. Vector와 **같은 
 | 언어 | Rust | Java |
 | 로그 | 가볍고 VRL로 변환이 자유롭다 | 되지만 무겁다 |
 | 트레이스 | **서비스 맵을 만들 수 없다** | `service_map_stateful` 전용 프로세서 |
-| 목적지 | OpenSearch·S3·Kafka·CloudWatch 등 다수 | OpenSearch 중심 |
+| 목적지 | OpenSearch, S3, Kafka, CloudWatch 등 다수 | OpenSearch 중심 |
 
 **로그만 놓고 보면 Vector가 낫다.** 메모리를 적게 쓰고, VRL이 Data Prepper의 프로세서 조합보다 표현력이 좋고, 디스크 버퍼가 제대로 동작한다.
 
@@ -334,10 +334,10 @@ OpenSearch 진영에는 Data Prepper라는 도구가 있다. Vector와 **같은 
 
 ```text
 앱 stdout → 도커 fluentd 드라이버 → Fluent Bit → Vector → OpenSearch → Dashboards
-                                    (수집)      (가공·버퍼)   (저장)      (조회)
+                                    (수집)     (가공, 버퍼)   (저장)      (조회)
 ```
 
-앞쪽 절반이 운영(ECS FireLens)과 같은 모양이라 로컬에서 검증한 파싱·전송 설정이 그대로 넘어간다. 그게 로컬 스택을 운영과 같은 경로로 만든 이유다.
+앞쪽 절반이 운영(ECS FireLens)과 같은 모양이라 로컬에서 검증한 파싱과 전송 설정이 그대로 넘어간다. 그게 로컬 스택을 운영과 같은 경로로 만든 이유다.
 
 실측에서 얻은 것 중 인상적이었던 것들.
 
