@@ -1,5 +1,5 @@
 ---
-title: "OpenSearch 인덱스 템플릿: keyword와 text를 나누는 기준"
+title: "OpenSearch 인덱스 템플릿에서 keyword와 text를 나누는 기준"
 date: 2026-08-20
 tags: [백엔드, 모니터링]
 ---
