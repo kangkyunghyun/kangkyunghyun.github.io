@@ -59,13 +59,18 @@ const show = items.length >= 3;
 
 <style>
 	.toc {
-		/* 긴 목차도 내부 스크롤 없이 문서와 함께 이어지게 한다 */
-		position: absolute;
+		/* 스크롤을 따라오게 sticky 로 띄운다. sticky 는 흐름 안에 있어야 해서
+		   float 로 빼 두고, 본문(--measure)의 오른쪽 '바깥'까지 음수 마진으로 민다.
+		   -16rem = 목차 폭 13rem + main 좌우 패딩 1.5rem + 본문과의 간격 1.5rem.
+		   본문 폭이나 --pad 를 바꾸면 이 값도 같이 바꾼다 */
+		position: sticky;
 		top: 6.5rem;
-		/* 가운데 정렬된 본문(--measure)의 오른쪽 '바깥'에 붙인다.
-		   본문 폭을 바꾸면 이 값도 같이 바꾼다 */
-		left: calc(50% + 28.5rem);
+		float: right;
 		width: 13rem;
+		margin: 2.5rem -16rem 0 0;
+		/* 뷰포트보다 긴 목차는 목차 안에서만 스크롤한다 */
+		max-height: calc(100vh - 8rem);
+		overflow-y: auto;
 		font-size: 0.8125rem;
 		line-height: 1.5;
 	}
