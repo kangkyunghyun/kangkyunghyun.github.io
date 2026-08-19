@@ -6,7 +6,7 @@ tags: [백엔드, 모니터링]
 
 [앞 글](/posts/log-pipeline-3-fluent-bit)에서 Fluent Bit으로 컨테이너 로그를 OpenSearch에 넣었다. 동작은 하는데 마지막에 문제를 하나 발견했다. **Fluent Bit이 잠깐 죽어 있는 동안 발생한 로그가 사라졌다.**
 
-이 글은 그 구멍을 메우는 과정이다. Fluent Bit과 OpenSearch 사이에 Vector를 한 겹 더 두고, 같은 실험을 다시 해 본다. 가는 길에 문서에 안 적힌 호환성 문제도 하나 밟았다.
+이 글은 그 구멍을 메우는 과정이다. Fluent Bit과 OpenSearch 사이에 Vector를 한 겹 더 두고 같은 실험을 다시 해 본다. 가는 길에 문서에 안 적힌 호환성 문제도 하나 밟았다.
 
 ## 왜 계층을 나누나
 
@@ -29,7 +29,7 @@ Fluent Bit만으로도 OpenSearch에 넣을 수 있다. 그럼 왜 하나를 더
 
 ## 앞 글에서 무엇이 사라졌나
 
-복기부터. Fluent Bit을 멈추고 요청을 보낸 뒤, 다시 켜고 확인했다.
+복기부터. Fluent Bit을 멈추고 요청을 보낸 뒤 다시 켜고 확인했다.
 
 ```bash
 docker stop manyak-fluent-bit
@@ -92,7 +92,7 @@ sinks:
 
 몇 가지 짚을 것.
 
-**`.pipeline = "vector"`**. 이 레코드가 Vector를 지났다는 표시다. 앞 글에서 "Fluent Bit이 정말 경로에 있나"를 증명할 때 쓴 것과 같은 수법으로, 나중에 이 필드의 유무만 보면 경로를 확인할 수 있다.
+**`.pipeline = "vector"`**. 이 레코드가 Vector를 지났다는 표시다. 앞 글에서 "Fluent Bit이 정말 경로에 있나"를 증명할 때 쓴 것과 같은 수법이다. 나중에 이 필드의 유무만 보면 경로를 확인할 수 있다.
 
 **`api_version: v7`**. OpenSearch는 Elasticsearch 7.10에서 갈라져 나왔다. `auto`로 두면 3.8.0이라는 버전 문자열을 ES 8로 오인해 요청 형식이 어긋날 수 있다.
 
@@ -163,7 +163,7 @@ ERROR source{component_id=fluentbit component_type=fluent}:
 
 **데이터는 도착했다.** 에러 덤프 안에 우리 로그가 그대로 보인다. 형식 해석에서 막힌 것이다.
 
-구조를 보면 각 항목이 `[[시각, 메타데이터], 레코드]`다. Fluent Bit 5.x가 쓰는 **v2 이벤트 형식**인데, Vector의 `fluent` 소스가 이걸 해석하지 못한다.
+구조를 보면 각 항목이 `[[시각, 메타데이터], 레코드]`다. Fluent Bit 5.x가 쓰는 **v2 이벤트 형식**인데 Vector의 `fluent` 소스가 이걸 해석하지 못한다.
 
 이 고장이 특히 나쁜 이유는 **조용하기 때문**이다. Fluent Bit 쪽은 전송에 성공했다고 보고하고(HTTP 200), OpenSearch는 아무 일도 없고, 로그만 사라진다. Vector 로그를 열어 보기 전엔 어디서 없어졌는지 알 수 없다.
 
@@ -269,7 +269,7 @@ curl -s "localhost:9200/manyak-logs-local-*/_count?q=request_id:req_buffered"
 {"count":1,...}
 ```
 
-**밀린 로그가 들어왔다.** Vector의 디스크 버퍼가 목적지가 죽은 동안 받아 뒀다가, 살아나자 밀어 넣었다.
+**밀린 로그가 들어왔다.** Vector의 디스크 버퍼가 목적지가 죽은 동안 받아 뒀다가 살아나자 밀어 넣었다.
 
 같은 실험을 두 번 했는데 결과가 정반대다.
 
@@ -278,7 +278,7 @@ curl -s "localhost:9200/manyak-logs-local-*/_count?q=request_id:req_buffered"
 | Fluent Bit → OpenSearch | Fluent Bit 중단 | **유실** (`count: 0`) |
 | Fluent Bit → **Vector** → OpenSearch | OpenSearch 중단 | **보존** (`count: 1`) |
 
-문서로 읽으면 "버퍼가 있으면 좋다" 정도인데, 직접 두 번 재현해 보니 왜 계층을 하나 더 두는지 명확해졌다.
+문서로 읽으면 "버퍼가 있으면 좋다" 정도인데 직접 두 번 재현해 보니 왜 계층을 하나 더 두는지 명확해졌다.
 
 ## 파이프라인은 실시간이 아니다
 
@@ -286,7 +286,7 @@ curl -s "localhost:9200/manyak-logs-local-*/_count?q=request_id:req_buffered"
 
 ![request_id로 검색했으나 결과가 없는 Discover 화면](/images/log-pipeline-4-vector/01-no-results.webp)
 
-로그가 안 오는 줄 알고 컨테이너 상태부터 뒤졌는데, 잠시 뒤 다시 보니 있었다.
+로그가 안 오는 줄 알고 컨테이너 상태부터 뒤졌는데 잠시 뒤 다시 보니 있었다.
 
 ![잠시 후 새로고침하자 조회된 로그](/images/log-pipeline-4-vector/02-request-id-found.webp)
 
@@ -324,7 +324,7 @@ OpenSearch 진영에는 Data Prepper라는 도구가 있다. Vector와 **같은 
 
 **로그만 놓고 보면 Vector가 낫다.** 메모리를 적게 쓰고, VRL이 Data Prepper의 프로세서 조합보다 표현력이 좋고, 디스크 버퍼가 제대로 동작한다.
 
-**트레이스는 얘기가 다르다.** OpenSearch Dashboards의 Trace Analytics는 `otel-v1-apm-span-*`과 `otel-v1-apm-service-map` 인덱스를 읽는데, 뒤쪽을 만드는 `service_map_stateful` 프로세서가 Data Prepper에만 있다. Vector에는 대응물이 없다.
+**트레이스는 얘기가 다르다.** OpenSearch Dashboards의 Trace Analytics는 `otel-v1-apm-span-*`과 `otel-v1-apm-service-map` 인덱스를 읽는데 뒤쪽을 만드는 `service_map_stateful` 프로세서가 Data Prepper에만 있다. Vector에는 대응물이 없다.
 
 그래서 트레이스를 붙일 때는 **로그는 Vector, 트레이스는 Data Prepper**로 두 경로를 따로 두게 된다. 둘 중 하나를 고르는 문제가 아니다.
 
@@ -337,7 +337,7 @@ OpenSearch 진영에는 Data Prepper라는 도구가 있다. Vector와 **같은 
                                     (수집)      (가공·버퍼)   (저장)      (조회)
 ```
 
-앞쪽 절반이 운영(ECS FireLens)과 같은 모양이라, 로컬에서 검증한 파싱·전송 설정이 그대로 넘어간다. 그게 로컬 스택을 운영과 같은 경로로 만든 이유다.
+앞쪽 절반이 운영(ECS FireLens)과 같은 모양이라 로컬에서 검증한 파싱·전송 설정이 그대로 넘어간다. 그게 로컬 스택을 운영과 같은 경로로 만든 이유다.
 
 실측에서 얻은 것 중 인상적이었던 것들.
 
