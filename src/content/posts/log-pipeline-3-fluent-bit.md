@@ -1,6 +1,6 @@
 ---
-title: "Fluent Bit으로 컨테이너 로그 수집하기 — ECS FireLens와 같은 모양으로"
-date: 2026-08-20
+title: "Fluent Bit으로 ECS FireLens와 같은 경로의 컨테이너 로그 수집"
+date: "2026-08-20T03:00:00Z"
 tags: [백엔드, 모니터링]
 ---
 
@@ -44,9 +44,9 @@ INPUT  →  FILTER  →  OUTPUT
 
 몇 가지 주의점이 있다.
 
-- **`Host opensearch`** — `localhost`가 아니다. 컨테이너 안에서 `localhost`는 자기 자신을 가리킨다. Docker 네트워크 안에서는 서비스 이름이 곧 호스트 이름이다.
-- **`Suppress_Type_Name On`** — OpenSearch는 문서 타입(`_type`)을 쓰지 않는다. 켜 두지 않으면 bulk 요청에 `_type`이 실려 색인이 거절된다.
-- **`Rate 1`** — 기본값(무제한)으로 두면 순식간에 수만 건이 쌓인다. 실제로 잠깐 놔뒀더니 1만 건이 넘었다.
+- **`Host opensearch`**. `localhost`가 아니다. 컨테이너 안에서 `localhost`는 자기 자신을 가리킨다. Docker 네트워크 안에서는 서비스 이름이 곧 호스트 이름이다.
+- **`Suppress_Type_Name On`**. OpenSearch는 문서 타입(`_type`)을 쓰지 않는다. 켜 두지 않으면 bulk 요청에 `_type`이 실려 색인이 거절된다.
+- **`Rate 1`**. 기본값(무제한)으로 두면 순식간에 수만 건이 쌓인다. 실제로 잠깐 놔뒀더니 1만 건이 넘었다.
 
 띄우고 확인했다.
 
@@ -157,13 +157,13 @@ JSON 줄: 50      평문 줄: 0
 
 설계상 정한 것들.
 
-**`profiles: ["app"]`** — 평소 `up -d`에는 뜨지 않는다. 일상 개발·테스트는 종전대로 `bootRun`을 쓰고, 파이프라인을 확인할 때만 `--profile app`으로 켠다.
+**`profiles: ["app"]`**. 평소 `up -d`에는 뜨지 않는다. 일상 개발·테스트는 종전대로 `bootRun`을 쓰고, 파이프라인을 확인할 때만 `--profile app`으로 켠다.
 
-**이미지를 빌드하지 않는다** — 루트 Dockerfile은 컨테이너 안에서 Gradle 빌드를 다시 돌려 느리다. 로컬에서 만든 jar를 그대로 얹으면 `./gradlew bootJar`가 1초, 컨테이너 기동이 수 초다.
+**이미지를 빌드하지 않는다**. 루트 Dockerfile은 컨테이너 안에서 Gradle 빌드를 다시 돌려 느리다. 로컬에서 만든 jar를 그대로 얹으면 `./gradlew bootJar`가 1초, 컨테이너 기동이 수 초다.
 
-**`fluentd-address: localhost:24224`** — 컨테이너 이름이 아니라 호스트 주소다. 로그 드라이버는 **컨테이너가 아니라 도커 데몬**이 실행하기 때문이다. 그래서 Fluent Bit 쪽에서 24224 포트를 호스트로 게시해야 한다.
+**`fluentd-address: localhost:24224`**. 컨테이너 이름이 아니라 호스트 주소다. 로그 드라이버는 **컨테이너가 아니라 도커 데몬**이 실행하기 때문이다. 그래서 Fluent Bit 쪽에서 24224 포트를 호스트로 게시해야 한다.
 
-**`fluentd-async: true`** — Fluent Bit이 아직 안 떠 있어도 컨테이너가 기동하게 한다. 기본값(false)이면 접속 실패 시 컨테이너가 아예 시작하지 못한다.
+**`fluentd-async: true`**. Fluent Bit이 아직 안 떠 있어도 컨테이너가 기동하게 한다. 기본값(false)이면 접속 실패 시 컨테이너가 아예 시작하지 못한다.
 
 Fluent Bit의 입력도 바꿨다.
 

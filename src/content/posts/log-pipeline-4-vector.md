@@ -1,6 +1,6 @@
 ---
-title: "Vector를 한 겹 더 두는 이유: 디스크 버퍼와 forward 호환성"
-date: 2026-08-20
+title: "로그 유실을 막는 Vector 디스크 버퍼와 forward 호환성 함정"
+date: "2026-08-20T04:00:00Z"
 tags: [백엔드, 모니터링]
 ---
 
@@ -17,7 +17,7 @@ Fluent Bit만으로도 OpenSearch에 넣을 수 있다. 그럼 왜 하나를 더
 | | Fluent Bit | Vector |
 |---|---|---|
 | 언어 | C | Rust |
-| 자리 | **에이전트** — 앱 옆에 붙는다 | **집계** — 중앙에 하나 |
+| 자리 | **에이전트**. 앱 옆에 붙는다 | **집계**. 중앙에 하나 |
 | 개수 | 서버·태스크마다 하나씩 (많음) | 하나 또는 소수 |
 | 최적화 | 극단적으로 가벼움 | 변환 능력 + 디스크 버퍼 |
 
@@ -92,11 +92,11 @@ sinks:
 
 몇 가지 짚을 것.
 
-**`.pipeline = "vector"`** — 이 레코드가 Vector를 지났다는 표시다. 앞 글에서 "Fluent Bit이 정말 경로에 있나"를 증명할 때 쓴 것과 같은 수법으로, 나중에 이 필드의 유무만 보면 경로를 확인할 수 있다.
+**`.pipeline = "vector"`**. 이 레코드가 Vector를 지났다는 표시다. 앞 글에서 "Fluent Bit이 정말 경로에 있나"를 증명할 때 쓴 것과 같은 수법으로, 나중에 이 필드의 유무만 보면 경로를 확인할 수 있다.
 
-**`api_version: v7`** — OpenSearch는 Elasticsearch 7.10에서 갈라져 나왔다. `auto`로 두면 3.8.0이라는 버전 문자열을 ES 8로 오인해 요청 형식이 어긋날 수 있다.
+**`api_version: v7`**. OpenSearch는 Elasticsearch 7.10에서 갈라져 나왔다. `auto`로 두면 3.8.0이라는 버전 문자열을 ES 8로 오인해 요청 형식이 어긋날 수 있다.
 
-**`buffer.type: disk`** — 이 파일의 핵심이다. `max_size`는 최소 허용치가 256MiB라 그보다 작게 주면 기동에 실패한다. `when_full: block`은 버퍼가 가득 차면 뒤로 밀어낸다는 뜻이다. `drop_newest`로 두면 조용히 버린다.
+**`buffer.type: disk`**. 이 파일의 핵심이다. `max_size`는 최소 허용치가 256MiB라 그보다 작게 주면 기동에 실패한다. `when_full: block`은 버퍼가 가득 차면 뒤로 밀어낸다는 뜻이다. `drop_newest`로 두면 조용히 버린다.
 
 Fluent Bit의 출력도 OpenSearch에서 Vector로 돌렸다.
 

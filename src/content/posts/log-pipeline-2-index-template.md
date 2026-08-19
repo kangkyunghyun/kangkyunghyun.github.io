@@ -1,6 +1,6 @@
 ---
 title: "OpenSearch 인덱스 템플릿에서 keyword와 text를 나누는 기준"
-date: 2026-08-20
+date: "2026-08-20T02:00:00Z"
 tags: [백엔드, 모니터링]
 ---
 
@@ -41,7 +41,7 @@ services:
 
 몇 가지는 이유를 적어 둘 만하다.
 
-**`name: manyak-observability`** — Compose는 이름을 안 주면 **디렉터리 이름**을 프로젝트로 쓴다. 그대로 두면 두 compose 파일이 같은 프로젝트에 묶여서, 한쪽에 `--remove-orphans`를 주면 다른 쪽 컨테이너가 지워진다. 실제로 처음엔 이 경고가 떴다.
+**`name: manyak-observability`**. Compose는 이름을 안 주면 **디렉터리 이름**을 프로젝트로 쓴다. 그대로 두면 두 compose 파일이 같은 프로젝트에 묶여서, 한쪽에 `--remove-orphans`를 주면 다른 쪽 컨테이너가 지워진다. 실제로 처음엔 이 경고가 떴다.
 
 ```text
 Found orphan containers ([manyak-postgres]) for this project
@@ -61,9 +61,9 @@ manyak-postgres                 manyak-server
 
 > 여기서 함정을 하나 밟았다. **프로젝트 이름을 바꾸면 `down`이 옛 컨테이너를 못 찾는다.** Docker는 컨테이너에 프로젝트 이름을 라벨로 박아 두고 그걸로 추적하는데, 파일의 이름을 바꾸면 새 이름으로 찾으니 옛 라벨이 걸리지 않는다. `docker rm -f`로 직접 지워야 했다.
 
-**healthcheck에서 `green`을 기다리지 않는다** — 단일 노드에서는 `yellow`가 정상이다. OpenSearch는 샤드의 복제본을 다른 노드에 두는데, 노드가 하나면 둘 데가 없어 미할당으로 남고 그게 yellow다. green을 기다리면 영원히 unhealthy가 된다. 응답이 오는지만 본다.
+**healthcheck에서 `green`을 기다리지 않는다**. 단일 노드에서는 `yellow`가 정상이다. OpenSearch는 샤드의 복제본을 다른 노드에 두는데, 노드가 하나면 둘 데가 없어 미할당으로 남고 그게 yellow다. green을 기다리면 영원히 unhealthy가 된다. 응답이 오는지만 본다.
 
-**`DISABLE_SECURITY_PLUGIN=true`는 로컬 전용이다** — 켜면 TLS 인증서와 admin 비밀번호(2.12+부터 필수)가 따라붙는다. 학습의 본줄기와 무관한 데 시간을 쓰게 된다. 운영 도메인은 반대로 인증을 반드시 켠다.
+**`DISABLE_SECURITY_PLUGIN=true`는 로컬 전용이다**. 켜면 TLS 인증서와 admin 비밀번호(2.12+부터 필수)가 따라붙는다. 학습의 본줄기와 무관한 데 시간을 쓰게 된다. 운영 도메인은 반대로 인증을 반드시 켠다.
 
 ## 필드를 추측하지 않고 세어 보기
 
@@ -360,8 +360,8 @@ Please select a new field.
 
 그래서 나눈 기준은 이렇게 정리된다.
 
-- **`keyword`** — 정확히 일치, 집계, 정렬이 필요한 값(식별자·경로·열거형). 분석기를 거치지 않고 통째로 저장한다.
-- **`text`** — 사람이 읽는 문장에서 단어로 찾아야 하는 값(`message`, `stack_trace`). 토큰으로 쪼개져 집계에는 못 쓴다.
+- **`keyword`**. 정확히 일치, 집계, 정렬이 필요한 값(식별자·경로·열거형). 분석기를 거치지 않고 통째로 저장한다.
+- **`text`**. 사람이 읽는 문장에서 단어로 찾아야 하는 값(`message`, `stack_trace`). 토큰으로 쪼개져 집계에는 못 쓴다.
 
 ## 모르는 필드가 들어오면
 
