@@ -16,7 +16,7 @@ tags: [백엔드, 모니터링]
 
 서버는 동작했지만 내부 상태를 확인할 계기판이 없었다. 비어 있던 서버 런타임 관측 영역을 채우기 위해 Prometheus와 Grafana를 공부하기 시작했다.
 
-이 글에서는 Spring Boot 애플리케이션에 Prometheus Registry를 추가하고, 로컬 환경에서 `/actuator/prometheus`를 열어 메트릭 원문을 확인하는 과정까지 다룬다. 아직 Prometheus 서버나 Grafana를 설치하지는 않는다.
+이 글에서는 Spring Boot 애플리케이션에 Prometheus Registry를 추가하고 로컬 환경에서 `/actuator/prometheus`를 열어 메트릭 원문을 확인하는 과정까지 다룬다. 아직 Prometheus 서버나 Grafana를 설치하지는 않는다.
 
 ## 확인한 환경
 
@@ -63,7 +63,7 @@ Prometheus로 확인하려던 서버 메트릭은 아래와 같았다.
 HTTP 요청 처리 시간 합계: 625초
 ```
 
-Prometheus는 메트릭을 수집하고 시간에 따라 저장하는 시스템이다. Grafana는 저장된 메트릭을 그래프와 대시보드로 보여주며, 조건에 따라 알림을 보낼 수 있다.
+Prometheus는 메트릭을 수집하고 시간에 따라 저장하는 시스템이다. Grafana는 저장된 메트릭을 그래프와 대시보드로 보여주며 조건에 따라 알림을 보낼 수 있다.
 
 두 도구와 Spring Boot의 관계를 단순화하면 아래 흐름이 된다.
 
@@ -144,7 +144,7 @@ BUILD SUCCESSFUL
 
 ## 로컬 전용 Prometheus 엔드포인트
 
-운영 환경에 곧바로 `/actuator/prometheus`를 공개하지 않고, 먼저 로컬 환경에서 내용을 확인하기로 했다. 공통 설정인 `application.yml`은 그대로 두고 `application-local.yml`에만 다음 설정을 추가했다.
+운영 환경에 곧바로 `/actuator/prometheus`를 공개하지 않고 먼저 로컬 환경에서 내용을 확인하기로 했다. 공통 설정인 `application.yml`은 그대로 두고 `application-local.yml`에만 다음 설정을 추가했다.
 
 ```yaml
 management:

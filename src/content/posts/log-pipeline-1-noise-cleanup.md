@@ -105,7 +105,7 @@ grep -o '"level":"[^"]*"' srv.log | sed 's/.*://' | sort | uniq -c | sort -rn
 
 ## 헬스체커는 앱 헤더를 보내지 않는다
 
-이 서비스는 모든 요청에 `X-Manyak-Device-Id`, `X-Manyak-Session-Id`, `X-Manyak-Request-Id` 세 헤더를 실어 보낸다. 서버는 필터에서 이 헤더를 받아 MDC에 넣고, 이후 모든 로그가 같은 `request_id`로 묶이게 한다. 요청 하나를 끝까지 추적하기 위한 장치다.
+이 서비스는 모든 요청에 `X-Manyak-Device-Id`, `X-Manyak-Session-Id`, `X-Manyak-Request-Id` 세 헤더를 실어 보낸다. 서버는 필터에서 이 헤더를 받아 MDC에 넣고 이후 모든 로그가 같은 `request_id`로 묶이게 한다. 요청 하나를 끝까지 추적하기 위한 장치다.
 
 헤더가 없으면 추적이 끊기니 경고를 남기게 해 뒀다.
 

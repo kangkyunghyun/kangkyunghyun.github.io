@@ -4,13 +4,13 @@ date: 2026-08-05
 tags: [백엔드, 모니터링]
 ---
 
-앞선 두 글에서는 Spring Boot Actuator가 제공하는 `/actuator/prometheus`를 열고, 카운터와 히스토그램 버킷을 직접 읽었다. 이번에는 메트릭을 Grafana Cloud에 저장하고 PromQL로 조회한 뒤, 요청량·응답시간·오류율을 한 화면에서 보는 RED 대시보드와 알림 규칙까지 만든다.
+앞선 두 글에서는 Spring Boot Actuator가 제공하는 `/actuator/prometheus`를 열고 카운터와 히스토그램 버킷을 직접 읽었다. 이번에는 메트릭을 Grafana Cloud에 저장하고 PromQL로 조회한 뒤, 요청량, 응답시간, 오류율을 한 화면에서 보는 RED 대시보드와 알림 규칙까지 만든다.
 
 이 글에서 사용한 환경은 Java 21, Kotlin 2.2.21, Spring Boot 4.0.6, Micrometer 1.16.5다. 애플리케이션은 IntelliJ에서 실행했고 PostgreSQL과 Redis는 Docker Compose로 띄웠다.
 
 ## Prometheus 서버 없는 구성
 
-`/actuator/prometheus`가 열렸다고 해서 Prometheus 서버가 설치된 것은 아니다. 이 주소는 애플리케이션이 현재 가지고 있는 메트릭을 Prometheus 텍스트 형식으로 보여주는 출구다. 서버를 재시작하면 누적값이 초기화되고, 이 엔드포인트만으로는 과거 값을 조회하거나 그래프를 만들 수 없다.
+`/actuator/prometheus`가 열렸다고 해서 Prometheus 서버가 설치된 것은 아니다. 이 주소는 애플리케이션이 현재 가지고 있는 메트릭을 Prometheus 텍스트 형식으로 보여주는 출구다. 서버를 재시작하면 누적값이 초기화되고 이 엔드포인트만으로는 과거 값을 조회하거나 그래프를 만들 수 없다.
 
 보통 Prometheus는 이 주소를 일정 주기로 읽는 pull 방식을 사용한다. 이번 실습에서는 로컬 컴퓨터를 외부에 공개하지 않기 위해 Spring Boot가 OTLP로 Grafana Cloud에 메트릭을 밀어 넣는 push 방식을 선택했다.
 
@@ -24,7 +24,7 @@ Spring Boot
      Explore / Dashboard / Alert
 ```
 
-따라서 Prometheus 형식과 PromQL은 그대로 사용하지만, 로컬에 독립적인 Prometheus 프로세스는 실행하지 않는다. Grafana Cloud 안의 Prometheus 호환 저장소가 장기 보관과 조회를 담당한다.
+따라서 Prometheus 형식과 PromQL은 그대로 사용하지만 로컬에 독립적인 Prometheus 프로세스는 실행하지 않는다. Grafana Cloud 안의 Prometheus 호환 저장소가 장기 보관과 조회를 담당한다.
 
 ## OTLP Registry와 Spring Boot OpenTelemetry 모듈
 
@@ -86,7 +86,7 @@ OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic%20<인증값>
 OTEL_SERVICE_NAME=manyak-server-local
 ```
 
-`OTEL_EXPORTER_OTLP_ENDPOINT`는 전송 목적지이고, `OTEL_EXPORTER_OTLP_HEADERS`는 Grafana Cloud가 요청자를 확인할 때 사용하는 인증 정보다. `OTEL_SERVICE_NAME`은 여러 애플리케이션의 메트릭을 구분하는 서비스 이름이며 이후 모든 PromQL 필터에 사용한다.
+`OTEL_EXPORTER_OTLP_ENDPOINT`는 전송 목적지이고 `OTEL_EXPORTER_OTLP_HEADERS`는 Grafana Cloud가 요청자를 확인할 때 사용하는 인증 정보다. `OTEL_SERVICE_NAME`은 여러 애플리케이션의 메트릭을 구분하는 서비스 이름이며 이후 모든 PromQL 필터에 사용한다.
 
 API 토큰은 비밀번호와 같다. 저장소, 블로그 본문, 스크린샷에 포함하면 안 된다. IntelliJ 실행 설정도 프로젝트 파일로 공유하지 않고 사용자 로컬 설정으로만 보관했다. 실습용으로 넓은 권한의 토큰을 만들었다면 이후 `metrics:write`처럼 필요한 범위만 가진 토큰으로 교체하는 편이 안전하다.
 
@@ -164,7 +164,7 @@ rate(
 
 ![최근 1분의 health 요청 초당 증가율](/images/grafana-cloud-red-dashboard/04-request-rate.png)
 
-그래프의 `0.3`은 요청이 총 0.3번 발생했다는 뜻이 아니라, 최근 1분의 증가 속도가 초당 약 0.3건이라는 뜻이다. 1분 동안의 요청 건수를 보고 싶다면 같은 카운터에 `increase()`를 사용한다.
+그래프의 `0.3`은 요청이 총 0.3번 발생했다는 뜻이 아니라 최근 1분의 증가 속도가 초당 약 0.3건이라는 뜻이다. 1분 동안의 요청 건수를 보고 싶다면 같은 카운터에 `increase()`를 사용한다.
 
 ```text
 increase(
@@ -269,7 +269,7 @@ or vector(0)
 
 ![요청률, p95, 5xx 오류율을 배치한 RED 대시보드](/images/grafana-cloud-red-dashboard/07-red-dashboard.png)
 
-대시보드의 시간 범위는 최근 15분, 자동 새로고침은 10초로 설정했다. 터미널에서 health 엔드포인트를 반복 호출하자 요청률과 p95 패널이 움직였고, 5xx를 만들지 않았기 때문에 오류율은 0%를 유지했다.
+대시보드의 시간 범위는 최근 15분, 자동 새로고침은 10초로 설정했다. 터미널에서 health 엔드포인트를 반복 호출하자 요청률과 p95 패널이 움직였고 5xx를 만들지 않았기 때문에 오류율은 0%를 유지했다.
 
 ## 5xx 오류율 알림
 
@@ -304,7 +304,7 @@ clamp_min(
 )
 ```
 
-`clamp_min()`은 분모가 0이 되지 않도록 최소값을 지정한다. 조건은 `IS ABOVE 5`, 평가 주기는 1분, Pending period는 5분, Keep firing for는 1분으로 설정했다. 짧은 순간의 오류 때문에 바로 알림이 발생하지 않고, 5분 동안 문제가 이어질 때만 firing 상태가 된다.
+`clamp_min()`은 분모가 0이 되지 않도록 최소값을 지정한다. 조건은 `IS ABOVE 5`, 평가 주기는 1분, Pending period는 5분, Keep firing for는 1분으로 설정했다. 짧은 순간의 오류 때문에 바로 알림이 발생하지 않고 5분 동안 문제가 이어질 때만 firing 상태가 된다.
 
 알림에는 `service=manyak-server-local`, `environment=local`, `severity=warning` 라벨을 붙였다. 이메일 Contact point도 연결하고 RED 대시보드의 5xx 패널을 링크했다. 규칙을 저장한 직후에는 아직 평가되지 않아 `Unknown`이었지만 첫 평가가 끝난 뒤 `Normal`로 바뀌었다.
 
@@ -322,4 +322,4 @@ clamp_min(
 
 ## 정리
 
-Spring Boot의 Micrometer 메트릭을 OTLP로 Grafana Cloud에 전송하고, PromQL로 카운터·요청률·평균·p95·오류율을 계산했다. 그 결과 RED 대시보드와 5xx 알림 규칙까지 만들 수 있었다. 다음 단계에서는 HTTP 공통 지표를 넘어 스토리 생성 성공률이나 LLM 호출 시간처럼 서비스가 직접 정의해야 하는 비즈니스 메트릭을 추가할 예정이다.
+Spring Boot의 Micrometer 메트릭을 OTLP로 Grafana Cloud에 전송하고 PromQL로 카운터, 요청률, 평균, p95, 오류율을 계산했다. 그 결과 RED 대시보드와 5xx 알림 규칙까지 만들 수 있었다. 다음 단계에서는 HTTP 공통 지표를 넘어 스토리 생성 성공률이나 LLM 호출 시간처럼 서비스가 직접 정의해야 하는 비즈니스 메트릭을 추가할 예정이다.

@@ -84,7 +84,7 @@ volumes:
 
 이미지는 실행 시점마다 내용이 달라지는 `latest` 대신 `v3.13.2`로 고정했다. `prometheus.yml`과 `rules.yml`은 읽기 전용으로 마운트해 컨테이너가 호스트의 설정을 수정하지 못하게 했다.
 
-수집한 시계열은 `manyak-prometheus-data` named volume에 저장한다. `docker compose down`으로 컨테이너를 내렸다가 다시 올려도 데이터는 남고, `docker compose down -v`를 실행하면 PostgreSQL 데이터와 함께 삭제된다.
+수집한 시계열은 `manyak-prometheus-data` named volume에 저장한다. `docker compose down`으로 컨테이너를 내렸다가 다시 올려도 데이터는 남고 `docker compose down -v`를 실행하면 PostgreSQL 데이터와 함께 삭제된다.
 
 Prometheus는 `manyak-server`가 단순히 실행된 시점이 아니라 healthcheck를 통과한 뒤에 시작한다. 서버가 준비되기 전에 스크레이프를 시도하면서 connection refused를 쌓는 것을 줄이기 위한 순서다. Prometheus 자체는 `/-/ready`를 호출해 설정을 읽고 요청을 받을 준비가 됐는지 검사한다.
 
@@ -141,7 +141,7 @@ environment="local"
 service_name="manyak-server-local"
 ```
 
-운영 Grafana Cloud의 OTLP 메트릭도 `service_name`을 사용한다. 로컬에서 같은 라벨 구조를 사용하면 PromQL을 비교하기 쉽고, 값은 `manyak-server-local`로 구분해 운영 데이터와 혼동하지 않는다.
+운영 Grafana Cloud의 OTLP 메트릭도 `service_name`을 사용한다. 로컬에서 같은 라벨 구조를 사용하면 PromQL을 비교하기 쉽고 값은 `manyak-server-local`로 구분해 운영 데이터와 혼동하지 않는다.
 
 스크레이프 대상의 원래 주소는 내부 라벨 `__address__`에 `manyak-server:8080`으로 들어간다. 정규식 `([^:]+):[0-9]+`에서 호스트 부분만 추출해 `instance="manyak-server"`로 바꿨다. 포트가 달라져도 같은 서버를 불필요하게 다른 시계열로 취급하지 않게 된다.
 
@@ -153,7 +153,7 @@ Spring Boot의 `http_server_requests_seconds_count`는 애플리케이션이 처
 rate(http_server_requests_seconds_count[5m])
 ```
 
-원본 메트릭은 URI, method, status, exception 같은 라벨 조합마다 나뉜다. 전체 서버 요청률을 만들기 위해 세부 시계열을 합산하고, 반복할 PromQL을 `prometheus/rules.yml`에 recording rule로 저장했다.
+원본 메트릭은 URI, method, status, exception 같은 라벨 조합마다 나뉜다. 전체 서버 요청률을 만들기 위해 세부 시계열을 합산하고 반복할 PromQL을 `prometheus/rules.yml`에 recording rule로 저장했다.
 
 ```yaml
 groups:

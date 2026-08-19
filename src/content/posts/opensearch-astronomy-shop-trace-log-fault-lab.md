@@ -4,7 +4,7 @@ date: 2026-08-11
 tags: [백엔드, 모니터링]
 ---
 
-이번 실습에서는 OpenTelemetry Demo의 쇼핑 애플리케이션인 **Astronomy Shop**에서 직접 주문을 만들고, 그 요청이 여러 마이크로서비스를 지나가는 과정을 OpenSearch Dashboards에서 추적했다. 이어서 결제 장애를 의도적으로 발생시킨 뒤, 사용자가 본 HTTP 500 응답에서 출발해 실제 오류가 발생한 `payment` 서비스와 예외 메시지까지 찾아갔다.
+이번 실습에서는 OpenTelemetry Demo의 쇼핑 애플리케이션인 **Astronomy Shop**에서 직접 주문을 만들고 그 요청이 여러 마이크로서비스를 지나가는 과정을 OpenSearch Dashboards에서 추적했다. 이어서 결제 장애를 의도적으로 발생시킨 뒤, 사용자가 본 HTTP 500 응답에서 출발해 실제 오류가 발생한 `payment` 서비스와 예외 메시지까지 찾아갔다.
 
 앞선 글에서는 OpenSearch, Data Prepper, OpenTelemetry Collector, Cortex와 Dashboards로 구성된 로컬 관측성 스택을 실행하고 데이터 수집 및 알림 흐름을 확인했다. 이번 글은 그다음 단계인 애플리케이션 관측 실습이다. 초기 구성 과정은 [앞선 로컬 스택 실습](/posts/opensearch-observability-stack-local-lab/)에 정리했다.
 
@@ -43,9 +43,9 @@ checkout (주문 전체 조율)
   └─ email
 ```
 
-`checkout`은 모든 일을 직접 처리하지 않는다. 장바구니 조회는 `cart`, 상품 정보는 `product-catalog`, 환율은 `currency`, 배송비 계산과 배송 처리는 `shipping`, 결제는 `payment`, 확인 메일은 `email`에 요청한다. 한 서비스의 구현과 배포를 독립적으로 관리할 수 있다는 장점이 있지만, 사용자 요청 하나가 여러 네트워크 호출로 분산되므로 장애 원인을 찾기는 더 어려워진다.
+`checkout`은 모든 일을 직접 처리하지 않는다. 장바구니 조회는 `cart`, 상품 정보는 `product-catalog`, 환율은 `currency`, 배송비 계산과 배송 처리는 `shipping`, 결제는 `payment`, 확인 메일은 `email`에 요청한다. 한 서비스의 구현과 배포를 독립적으로 관리할 수 있다는 장점이 있지만 사용자 요청 하나가 여러 네트워크 호출로 분산되므로 장애 원인을 찾기는 더 어려워진다.
 
-반면 OpenSearch, Data Prepper, OpenTelemetry Collector, Cortex, Kafka, PostgreSQL, flagd 같은 컨테이너는 애플리케이션의 비즈니스 기능을 담당하지 않는다. 애플리케이션을 지원하거나 텔레메트리를 저장·전달·조회하는 인프라 구성 요소다. `docker compose ps`에 컨테이너가 많이 보인다고 해서 모두 같은 종류의 서비스인 것은 아니다.
+반면 OpenSearch, Data Prepper, OpenTelemetry Collector, Cortex, Kafka, PostgreSQL, flagd 같은 컨테이너는 애플리케이션의 비즈니스 기능을 담당하지 않는다. 애플리케이션을 지원하거나 텔레메트리를 저장, 전달, 조회하는 인프라 구성 요소다. `docker compose ps`에 컨테이너가 많이 보인다고 해서 모두 같은 종류의 서비스인 것은 아니다.
 
 ## 스택 실행과 수동 요청 준비
 
@@ -55,7 +55,7 @@ Astronomy Shop은 OpenSearch Observability Stack의 기본 예제가 아니라 �
 INCLUDE_COMPOSE_OTEL_DEMO=docker-compose.otel-demo.yml
 ```
 
-공식 README는 Demo 실행에 약 2GB의 메모리가 추가로 필요하며, 코어 스택과 함께 실행할 호스트에는 최소 8GB RAM을 권장한다. Demo를 켜면 웹 스토어는 `/`, 부하 생성기 화면은 `/loadgen/`, Feature Flag 화면은 `/feature` 경로로 모두 8080 포트에 열린다.
+공식 README는 Demo 실행에 약 2GB의 메모리가 추가로 필요하며 코어 스택과 함께 실행할 호스트에는 최소 8GB RAM을 권장한다. Demo를 켜면 웹 스토어는 `/`, 부하 생성기 화면은 `/loadgen/`, Feature Flag 화면은 `/feature` 경로로 모두 8080 포트에 열린다.
 
 전체 예제를 실행했다.
 
@@ -81,7 +81,7 @@ Astronomy Shop에는 자동으로 트래픽을 발생시키는 `load-generator`�
 docker compose stop load-generator
 ```
 
-이미 수집된 데이터는 사라지지 않지만, 이 시점 이후에는 수동으로 발생시킨 요청을 시간대와 동작으로 구분하기 쉬워진다. 대시보드에 이전 트래픽의 수치가 남아 있는 이유도 여기 있다.
+이미 수집된 데이터는 사라지지 않지만 이 시점 이후에는 수동으로 발생시킨 요청을 시간대와 동작으로 구분하기 쉬워진다. 대시보드에 이전 트래픽의 수치가 남아 있는 이유도 여기 있다.
 
 ## 정상 주문으로 기준선 만들기
 
@@ -103,7 +103,7 @@ OpenSearch Dashboards의 `Astronomy Shop` 대시보드에는 비즈니스 지표
 - **트레이스**는 특정 요청 한 건이 어느 서비스를 어떤 순서로 통과했는지 보여준다.
 - **로그**는 각 서비스가 그 순간 남긴 구체적인 사건과 값을 보여준다.
 
-대시보드는 이상 징후를 발견하는 출발점이고, 개별 요청의 원인을 분석할 때는 트레이스와 로그로 내려가야 한다.
+대시보드는 이상 징후를 발견하는 출발점이고 개별 요청의 원인을 분석할 때는 트레이스와 로그로 내려가야 한다.
 
 ## PPL로 주문 요청 찾기
 
@@ -131,7 +131,7 @@ source = `otel-v1-apm-span*`
 
 정상 주문의 트레이스 ID는 `9c9b7c0e1a4081a20cbae3955648bdd0`이었다. 트레이스 상세 화면에서는 48개의 span이 하나의 부모-자식 구조로 연결되어 있었다.
 
-최상단의 `frontend-web: HTTP POST`에서 시작해 `frontend-proxy`, `frontend`, `checkout`으로 이어졌고, 그 아래에서 장바구니, 상품, 환율, 배송, 결제 등의 호출이 분기됐다. 막대의 시작 위치는 호출 시점, 길이는 소요 시간을 뜻한다. 따라서 트리 구조와 타임라인을 함께 보면 **누가 누구를 호출했는지**와 **어디에서 시간을 썼는지**를 동시에 확인할 수 있다.
+최상단의 `frontend-web: HTTP POST`에서 시작해 `frontend-proxy`, `frontend`, `checkout`으로 이어졌고 그 아래에서 장바구니, 상품, 환율, 배송, 결제 등의 호출이 분기됐다. 막대의 시작 위치는 호출 시점, 길이는 소요 시간을 뜻한다. 따라서 트리 구조와 타임라인을 함께 보면 **누가 누구를 호출했는지**와 **어디에서 시간을 썼는지**를 동시에 확인할 수 있다.
 
 ![정상 주문 요청의 전체 서비스 호출 타임라인](/images/opensearch-astronomy-shop-trace-log-fault-lab/12-successful-trace-timeline.webp)
 
@@ -167,7 +167,7 @@ order placed
 Order confirmation email sent
 ```
 
-이 연결을 가능하게 만드는 핵심 값은 `traceId`다. 동일한 사용자 요청에 참여한 서비스가 같은 trace context를 전파하고 로그에도 trace ID를 기록하면, OpenSearch에서 서비스별 로그를 하나의 요청 단위로 다시 묶을 수 있다. `spanId`까지 있으면 그 로그가 트레이스의 어느 작업에서 생성됐는지도 더 정확하게 연결할 수 있다.
+이 연결을 가능하게 만드는 핵심 값은 `traceId`다. 동일한 사용자 요청에 참여한 서비스가 같은 trace context를 전파하고 로그에도 trace ID를 기록하면 OpenSearch에서 서비스별 로그를 하나의 요청 단위로 다시 묶을 수 있다. `spanId`까지 있으면 그 로그가 트레이스의 어느 작업에서 생성됐는지도 더 정확하게 연결할 수 있다.
 
 Discover Logs로 이동해 `traceId = 9c9b7c0e1a4081a20cbae3955648bdd0` 조건을 적용했을 때 checkout, payment, cart, email, quote, product-catalog 등 여러 서비스의 로그 12건이 함께 조회됐다. 즉, 트레이스와 로그는 별도 인덱스에 저장되지만 공통 식별자를 통해 같은 사건으로 탐색할 수 있다.
 
@@ -194,13 +194,13 @@ Discover Logs로 이동해 `traceId = 9c9b7c0e1a4081a20cbae3955648bdd0` 조건�
 
 ![flagd UI에서 paymentFailure를 100%로 설정](/images/opensearch-astronomy-shop-trace-log-fault-lab/07-payment-failure-flag.webp)
 
-이 설정은 결제 서비스가 모든 결제 요청을 실패시키도록 만든다. 선택 직후 화면 변화가 작아 같은 값을 한 번 더 선택했지만, 결과적으로 상태는 동일한 `100%`였다. 같은 Feature Flag 값을 다시 설정하는 것은 추가 장애를 두 번 만드는 동작이 아니라 현재 값을 다시 저장하는 동작이다.
+이 설정은 결제 서비스가 모든 결제 요청을 실패시키도록 만든다. 선택 직후 화면 변화가 작아 같은 값을 한 번 더 선택했지만 결과적으로 상태는 동일한 `100%`였다. 같은 Feature Flag 값을 다시 설정하는 것은 추가 장애를 두 번 만드는 동작이 아니라 현재 값을 다시 저장하는 동작이다.
 
 그 상태에서 새 상품을 장바구니에 담고 결제를 시도하자 주문 완료 대신 오류가 발생했다. 이제 관측 데이터만 이용해 원인을 좁혀 본다.
 
 ## HTTP 500에서 실제 실패 지점까지 내려가기
 
-실패한 주문의 trace ID는 `f6419d9d42c74c202bf94ed54ce60a40`이었다. 최상위 `POST /api/checkout` span은 HTTP 500과 Error 상태를 보여줬고, 상위 호출 경로에도 오류 표시가 전파되어 있었다.
+실패한 주문의 trace ID는 `f6419d9d42c74c202bf94ed54ce60a40`이었다. 최상위 `POST /api/checkout` span은 HTTP 500과 Error 상태를 보여줬고 상위 호출 경로에도 오류 표시가 전파되어 있었다.
 
 ![결제 장애가 전파된 실패 checkout 트레이스](/images/opensearch-astronomy-shop-trace-log-fault-lab/08-failed-checkout-trace.webp)
 
@@ -225,11 +225,11 @@ HTTP 계층: frontend POST /api/checkout → 500
 주입 원인: paymentFailure Feature Flag 100%
 ```
 
-해당 payment span의 Logs 탭에는 `Charge request received.` 이후 `Payment request failed. Invalid token...` 경고가 같은 span과 연결되어 있었다. 트레이스는 실패 위치를 빠르게 좁혀 주고, 예외 이벤트와 로그는 왜 실패했는지를 구체화했다.
+해당 payment span의 Logs 탭에는 `Charge request received.` 이후 `Payment request failed. Invalid token...` 경고가 같은 span과 연결되어 있었다. 트레이스는 실패 위치를 빠르게 좁혀 주고 예외 이벤트와 로그는 왜 실패했는지를 구체화했다.
 
 ![실패한 payment span에 연결된 요청 및 오류 로그](/images/opensearch-astronomy-shop-trace-log-fault-lab/15-payment-span-related-logs.webp)
 
-이것이 분산 추적의 실질적인 장점이다. 프론트엔드 로그만 보면 “checkout 500”에서 멈출 수 있지만, trace context가 서비스 사이에 전파되면 한 화면에서 하위 결제 호출까지 내려갈 수 있다.
+이것이 분산 추적의 실질적인 장점이다. 프론트엔드 로그만 보면 “checkout 500”에서 멈출 수 있지만 trace context가 서비스 사이에 전파되면 한 화면에서 하위 결제 호출까지 내려갈 수 있다.
 
 ## 장애 해제와 복구 확인
 
@@ -255,8 +255,8 @@ flagd UI에서 `paymentFailure`를 다시 `off`로 바꾸고 새 주문을 만�
 | 트레이스 | 실패한 주문은 어떤 서비스를 거쳤고 어느 호출에서 깨졌는가? |
 | 로그 | payment 서비스가 남긴 구체적인 오류 메시지는 무엇인가? |
 
-메트릭만으로는 개별 주문을 찾기 어렵고, 로그만으로는 여러 서비스의 호출 관계를 복원하기 어렵다. 트레이스만으로도 오류 위치는 찾을 수 있지만 구체적인 애플리케이션 메시지가 부족할 수 있다. 세 신호가 `service.name`, `traceId`, `spanId` 같은 공통 문맥을 가지고 연결될 때 장애 조사 속도가 빨라진다.
+메트릭만으로는 개별 주문을 찾기 어렵고 로그만으로는 여러 서비스의 호출 관계를 복원하기 어렵다. 트레이스만으로도 오류 위치는 찾을 수 있지만 구체적인 애플리케이션 메시지가 부족할 수 있다. 세 신호가 `service.name`, `traceId`, `spanId` 같은 공통 문맥을 가지고 연결될 때 장애 조사 속도가 빨라진다.
 
 ## 마무리
 
-이번 실습에서는 정상 주문을 기준선으로 만든 뒤 Feature Flag로 결제 장애를 주입하고, `frontend`의 HTTP 500에서 `payment` 서비스의 Invalid token 예외까지 추적했다. 특히 `traceId`를 중심으로 트레이스와 여러 서비스의 로그를 연결하면서 분산 환경에서 관측성이 필요한 이유를 직접 확인했다. 다음 단계에서는 이 실패 조건을 메트릭과 알림 규칙으로 연결해, 사용자가 장애를 신고하기 전에 시스템이 먼저 이상을 감지하도록 확장할 수 있다.
+이번 실습에서는 정상 주문을 기준선으로 만든 뒤 Feature Flag로 결제 장애를 주입하고 `frontend`의 HTTP 500에서 `payment` 서비스의 Invalid token 예외까지 추적했다. 특히 `traceId`를 중심으로 트레이스와 여러 서비스의 로그를 연결하면서 분산 환경에서 관측성이 필요한 이유를 직접 확인했다. 다음 단계에서는 이 실패 조건을 메트릭과 알림 규칙으로 연결해, 사용자가 장애를 신고하기 전에 시스템이 먼저 이상을 감지하도록 확장할 수 있다.

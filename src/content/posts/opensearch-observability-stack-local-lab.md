@@ -6,15 +6,15 @@ tags: [백엔드, 모니터링]
 
 이번 실습의 목표는 단순히 컨테이너를 실행하는 데 있지 않았다. AI 에이전트 예제에 요청을 발생시키고, 그 요청이 OpenTelemetry Collector와 Data Prepper를 거쳐 OpenSearch에 저장되는지 확인한 다음, OpenSearch Dashboards에서 트레이스 병목과 부분 실패를 읽고, 마지막에는 Prometheus 호환 규칙이 `pending → active → resolved`로 변하는 과정까지 직접 따라가 보았다.
 
-처음에는 거의 모든 명령을 그대로 입력하면서 진행했기 때문에 각 확인 작업이 왜 필요한지 잘 연결되지 않았다. 이 글은 그 과정을 실행 순서대로 다시 풀어 쓴 기록이다. 모든 스크린샷은 브라우저 탭 제목과 북마크 영역만 모자이크 처리했고, 로컬 URL과 OpenSearch 화면은 실습 맥락을 위해 그대로 남겼다.
+처음에는 거의 모든 명령을 그대로 입력하면서 진행했기 때문에 각 확인 작업이 왜 필요한지 잘 연결되지 않았다. 이 글은 그 과정을 실행 순서대로 다시 풀어 쓴 기록이다. 모든 스크린샷은 브라우저 탭 제목과 북마크 영역만 모자이크 처리했고 로컬 URL과 OpenSearch 화면은 실습 맥락을 위해 그대로 남겼다.
 
 ## 전체 데이터 흐름부터 잡기
 
-이번 구성에서 가장 먼저 이해해야 할 점은 트레이스·로그와 메트릭이 서로 다른 저장 경로를 사용한다는 것이다.
+이번 구성에서 가장 먼저 이해해야 할 점은 트레이스와 로그가 메트릭과 서로 다른 저장 경로를 사용한다는 것이다.
 
 ![OpenSearch Observability Stack의 데이터 수집 및 저장 구조](/images/opensearch-observability-stack-local-lab/00-architecture.png)
 
-[공식 저장소의 아키텍처 그림](https://github.com/opensearch-project/observability-stack)은 이 분기를 한눈에 보여준다. 애플리케이션과 AI 에이전트가 보낸 로그·트레이스·메트릭은 OTLP gRPC 4317 또는 HTTP 4318 포트로 Collector에 들어온다. Collector는 로그와 트레이스를 Data Prepper와 OpenSearch로 보내고, 메트릭은 Compose에서 `prometheus`라는 서비스 이름으로 실행되는 Cortex에 보낸다. Data Prepper도 처리한 트레이스에서 요청률·오류율·지연 시간(RED) 메트릭을 만들어 Cortex에 전달한다. Dashboards는 OpenSearch의 로그·트레이스 분석과 Cortex의 인프라·애플리케이션 메트릭을 한 UI에서 보여준다.
+[공식 저장소의 아키텍처 그림](https://github.com/opensearch-project/observability-stack)은 이 분기를 한눈에 보여준다. 애플리케이션과 AI 에이전트가 보낸 로그, 트레이스, 메트릭은 OTLP gRPC 4317 또는 HTTP 4318 포트로 Collector에 들어온다. Collector는 로그와 트레이스를 Data Prepper와 OpenSearch로 보내고 메트릭은 Compose에서 `prometheus`라는 서비스 이름으로 실행되는 Cortex에 보낸다. Data Prepper도 처리한 트레이스에서 요청률, 오류율, 지연 시간(RED) 메트릭을 만들어 Cortex에 전달한다. Dashboards는 OpenSearch의 로그와 트레이스 분석, Cortex의 인프라와 애플리케이션 메트릭을 한 UI에서 보여준다.
 
 ```text
 예제 에이전트 / Canary
@@ -36,11 +36,11 @@ OpenTelemetry Collector :4317, :4318
 
 OpenTelemetry Collector는 애플리케이션이 보낸 텔레메트리의 진입점이다. 트레이스와 로그는 Data Prepper가 OpenSearch 문서 형태로 가공해 저장한다. 반면 메트릭은 이 Compose 구성에서 서비스 이름이 `prometheus`인 Cortex로 전송된다. 따라서 트레이스가 보이지 않을 때와 메트릭이 보이지 않을 때 살펴봐야 할 구성 요소가 다르다.
 
-실습 당시 주요 버전은 OpenSearch와 OpenSearch Dashboards 3.8.0, OpenTelemetry Collector Contrib 0.156.0, Data Prepper 2.16.0 SNAPSHOT 계열이었다. 버전에 따라 메트릭 이름이나 UI 위치가 달라질 수 있으므로, 아래 화면과 다른 결과가 나오면 먼저 이미지 버전을 비교하는 편이 좋다.
+실습 당시 주요 버전은 OpenSearch와 OpenSearch Dashboards 3.8.0, OpenTelemetry Collector Contrib 0.156.0, Data Prepper 2.16.0 SNAPSHOT 계열이었다. 버전에 따라 메트릭 이름이나 UI 위치가 달라질 수 있으므로 아래 화면과 다른 결과가 나오면 먼저 이미지 버전을 비교하는 편이 좋다.
 
 ## OpenSearch부터 단독으로 시작하기
 
-전체 스택을 한 번에 올릴 수도 있지만, 이번에는 데이터가 도착하는 역순으로 구성 요소를 하나씩 실행했다. 가장 아래에서 데이터를 저장하는 OpenSearch가 준비됐는지 먼저 확인해야 이후 Data Prepper 오류를 저장소 문제와 구분할 수 있기 때문이다.
+전체 스택을 한 번에 올릴 수도 있지만 이번에는 데이터가 도착하는 역순으로 구성 요소를 하나씩 실행했다. 가장 아래에서 데이터를 저장하는 OpenSearch가 준비됐는지 먼저 확인해야 이후 Data Prepper 오류를 저장소 문제와 구분할 수 있기 때문이다.
 
 저장소 루트에서 OpenSearch만 시작했다.
 
@@ -54,7 +54,7 @@ docker compose up -d opensearch
 docker compose ps opensearch
 ```
 
-`STATUS`가 `Up ... (healthy)`로 바뀐 다음 9200 포트의 cluster health API를 직접 호출했다. 아래 명령은 `.env`의 `OPENSEARCH_PASSWORD` 값을 현재 셸에도 같은 이름으로 export했다고 가정한다. Compose는 `.env`를 자동으로 읽지만, 터미널에서 실행하는 `curl`은 그렇지 않다는 점에 주의해야 한다.
+`STATUS`가 `Up ... (healthy)`로 바뀐 다음 9200 포트의 cluster health API를 직접 호출했다. 아래 명령은 `.env`의 `OPENSEARCH_PASSWORD` 값을 현재 셸에도 같은 이름으로 export했다고 가정한다. Compose는 `.env`를 자동으로 읽지만 터미널에서 실행하는 `curl`은 그렇지 않다는 점에 주의해야 한다.
 
 ```bash
 curl -sk \
@@ -62,9 +62,9 @@ curl -sk \
   'https://localhost:9200/_cluster/health?pretty'
 ```
 
-여기서 확인하는 것은 세 가지다. 호스트의 9200 포트가 컨테이너까지 연결되는지, 자체 서명 인증서를 사용하는 HTTPS 연결이 가능한지, 설정한 관리자 계정으로 OpenSearch API를 호출할 수 있는지다. `-k`는 로컬 개발용 자체 서명 인증서 검증을 생략하고, `-s`는 진행률 출력을 숨긴다.
+여기서 확인하는 것은 세 가지다. 호스트의 9200 포트가 컨테이너까지 연결되는지, 자체 서명 인증서를 사용하는 HTTPS 연결이 가능한지, 설정한 관리자 계정으로 OpenSearch API를 호출할 수 있는지다. `-k`는 로컬 개발용 자체 서명 인증서 검증을 생략하고 `-s`는 진행률 출력을 숨긴다.
 
-응답의 `status`는 `yellow`였다. 이 구성은 OpenSearch 노드가 하나인데 일부 인덱스의 replica 수는 1이므로, 복제본 shard를 배치할 두 번째 노드가 없다. Primary shard가 활성화되고 `timed_out`이 `false`라면 실습을 진행할 수 있다. 데이터까지 사용할 수 없는 `red` 상태와는 다르다.
+응답의 `status`는 `yellow`였다. 이 구성은 OpenSearch 노드가 하나인데 일부 인덱스의 replica 수는 1이므로 복제본 shard를 배치할 두 번째 노드가 없다. Primary shard가 활성화되고 `timed_out`이 `false`라면 실습을 진행할 수 있다. 데이터까지 사용할 수 없는 `red` 상태와는 다르다.
 
 OpenSearch가 준비된 것을 확인한 뒤 Data Prepper를 시작했다.
 
@@ -81,7 +81,7 @@ nc -vz localhost 21890
 
 `Connection to localhost port 21890 ... succeeded!`는 호스트에서 컨테이너 포트까지 TCP 연결이 된다는 뜻이다. 아직 Data Prepper의 OpenSearch sink가 초기화됐거나 실제 trace가 저장됐다는 증거는 아니다. 그 상태는 로그와 OpenSearch 인덱스를 별도로 확인해야 한다.
 
-컨테이너는 모두 실행 중이었지만 Data Prepper 로그에서는 곧 `Request execution cancelled`가 반복되기 시작했다. 이제 OpenSearch API 자체는 동작한다는 사실을 알고 있으므로, 다음 단계에서는 Data Prepper 컨테이너 내부의 DNS, 인증, sink 설정과 초기화 시점을 차례로 점검했다.
+컨테이너는 모두 실행 중이었지만 Data Prepper 로그에서는 곧 `Request execution cancelled`가 반복되기 시작했다. 이제 OpenSearch API 자체는 동작한다는 사실을 알고 있으므로 다음 단계에서는 Data Prepper 컨테이너 내부의 DNS, 인증, sink 설정과 초기화 시점을 차례로 점검했다.
 
 ## Data Prepper의 `Request execution cancelled` 추적하기
 
@@ -93,7 +93,7 @@ java.lang.RuntimeException: Request execution cancelled
 Caused by: java.util.concurrent.CancellationException: Request execution cancelled
 ```
 
-스택 트레이스는 `OpenSearchClusterClient.getSettings`, `AbstractIndexManager.checkISMEnabled`를 지나고 있었다. 즉 Data Prepper가 OpenSearch에 연결해 인덱스 설정과 ISM 사용 여부를 확인하는 초기화 단계에서 HTTP 클라이언트 요청이 취소된 것이다. 이 메시지만 보고 비밀번호나 네트워크를 바로 의심할 수 있지만, 먼저 계층별로 가능성을 제거했다.
+스택 트레이스는 `OpenSearchClusterClient.getSettings`, `AbstractIndexManager.checkISMEnabled`를 지나고 있었다. 즉 Data Prepper가 OpenSearch에 연결해 인덱스 설정과 ISM 사용 여부를 확인하는 초기화 단계에서 HTTP 클라이언트 요청이 취소된 것이다. 이 메시지만 보고 비밀번호나 네트워크를 바로 의심할 수 있지만 먼저 계층별로 가능성을 제거했다.
 
 OpenSearch와 Data Prepper의 상태부터 확인했다.
 
@@ -116,7 +116,7 @@ docker compose exec data-prepper \
   'https://opensearch:9200/_cluster/health?pretty'
 ```
 
-컨테이너 내부에서도 앞서 호스트에서 확인한 것과 같은 cluster health 응답이 돌아왔다. 이 호출의 목적은 `yellow` 상태를 다시 판정하는 것이 아니라, Compose 네트워크와 컨테이너에 전달된 자격 증명으로 OpenSearch에 접근할 수 있는지 확인하는 데 있다.
+컨테이너 내부에서도 앞서 호스트에서 확인한 것과 같은 cluster health 응답이 돌아왔다. 이 호출의 목적은 `yellow` 상태를 다시 판정하는 것이 아니라 Compose 네트워크와 컨테이너에 전달된 자격 증명으로 OpenSearch에 접근할 수 있는지 확인하는 데 있다.
 
 Data Prepper가 실제로 읽은 파이프라인 설정도 확인했다.
 
@@ -131,7 +131,7 @@ docker compose exec data-prepper \
 curl -s 'http://localhost:4900/list'
 ```
 
-여기까지의 결과를 종합하면 DNS, 포트, TLS 연결, 계정, sink 주소가 모두 동작하고 있었다. 리소스도 확인했지만 Data Prepper는 약 490MiB/1GiB, OpenSearch는 약 1.75GiB/2GiB를 사용해 즉시 OOM이 발생한 상태는 아니었다. 남은 가능성은 OpenSearch가 컨테이너 health check는 통과했지만 Data Prepper의 인덱스 초기화 요청을 안정적으로 처리할 만큼 완전히 준비되기 전에 연결이 만들어졌거나, SNAPSHOT Data Prepper의 비동기 HTTP 클라이언트 초기화가 불안정했던 경우였다.
+여기까지의 결과를 종합하면 DNS, 포트, TLS 연결, 계정, sink 주소가 모두 동작하고 있었다. 리소스도 확인했지만 Data Prepper는 약 490MiB/1GiB, OpenSearch는 약 1.75GiB/2GiB를 사용해 즉시 OOM이 발생한 상태는 아니었다. 남은 가능성은 OpenSearch가 컨테이너 health check는 통과했지만 Data Prepper의 인덱스 초기화 요청을 안정적으로 처리할 만큼 완전히 준비되기 전에 연결이 만들어졌거나 SNAPSHOT Data Prepper의 비동기 HTTP 클라이언트 초기화가 불안정했던 경우였다.
 
 OpenSearch가 충분히 올라온 뒤 Data Prepper만 다시 시작했다.
 
@@ -188,7 +188,7 @@ Everything is ready. Begin running and processing data.
 
 Collector의 memory limiter는 총 500MiB를 기준으로 400MiB limit와 125MiB spike limit를 사용하고 있었다. 이후 메모리 알림 임계값이 400MiB로 설정된 이유도 이 값과 연결된다.
 
-`frontend-proxy:10000`을 찾지 못한다는 Prometheus receiver 경고도 있었지만, 해당 예제 서비스를 아직 실행하지 않았기 때문에 발생한 별도 scrape 실패였다. Collector 전체가 준비되지 않았다는 뜻은 아니다.
+`frontend-proxy:10000`을 찾지 못한다는 Prometheus receiver 경고도 있었지만 해당 예제 서비스를 아직 실행하지 않았기 때문에 발생한 별도 scrape 실패였다. Collector 전체가 준비되지 않았다는 뜻은 아니다.
 
 Collector self-metric이 Cortex까지 전달됐는지 Prometheus 호환 API로 조회했다. 처음에는 익숙한 경로를 사용했다.
 
@@ -214,7 +214,7 @@ curl -sG 'http://localhost:9090/prometheus/api/v1/query' \
 docker compose up -d example-canary
 ```
 
-Canary는 처음 두 번 Travel Planner의 8000 포트에서 `Connection refused`를 받았다. 몇 초 뒤 `Travel planner is healthy`가 출력됐고 정상·deep·fault injection 시나리오를 반복해서 호출하기 시작했다. 컨테이너가 `Up`인 시점과 애플리케이션이 요청을 받을 준비가 된 시점 사이에 짧은 차이가 있다는 점을 여기서도 볼 수 있다.
+Canary는 처음 두 번 Travel Planner의 8000 포트에서 `Connection refused`를 받았다. 몇 초 뒤 `Travel planner is healthy`가 출력됐고 정상, deep, fault injection 시나리오를 반복해서 호출하기 시작했다. 컨테이너가 `Up`인 시점과 애플리케이션이 요청을 받을 준비가 된 시점 사이에 짧은 차이가 있다는 점을 여기서도 볼 수 있다.
 
 ## Dashboards 초기화와 워크스페이스 생성
 
@@ -235,11 +235,11 @@ Agent Traces 화면에는 최근 15분 동안 26개의 trace, 452개의 span, �
 
 ![Agent Traces 목록과 전체 지표](/images/opensearch-observability-stack-local-lab/02-agent-traces-overview.webp)
 
-Trace는 사용자 요청 하나의 전체 여정이고, span은 그 안에서 수행된 개별 작업이다. `POST /plan` 한 행을 열어 보면 Travel Planner가 Weather Agent와 Events Agent를 호출하고, 각 에이전트가 LLM 및 MCP tool을 실행하는 부모-자식 구조를 확인할 수 있다.
+Trace는 사용자 요청 하나의 전체 여정이고 span은 그 안에서 수행된 개별 작업이다. `POST /plan` 한 행을 열어 보면 Travel Planner가 Weather Agent와 Events Agent를 호출하고 각 에이전트가 LLM 및 MCP tool을 실행하는 부모-자식 구조를 확인할 수 있다.
 
 ![Travel Planner 요청의 Trace Tree](/images/opensearch-observability-stack-local-lab/03-trace-tree.webp)
 
-선택한 요청은 “Plan a trip to Mumbai”였고 전체 17.45초 동안 52개의 span과 2,908개의 token을 사용했다. 오른쪽 패널에서는 입력과 출력뿐 아니라 trace ID, span ID, 시작·종료 시간, raw span까지 확인할 수 있다. 운영 환경에서는 이 입력·출력에 사용자 텍스트나 개인정보가 포함될 수 있으므로 수집 전 redaction과 접근 제어가 필요하다.
+선택한 요청은 “Plan a trip to Mumbai”였고 전체 17.45초 동안 52개의 span과 2,908개의 token을 사용했다. 오른쪽 패널에서는 입력과 출력뿐 아니라 trace ID, span ID, 시작과 종료 시간, raw span까지 확인할 수 있다. 운영 환경에서는 이 입력과 출력에 사용자 텍스트나 개인정보가 포함될 수 있으므로 수집 전 redaction과 접근 제어가 필요하다.
 
 ### Timeline으로 지연 시간을 분해하기
 
@@ -247,7 +247,7 @@ Tree가 호출 관계를 설명한다면 Timeline은 시간이 어디에서 소�
 
 ![같은 요청을 시간축으로 펼친 Timeline](/images/opensearch-observability-stack-local-lab/04-trace-timeline.webp)
 
-이 요청에서 Travel Planner의 `chat planning`은 약 286ms였다. 반면 Weather Agent 호출은 약 6.5초, Events Agent 호출은 약 5.34초였고 그 아래 tool 호출 대부분이 비슷한 시간을 차지했다. LLM 응답보다 외부 API 또는 tool 호출이 전체 latency를 지배하고 있었다. “에이전트가 느리다”는 현상을 LLM 문제로 뭉뚱그리지 않고, 어느 downstream에서 기다렸는지를 분리할 수 있다는 것이 distributed trace의 가치다.
+이 요청에서 Travel Planner의 `chat planning`은 약 286ms였다. 반면 Weather Agent 호출은 약 6.5초, Events Agent 호출은 약 5.34초였고 그 아래 tool 호출 대부분이 비슷한 시간을 차지했다. LLM 응답보다 외부 API 또는 tool 호출이 전체 latency를 지배하고 있었다. “에이전트가 느리다”는 현상을 LLM 문제로 뭉뚱그리지 않고 어느 downstream에서 기다렸는지를 분리할 수 있다는 것이 distributed trace의 가치다.
 
 ### Trace Map으로 서비스 의존성 보기
 
@@ -267,7 +267,7 @@ WHERE `status.code` = 2
 
 ![status.code 2로 좁힌 오류 span 목록](/images/opensearch-observability-stack-local-lab/06-error-span-filter.webp)
 
-오류 span 중 하나를 열어 보니 흥미로운 구조가 나왔다. 루트 `POST /plan` trace는 `Success`였지만, 그 아래 `invoke_agent Events Agent`에 빨간 오류 표시가 있었다.
+오류 span 중 하나를 열어 보니 흥미로운 구조가 나왔다. 루트 `POST /plan` trace는 `Success`였지만 그 아래 `invoke_agent Events Agent`에 빨간 오류 표시가 있었다.
 
 ![루트 요청은 성공이지만 Events Agent 하위 span은 실패한 trace](/images/opensearch-observability-stack-local-lab/07-partial-failure-trace.webp)
 
@@ -289,7 +289,7 @@ WHERE `status.code` = 2
 
 ![초기화된 OpenSearch Dashboards 목록](/images/opensearch-observability-stack-local-lab/09-dashboard-list.webp)
 
-Observability Pipeline Health 상단에서는 Collector가 받은 span과 OpenSearch 방향으로 내보낸 span의 초당 비율이 거의 같은 형태로 움직였다. 수신량만 늘고 export가 따라오지 못한다면 queue 또는 downstream 문제를 의심해야 하지만, 이 구간에서는 두 그래프가 함께 움직였다. Metric received/sec도 지속적으로 값이 들어왔다.
+Observability Pipeline Health 상단에서는 Collector가 받은 span과 OpenSearch 방향으로 내보낸 span의 초당 비율이 거의 같은 형태로 움직였다. 수신량만 늘고 export가 따라오지 못한다면 queue 또는 downstream 문제를 의심해야 하지만 이 구간에서는 두 그래프가 함께 움직였다. Metric received/sec도 지속적으로 값이 들어왔다.
 
 ![Collector 수신량과 export 처리량을 비교하는 Pipeline Health 상단](/images/opensearch-observability-stack-local-lab/10-pipeline-health-top.webp)
 
@@ -301,7 +301,7 @@ Exporter queue size는 0이었고 Collector CPU 사용량도 낮았다. Batch me
 
 ![Data Prepper 관련 패널에 No results found가 표시된 화면](/images/opensearch-observability-stack-local-lab/12-pipeline-health-no-data.webp)
 
-여기서 `No results found`와 값 0을 구분해야 한다. 값 0은 시계열이 존재하고 현재 측정값이 0이라는 뜻이다. `No results found`는 쿼리가 일치하는 시계열 자체를 찾지 못했다는 뜻이다. Data Prepper self-metric을 수집하지 않았거나, 버전이 바뀌면서 metric 이름과 dashboard query가 맞지 않을 수 있다. 실제로 메모리 규칙 화면에서는 `otelcol_process_memory_rss`가 약 95~102MiB로 조회됐지만, Pipeline Health의 Collector memory 패널은 비어 있었다. 이런 경우 대시보드만 보고 “메모리가 0”이라고 판단하면 안 된다. 패널의 PromQL과 실제 `/metrics`의 이름을 비교해야 한다.
+여기서 `No results found`와 값 0을 구분해야 한다. 값 0은 시계열이 존재하고 현재 측정값이 0이라는 뜻이다. `No results found`는 쿼리가 일치하는 시계열 자체를 찾지 못했다는 뜻이다. Data Prepper self-metric을 수집하지 않았거나 버전이 바뀌면서 metric 이름과 dashboard query가 맞지 않을 수 있다. 실제로 메모리 규칙 화면에서는 `otelcol_process_memory_rss`가 약 95~102MiB로 조회됐지만 Pipeline Health의 Collector memory 패널은 비어 있었다. 이런 경우 대시보드만 보고 “메모리가 0”이라고 판단하면 안 된다. 패널의 PromQL과 실제 `/metrics`의 이름을 비교해야 한다.
 
 ## 기본 알림 규칙과 모니터 만들기
 
@@ -314,7 +314,7 @@ docker compose logs --tail=120 alerting-rules-monitors-init
 
 init job은 Cortex의 `/rules/stack/stack-alerts.yml`을 `stack` namespace에 올리고 4개의 Prometheus 규칙을 등록했다. 이어서 OpenSearch에는 `Observability Stack - Cluster Health Red` 모니터를 만들고 `Exited (0)`으로 끝났다.
 
-OpenSearch Dashboards에는 classic Alerting 화면과 통합 Observability Alerting 화면이 함께 있어 처음에 UI를 찾기 어려웠다. classic `/app/alerts#/dashboard`에는 Rules 탭이 없었다. 통합 화면 `/app/observability-alerting#/rules`로 이동하면 `Alerts`, `Rules`, `Routing` 탭과 OpenSearch·Prometheus datasource를 한 화면에서 볼 수 있다.
+OpenSearch Dashboards에는 classic Alerting 화면과 통합 Observability Alerting 화면이 함께 있어 처음에 UI를 찾기 어려웠다. classic `/app/alerts#/dashboard`에는 Rules 탭이 없었다. 통합 화면 `/app/observability-alerting#/rules`로 이동하면 `Alerts`, `Rules`, `Routing` 탭과 OpenSearch와 Prometheus datasource를 한 화면에서 볼 수 있다.
 
 ![OpenSearch monitor와 Prometheus 규칙이 함께 보이는 Rules 화면](/images/opensearch-observability-stack-local-lab/13-alert-rules.webp)
 
@@ -339,7 +339,7 @@ otelcol_process_memory_rss{job="otel-collector"} / 1024 / 1024 > 400
 
 ![Collector RSS 400MiB 임계값을 사용하는 High Memory 규칙](/images/opensearch-observability-stack-local-lab/14-high-memory-rule.webp)
 
-Collector 컨테이너 제한이 500MiB이고 memory limiter가 400MiB에 설정돼 있으므로, 이 임계값은 OOM까지 약 100MiB의 여유가 남은 지점이다. 실습 중 실제 값은 약 100MiB로 조건을 만족하지 않았다.
+Collector 컨테이너 제한이 500MiB이고 memory limiter가 400MiB에 설정돼 있으므로 이 임계값은 OOM까지 약 100MiB의 여유가 남은 지점이다. 실습 중 실제 값은 약 100MiB로 조건을 만족하지 않았다.
 
 ### Exporter Queue Near Capacity
 
@@ -380,7 +380,7 @@ Routing 탭은 읽기 전용이며 실제 구성은 Alertmanager 설정 파일 �
 
 ![Alertmanager route tree, receiver, inhibition 설정](/images/opensearch-observability-stack-local-lab/18-alert-routing.webp)
 
-Root route는 모든 alert를 받아 `alertname`, `service_name`으로 묶고, 30초 기다린 뒤 알림을 전송하며 5분 간격으로 group을 갱신하고 4시간 후 반복한다. `component="otel-demo"`이면서 severity가 critical 또는 warning인 alert만 하위 route로 내려간다. 실습에서 만든 `component="learning-test"` alert는 하위 matcher와 일치하지 않으므로 root의 `opensearch-webhook`으로 간다.
+Root route는 모든 alert를 받아 `alertname`, `service_name`으로 묶고 30초 기다린 뒤 알림을 전송하며 5분 간격으로 group을 갱신하고 4시간 후 반복한다. `component="otel-demo"`이면서 severity가 critical 또는 warning인 alert만 하위 route로 내려간다. 실습에서 만든 `component="learning-test"` alert는 하위 matcher와 일치하지 않으므로 root의 `opensearch-webhook`으로 간다.
 
 Receiver 목록에 dummy Slack, email, PagerDuty가 보인다는 것만으로 해당 통합이 실제 전송 가능하다고 해석해서는 안 된다. route가 어떤 receiver를 선택했는지와 receiver가 최종 목적지에 성공적으로 전송했는지는 별도 단계다.
 
@@ -388,7 +388,7 @@ Inhibit rule은 같은 `service`에서 critical alert가 있을 때 warning을 �
 
 ## 학습용 규칙으로 `pending → active → resolved` 재현하기
 
-기본 High Memory 임계값은 400MiB인데 실제 Collector RSS는 약 100MiB였다. 컨테이너를 일부러 메모리 부족으로 몰아넣는 대신, 안전하게 임계값만 50MiB로 낮춘 임시 규칙을 새로 만들었다. 기존 규칙을 clone하는 과정에서는 UI 목록이 늦게 갱신되어 복사본이 생겼다가 사라진 것처럼 보였다. 잠시 뒤 다시 나타난 것으로 보아 rule API와 화면 refresh 사이의 eventual consistency 문제였고, 정확한 이름을 확인한 뒤 복사본은 삭제했다.
+기본 High Memory 임계값은 400MiB인데 실제 Collector RSS는 약 100MiB였다. 컨테이너를 일부러 메모리 부족으로 몰아넣는 대신, 안전하게 임계값만 50MiB로 낮춘 임시 규칙을 새로 만들었다. 기존 규칙을 clone하는 과정에서는 UI 목록이 늦게 갱신되어 복사본이 생겼다가 사라진 것처럼 보였다. 잠시 뒤 다시 나타난 것으로 보아 rule API와 화면 refresh 사이의 eventual consistency 문제였고 정확한 이름을 확인한 뒤 복사본은 삭제했다.
 
 새 규칙의 이름은 `LearningTestCollectorMemory`로 정했다. query는 비교 연산을 제외한 원시 RSS MiB 값으로 입력하고 UI의 Alert Condition에서 `> 50 MiB`를 설정했다.
 
@@ -457,4 +457,4 @@ curl -s 'http://localhost:9093/api/v2/alerts' | python3 -m json.tool
 
 이번 실습에서 가장 큰 수확은 “실행되고 있다”와 “관측 가능하다”가 다르다는 점이었다. 컨테이너 상태, 실제 API 연결, 저장소의 refresh, trace의 부모-자식 상태, metric query 결과, alert lifecycle을 각각 확인해야 전체 경로가 정상이라고 말할 수 있다.
 
-특히 HTTP 200 안의 부분 실패와 `No results found`를 0으로 오해하지 않는 습관은 실제 장애 분석에서도 그대로 중요하다. 다음 단계에서는 비어 있던 Data Prepper·Cortex 대시보드 쿼리를 실제 노출 metric과 맞추고, `opensearch-webhook`의 최종 delivery까지 검증하면 이 로컬 스택을 한 단계 더 운영 환경에 가깝게 만들 수 있다.
+특히 HTTP 200 안의 부분 실패와 `No results found`를 0으로 오해하지 않는 습관은 실제 장애 분석에서도 그대로 중요하다. 다음 단계에서는 비어 있던 Data Prepper와 Cortex 대시보드 쿼리를 실제 노출 metric과 맞추고 `opensearch-webhook`의 최종 delivery까지 검증하면 이 로컬 스택을 한 단계 더 운영 환경에 가깝게 만들 수 있다.
