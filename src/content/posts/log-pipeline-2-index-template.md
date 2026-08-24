@@ -10,7 +10,7 @@ OpenSearch는 스키마를 미리 정하지 않아도 쓸 수 있다. 문서를 
 
 ## 로컬에 OpenSearch부터 세우기
 
-평소 개발용 `docker-compose.yml`(postgres, redis)과 **분리된 파일**로 만들었다. 관측 스택은 학습할 때만 쓰는 무거운 물건이라 평소 개발 회전에 끼워 넣으면 손해다.
+평소 개발용 `docker-compose.yml`(postgres, redis)과 **분리된 파일**로 만들었다. 관측 스택은 학습할 때만 쓰는 데다 무거워서 평소 개발 회전에 끼워 넣으면 손해다.
 
 ```yaml
 name: manyak-observability
@@ -250,7 +250,7 @@ Could not locate that index-pattern-field (id: @timestamp)
 
 원인은 **인덱스 패턴을 API로 만들면서 필드 목록을 안 채운 것**이었다. Dashboards는 필드 목록을 인덱스 패턴 객체에 캐시해 두고 쓰는데 `title`과 `timeFieldName`만 등록하면 그게 비어 있어 `@timestamp`를 못 찾는다.
 
-여기서 용어를 정리하고 넘어가는 게 좋다. 이름이 비슷한 물건이 둘인데 **사는 곳이 다르다.**
+여기서 용어를 정리하고 넘어가는 게 좋다. 이름이 비슷한 게 둘인데 **역할과 저장 위치가 다르다.**
 
 | | 무엇을 정하나 | 어디에 저장되나 |
 |---|---|---|
