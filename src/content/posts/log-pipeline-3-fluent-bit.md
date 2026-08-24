@@ -18,7 +18,7 @@ INPUT  →  FILTER  →  OUTPUT
 가져올까     가공할까     보낼까
 ```
 
-한 번에 셋을 다 맞추려다 어디서 틀렸는지 못 찾는 게 흔한 실패다. 그래서 **가장 단순한 것부터** 갔다. 가짜 로그를 만들어내는 `dummy` 입력으로 배관만 먼저 뚫는다.
+한 번에 셋을 다 맞추려다 어디서 틀렸는지 못 찾는 게 흔한 실패다. 그래서 **가장 단순한 것부터** 갔다. 가짜 로그를 만들어내는 `dummy` 입력으로 파이프라인을 먼저 검증한다.
 
 ```ini
 [SERVICE]
@@ -29,7 +29,7 @@ INPUT  →  FILTER  →  OUTPUT
 [INPUT]
     Name     dummy
     Tag      test.dummy
-    Dummy    {"@timestamp":"2026-01-01T00:00:00.000Z","level":"INFO","service":"fluent-bit-test","message":"배관 확인용 가짜 로그","status_code":200,"duration_ms":7}
+    Dummy    {"@timestamp":"2026-01-01T00:00:00.000Z","level":"INFO","service":"fluent-bit-test","message":"파이프라인 확인용 가짜 로그","status_code":200,"duration_ms":7}
     Rate     1
 
 [OUTPUT]
@@ -60,7 +60,7 @@ index                        docs.count
 manyak-logs-local-test               16
 ```
 
-배관이 뚫렸다. 그리고 이 인덱스에도 앞 글에서 만든 템플릿이 적용됐는지 확인했다.
+파이프라인이 연결됐다. 그리고 이 인덱스에도 앞 글에서 만든 템플릿이 적용됐는지 확인했다.
 
 ```text
   duration_ms    long
