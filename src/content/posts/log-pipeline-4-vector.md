@@ -6,7 +6,7 @@ tags: [백엔드, 모니터링]
 
 [앞 글](/posts/log-pipeline-3-fluent-bit)에서 Fluent Bit으로 컨테이너 로그를 OpenSearch에 넣었다. 동작은 하는데 마지막에 문제를 하나 발견했다. **Fluent Bit이 잠깐 죽어 있는 동안 발생한 로그가 사라졌다.**
 
-이 글은 그 구멍을 메우는 과정이다. Fluent Bit과 OpenSearch 사이에 Vector를 한 겹 더 두고 같은 실험을 다시 해 본다. 가는 길에 문서에 안 적힌 호환성 문제도 하나 밟았다.
+이 글은 그 구멍을 메우는 과정이다. Fluent Bit과 OpenSearch 사이에 Vector를 한 겹 더 두고 같은 실험을 다시 해 본다. 가는 길에 문서에 안 적힌 호환성 문제도 하나 만났다.
 
 ## 왜 계층을 나누나
 
