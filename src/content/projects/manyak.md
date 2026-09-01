@@ -1,7 +1,7 @@
 ---
 title: 마냑
 summary: 나만의 스토리를 만들고 채팅으로 이어나가는 AI 스토리챗 서비스
-period: 2026. 6. — 현재
+period: 2026. 6. ~ 현재
 role: 백엔드·인프라
 badge: AI·SW 마에스트로
 status: live

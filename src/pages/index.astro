@@ -23,45 +23,54 @@ const statusLabels = { live: '운영 중', paused: '운영 중단' } as const;
 // 출처: github.com/kangkyunghyun 프로필 README
 const education = [
 	{
-		period: '2022. 3. — 현재',
+		period: '2022. 3. ~ 현재',
 		title: '경희대학교',
 		aside: '컴퓨터공학과',
 		desc: 'GPA 4.09 / 4.5',
 	},
 ];
 
-// 고유명을 앞에, 부연은 aside 로 뒤에 연하게 둔다
+// title 은 조직·활동명, aside 는 그 안에서의 역할(없으면 비운다),
+// desc 는 그 조직이 무엇인지. 세 칸의 성격을 섞지 않는다.
 const activity = [
 	{
-		period: '2026. 3. — 현재',
+		period: '2026. 4. ~ 현재',
 		title: 'AI·SW 마에스트로',
-		aside: '17기',
+		aside: '17기 연수생',
+		desc: '과학기술정보통신부 SW 인재양성 사업',
 		href: 'https://swmaestro.ai/',
 	},
 	{
-		period: '2026. 3. — 2026. 6.',
+		period: '2026. 3. ~ 현재',
 		title: '알고리즘 멘토',
-		aside: '경희대학교',
+		aside: '강의 지원',
+		desc: '경희대학교 SW중심대학사업단 KHU-SW멘토',
 	},
 	{
-		period: '2025. 9. — 현재',
+		period: '2025. 9. ~ 현재',
 		title: 'HacKHU',
-		aside: '경희대학교 해킹 동아리',
+		desc: '경희대학교 해킹 동아리',
 	},
 	{
-		period: '2025. 9. — 현재',
+		period: '2025. 9. ~ 2026. 6.',
 		title: 'KHUA',
-		aside: '경희대학교 알고리즘 동아리',
+		desc: '경희대학교 알고리즘 동아리',
 	},
 	{
-		period: '2025. 9. — 2026. 2.',
-		title: 'GDG on Campus',
-		aside: '경희대학교',
+		period: '2025. 9. ~ 2026. 2.',
+		title: 'GDG on Campus KHU',
+		aside: '백엔드 멤버',
+		desc: '경희대학교 구글 개발자 커뮤니티',
 		href: 'https://github.com/GDG-on-Campus-KHU',
 	},
 ];
 
 const awards = [
+	{
+		period: '2026. 8.',
+		title: '제12회 SCPC',
+		aside: '본선 진출',
+	},
 	{
 		period: '2026. 5.',
 		title: '2026 경희대학교 봄 프로그래밍 경시대회',

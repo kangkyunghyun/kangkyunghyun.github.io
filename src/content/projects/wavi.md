@@ -1,7 +1,7 @@
 ---
 title: WAVI
 summary: 실패 이유를 데이터로 기록해 습관을 자동 조정하는 AI 습관 관리 서비스
-period: 2025. 5. — 2025. 10.
+period: 2025. 5. ~ 2025. 10.
 role: 팀장·백엔드 리드
 logo: wavi.png
 team: Backend 2, Frontend 2, AI 1, Design 1
