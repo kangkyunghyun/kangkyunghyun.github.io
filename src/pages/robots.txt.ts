@@ -6,7 +6,7 @@ export const GET: APIRoute = ({ site }) => {
 		'User-agent: *',
 		'Allow: /',
 		'',
-		`Sitemap: ${new URL('/sitemap.xml', origin).href}`,
+		`Sitemap: ${new URL('/sitemap-index.xml', origin).href}`,
 		'',
 	].join('\n');
 

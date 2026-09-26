@@ -16,12 +16,12 @@
 | --- | --- |
 | 프레임워크 | Astro 7.1.6 (`package.json`) |
 | 출력 | `static` |
-| 런타임 의존성 | 없음 |
-| 빌드 의존성 | `astro` 하나 |
+| 클라이언트 의존성 | Mermaid 코드 블록이 있는 페이지에서만 `mermaid` 청크 로드 |
+| 빌드 의존성 | `astro`, `astro-mermaid`, `mermaid`, `@astrojs/rss`, `@astrojs/sitemap` |
 | Node | `>=22.12.0` |
 
 ```text
-astro.config.mjs                   site URL, shiki 듀얼 테마
+astro.config.mjs                   site URL, shiki 듀얼 테마, Mermaid, 사이트맵
 src/content.config.ts              posts / projects 컬렉션 정의
 src/content/posts/*.md             글
 src/content/projects/*.md          프로젝트
@@ -32,6 +32,8 @@ src/pages/index.astro              포트폴리오 (메인)
 src/pages/blog.astro               글 목록
 src/pages/posts/[...slug].astro    글 상세
 src/pages/projects/[...slug].astro 프로젝트 상세
+src/pages/rss.xml.ts               @astrojs/rss 피드 생성
+src/pages/robots.txt.ts            사이트맵 인덱스 위치 안내
 .github/workflows/deploy.yml       Pages 배포
 tools/import-tistory.py            티스토리 이관 (표준 라이브러리만)
 ```
@@ -106,7 +108,7 @@ AS-IS → TO-BE만 본문이 아니라 프런트매터에 있다. 2열 비교를
 | `--blue-strong` | `#1b64da` | `#4593fc` | **파랑 글자 전용.** 본문 링크와 배지 텍스트 |
 | `--green` | `#166534` | `#4ade80` | 운영 중 상태 배지 전용. 운영 중단은 그레이 스케일 사용 |
 
-테마는 **시스템·라이트·다크 3단**이다. `localStorage.theme`에 `light`/`dark`를 저장하고 `<html data-theme>`로 적용하며, 시스템일 때는 둘 다 지워 `prefers-color-scheme`에 맡긴다. 다크 토큰 블록이 두 벌인 것은 의도된 중복이다 — `@media` 안의 규칙은 밖에서 재사용할 수 없다. `@media` 쪽에는 `:not([data-theme='light'])`가 반드시 있어야 OS가 다크여도 수동 라이트가 이긴다. `MUST`
+테마는 **시스템·라이트·다크 3단**이다. `localStorage.theme`에는 수동 선택인 `light`/`dark`만 저장한다. 시스템 모드는 `prefers-color-scheme`의 현재 값을 `<html data-theme>`에 반영하고 OS 설정이 바뀌면 갱신한다. Mermaid도 같은 속성을 보고 테마를 바꾼다. 다크 토큰 블록이 두 벌인 것은 의도된 중복이다. `@media` 안의 규칙은 밖에서 재사용할 수 없다. `@media` 쪽에는 `:not([data-theme='light'])`가 반드시 있어야 OS가 다크여도 수동 라이트가 이긴다. `MUST`
 
 테마 적용 스크립트는 `<head>`에 인라인으로 둔다. 본문 뒤로 옮기면 첫 페인트가 라이트로 찍혔다 바뀌어 화면이 번쩍인다. `MUST`
 | `--r` | `18px` | — | 카드 모서리 |

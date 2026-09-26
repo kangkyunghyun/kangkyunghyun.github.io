@@ -81,6 +81,7 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 		/>
 		<link rel="canonical" href={canonical} />
 		<link rel="alternate" type="application/rss+xml" title="강경현 블로그 RSS" href="/rss.xml" />
+		<link rel="sitemap" href="/sitemap-index.xml" />
 		<meta property="og:type" content={type} />
 		<meta property="og:locale" content="ko_KR" />
 		<meta property="og:site_name" content="Kyunghyun Kang" />
@@ -101,9 +102,12 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 		<script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
 		{/* 첫 페인트 전에 테마를 적용해야 화면이 번쩍이지 않는다 */}
 		<script is:inline>
-			const t = localStorage.getItem('theme');
-			if (t === 'light' || t === 'dark')
-				document.documentElement.dataset.theme = t;
+			const savedTheme = localStorage.getItem('theme');
+			const systemTheme = matchMedia('(prefers-color-scheme: dark)').matches
+				? 'dark'
+				: 'light';
+			document.documentElement.dataset.theme =
+				savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : systemTheme;
 		</script>
 	</head>
 	<body>
@@ -205,12 +209,17 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 
 		<script is:inline>
 			// 시스템 → 라이트 → 다크 → 시스템 순으로 순환한다.
-			// 'system' 은 data-theme 을 지워서 prefers-color-scheme 에 맡긴다.
+			// 'system' 은 OS 설정을 data-theme 에 반영한다.
 			(() => {
 				const ORDER = ['system', 'light', 'dark'];
 				const btn = document.getElementById('theme-toggle');
 				if (!btn) return;
+				const colorScheme = matchMedia('(prefers-color-scheme: dark)');
 				const icons = btn.querySelectorAll('[data-theme-icon]');
+				const apply = (mode) => {
+					document.documentElement.dataset.theme =
+						mode === 'system' ? (colorScheme.matches ? 'dark' : 'light') : mode;
+				};
 				const paint = (mode) => {
 					icons.forEach((el) => {
 						el.hidden = el.dataset.themeIcon !== mode;
@@ -219,17 +228,20 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 				};
 				let mode = localStorage.getItem('theme') ?? 'system';
 				if (!ORDER.includes(mode)) mode = 'system';
+				apply(mode);
 				paint(mode);
 				btn.addEventListener('click', () => {
 					mode = ORDER[(ORDER.indexOf(mode) + 1) % ORDER.length];
 					if (mode === 'system') {
-						delete document.documentElement.dataset.theme;
 						localStorage.removeItem('theme');
 					} else {
-						document.documentElement.dataset.theme = mode;
 						localStorage.setItem('theme', mode);
 					}
+					apply(mode);
 					paint(mode);
+				});
+				colorScheme.addEventListener('change', () => {
+					if (mode === 'system') apply(mode);
 				});
 			})();
 		</script>
