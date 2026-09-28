@@ -2,7 +2,6 @@
 title: "Kafka와 SQS 알림 컨슈머 비교"
 date: "2026-09-28T01:00:00Z"
 tags: [백엔드]
-draft: true
 ---
 
 [앞 글](/posts/notification-sqs-visibility-redrive)에서는 마냑의 알림 소비자를 개발서버 SQS에 붙이고 자격 조회 실패로 DLQ에 간 메시지를 복구했다. 마냑은 사용자가 설정을 넣으면 AI가 스토리를 만들고 그 스토리 속 인물과 채팅하는 서비스다. 로컬 Kafka와 개발서버 SQS에 같은 소비 규칙을 적용했지만 완료와 재시도 방식은 달랐다.
