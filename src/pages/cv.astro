@@ -1,0 +1,320 @@
+---
+import Base from '../layouts/Base.astro';
+import {
+	activity,
+	awards,
+	certs,
+	education,
+	getProjects,
+	lead,
+	links,
+	name,
+	role,
+	stacks,
+} from '../data/resume';
+
+// 모양은 sb2nov 계열 LaTeX 이력서(changh95/latex_resume_template_kor)를 따른다.
+// 데이터는 포트폴리오와 같은 src/data/resume.ts 를 읽는다.
+const projects = await getProjects();
+const contacts = links.map((l) => ({ ...l, text: l.handle.replace(/^@/, '') }));
+---
+
+<Base title={`CV — ${name}`} description={`${name}의 이력서`}>
+	<div class="tools no-print">
+		<button type="button" onclick="window.print()">PDF로 저장</button>
+	</div>
+
+	<article class="cv">
+		<header class="top">
+			<div>
+				<h1>{name}</h1>
+				<p class="role">{role}</p>
+			</div>
+			<ul class="contacts">
+				{
+					contacts.map((c) => (
+						<li>
+							<span class="k">{c.label}</span>
+							<a href={c.href}>{c.text}</a>
+						</li>
+					))
+				}
+			</ul>
+		</header>
+
+		<section>
+			<h2>Summary</h2>
+			<p class="summary">{lead}</p>
+		</section>
+
+		<section>
+			<h2>Projects</h2>
+			{
+				projects.map((p) => (
+					<div class="row">
+						<div class="l1">
+							<b>
+								<a href={`/projects/${p.id}`}>{p.data.title}</a>
+							</b>
+							<span>{p.data.period}</span>
+						</div>
+						<div class="l2">
+							<i>
+								{p.data.role}
+								{p.data.team && ` · ${p.data.team}`}
+							</i>
+							<i>{p.data.stack.join(', ')}</i>
+						</div>
+						<ul>
+							<li>{p.data.summary}</li>
+							{p.data.toBe.map((t) => (
+								<li>{t}</li>
+							))}
+						</ul>
+					</div>
+				))
+			}
+		</section>
+
+		<section>
+			<h2>Technical Skills</h2>
+			<ul class="plain">
+				{
+					stacks.map(([field, items]) => (
+						<li>
+							<b>{field}</b> — {(items as string[]).join(', ')}
+						</li>
+					))
+				}
+			</ul>
+		</section>
+
+		<section>
+			<h2>Education</h2>
+			{
+				education.map((e) => (
+					<div class="row">
+						<div class="l1">
+							<b>{e.title}</b>
+							<span>{e.period}</span>
+						</div>
+						<div class="l2">
+							<i>{e.aside}</i>
+							<i>{e.desc}</i>
+						</div>
+					</div>
+				))
+			}
+		</section>
+
+		<section>
+			<h2>Activities</h2>
+			{
+				activity.map((a) => (
+					<div class="row">
+						<div class="l1">
+							<b>{a.title}</b>
+							<span>{a.period}</span>
+						</div>
+						<div class="l2">
+							<i>{[a.aside, a.desc].filter(Boolean).join(' · ')}</i>
+						</div>
+					</div>
+				))
+			}
+		</section>
+
+		<section>
+			<h2>Awards</h2>
+			{
+				awards.map((a) => (
+					<div class="row">
+						<div class="l1">
+							<b>{a.title}</b>
+							<span>{a.period}</span>
+						</div>
+						<div class="l2">
+							<i>{a.aside}</i>
+						</div>
+					</div>
+				))
+			}
+		</section>
+
+		<section>
+			<h2>Certifications</h2>
+			{
+				certs.map((c) => (
+					<div class="row">
+						<div class="l1">
+							<b>
+								{c.title}
+								{c.aside && <span class="aside">{c.aside}</span>}
+							</b>
+							<span>{c.period}</span>
+						</div>
+					</div>
+				))
+			}
+		</section>
+	</article>
+</Base>
+
+<style>
+	.tools {
+		display: flex;
+		justify-content: flex-end;
+		margin: 1.5rem 0 0;
+	}
+	.tools button {
+		padding: 0.5rem 0.95rem;
+		border: 0;
+		border-radius: 999px;
+		background: var(--surface);
+		color: var(--fg);
+		font: inherit;
+		font-size: 0.875rem;
+		font-weight: 700;
+		cursor: pointer;
+	}
+	.tools button:hover {
+		background: var(--blue);
+		color: #fff;
+	}
+
+	/* 종이 한 장처럼. LaTeX 이력서의 밀도를 그대로 가져온다 */
+	.cv {
+		max-width: 46rem;
+		margin: 1.25rem auto 0;
+		padding: clamp(1.5rem, 5vw, 3rem);
+		border: 1px solid var(--line);
+		border-radius: var(--r);
+		background: var(--surface);
+		font-size: 0.9375rem;
+		line-height: 1.5;
+	}
+	.top {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 1rem;
+		margin-bottom: 1.25rem;
+	}
+	h1 {
+		margin: 0;
+		font-size: 1.75rem;
+		font-weight: 800;
+		letter-spacing: -0.04em;
+		line-height: 1.2;
+	}
+	.role {
+		margin: 0.15rem 0 0;
+		color: var(--fg2);
+		font-weight: 600;
+	}
+	.contacts {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		text-align: right;
+		font-size: 0.875rem;
+	}
+	.contacts .k {
+		margin-right: 0.4rem;
+		color: var(--fg3);
+	}
+	.contacts a {
+		color: inherit;
+	}
+
+	section {
+		margin-top: 1.1rem;
+	}
+	h2 {
+		margin: 0 0 0.5rem;
+		padding-bottom: 0.15rem;
+		border-bottom: 1px solid var(--fg);
+		font-size: 1rem;
+		font-weight: 700;
+		font-variant: small-caps;
+		letter-spacing: 0.04em;
+	}
+	.summary {
+		margin: 0;
+	}
+
+	.row {
+		margin-bottom: 0.7rem;
+		break-inside: avoid;
+	}
+	.row:last-child {
+		margin-bottom: 0;
+	}
+	.l1,
+	.l2 {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+	.l1 span {
+		flex: none;
+		color: var(--fg2);
+		font-variant-numeric: tabular-nums;
+	}
+	.l1 a {
+		color: inherit;
+	}
+	.aside {
+		margin-left: 0.4rem;
+		color: var(--fg3);
+		font-weight: 500;
+	}
+	.l2 {
+		color: var(--fg2);
+		font-size: 0.875rem;
+	}
+	.l2 i:last-child {
+		text-align: right;
+	}
+	.row ul,
+	.plain {
+		margin: 0.25rem 0 0;
+		padding-left: 1.1rem;
+	}
+	.plain {
+		list-style: none;
+		padding-left: 0;
+	}
+	.row li,
+	.plain li {
+		font-size: 0.875rem;
+	}
+
+	@media (max-width: 34rem) {
+		.top,
+		.l2 {
+			flex-direction: column;
+			gap: 0.1rem;
+		}
+		.contacts {
+			text-align: left;
+		}
+		.l2 i:last-child {
+			text-align: left;
+		}
+	}
+
+	@media print {
+		.cv {
+			max-width: none;
+			margin: 0;
+			padding: 0;
+			border: 0;
+			background: none;
+			font-size: 10.5pt;
+		}
+		.l1 a {
+			text-decoration: none;
+		}
+	}
+</style>
