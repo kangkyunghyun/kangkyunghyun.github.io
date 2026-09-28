@@ -72,12 +72,6 @@ export const activity: Entry[] = [
 		href: 'https://github.com/GDG-on-Campus-KHU',
 	},
 	{
-		period: '2023. 10. ~ 2025. 4.',
-		title: '대한민국 국방부',
-		aside: 'M/W 운용병',
-		desc: '통신 장비와 회선 운용, 구간별 장애 진단과 복구',
-	},
-	{
 		period: '2022. 3. ~ 현재',
 		title: 'Hacker',
 		desc: '경희대학교 소프트웨어융합대학 학술동아리',
