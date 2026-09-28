@@ -26,6 +26,11 @@ links:
     href: https://addons.mozilla.org/ko/firefox/addon/linkhu
   - label: GitHub
     href: https://github.com/kangkyunghyun/LinKHU
+cv:
+  - 경희대학교 웹서비스 117개를 클릭 한 번으로 여는 확장을 혼자 개발해 Chrome, 웨일, Firefox 세 스토어에 배포
+  - Chrome 설치 480건, 주간 사용자 최고 132명(2026년 9월). 스토어 유입 세션의 50%가 에브리타임 경유
+  - 서비스 목록을 코드와 분리해 데이터로 관리하고 GitHub Actions가 push마다 데이터 규칙을 검증. 세 스토어의 서로 다른 매니페스트를 한 소스에서 빌드로 분기
+  - 사용자 제보 3건(드래그 시 이미지 열림, 순서 변경 중 화면 밖 이동 불가, 학과 URL 변경)을 모두 반영
 ---
 
 ## 왜 만들었나

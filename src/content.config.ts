@@ -33,6 +33,8 @@ const projects = defineCollection({
 		links: z
 			.array(z.object({ label: z.string(), href: z.string() }))
 			.default([]),
+		/** CV(/cv)에 싣는 성과 bullet. 본문에 근거가 있는 수치·결정만 쓴다. 비면 CV에서 빠진다 */
+		cv: z.array(z.string()).default([]),
 		draft: z.boolean().default(false),
 	}),
 });

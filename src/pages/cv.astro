@@ -15,7 +15,8 @@ import {
 
 // 모양은 sb2nov 계열 LaTeX 이력서(changh95/latex_resume_template_kor)를 따른다.
 // 데이터는 포트폴리오와 같은 src/data/resume.ts 를 읽는다.
-const projects = await getProjects();
+// CV bullet이 없는 프로젝트는 싣지 않는다. 요약만 반복하면 포트폴리오와 같아진다
+const projects = (await getProjects()).filter((p) => p.data.cv.length);
 const contacts = links.map((l) => ({ ...l, text: l.handle.replace(/^@/, '') }));
 ---
 
@@ -66,8 +67,7 @@ const contacts = links.map((l) => ({ ...l, text: l.handle.replace(/^@/, '') }));
 							<i>{p.data.stack.join(', ')}</i>
 						</div>
 						<ul>
-							<li>{p.data.summary}</li>
-							{p.data.toBe.map((t) => (
+							{p.data.cv.map((t) => (
 								<li>{t}</li>
 							))}
 						</ul>
@@ -119,6 +119,13 @@ const contacts = links.map((l) => ({ ...l, text: l.handle.replace(/^@/, '') }));
 						<div class="l2">
 							<i>{[a.aside, a.desc].filter(Boolean).join(' · ')}</i>
 						</div>
+						{a.cv && (
+							<ul>
+								{a.cv.map((t) => (
+									<li>{t}</li>
+								))}
+							</ul>
+						)}
 					</div>
 				))
 			}
