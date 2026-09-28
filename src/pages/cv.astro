@@ -182,14 +182,8 @@ const contacts = links.map((l) => ({ ...l, text: l.handle.replace(/^@/, '') }));
 		color: #fff;
 	}
 
-	/* 종이 한 장처럼. LaTeX 이력서의 밀도를 그대로 가져온다 */
 	.cv {
-		max-width: 46rem;
-		margin: 1.25rem auto 0;
-		padding: clamp(1.5rem, 5vw, 3rem);
-		border: 1px solid var(--line);
-		border-radius: var(--r);
-		background: var(--surface);
+		margin-top: 1.25rem;
 		font-size: 0.9375rem;
 		line-height: 1.5;
 	}
@@ -306,11 +300,7 @@ const contacts = links.map((l) => ({ ...l, text: l.handle.replace(/^@/, '') }));
 
 	@media print {
 		.cv {
-			max-width: none;
 			margin: 0;
-			padding: 0;
-			border: 0;
-			background: none;
 			font-size: 10.5pt;
 		}
 		.l1 a {
