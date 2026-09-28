@@ -1,0 +1,35 @@
+---
+import viewerScript from '../scripts/mermaid-viewer.js?url';
+---
+
+<dialog class="diagram-dialog" aria-label="흐름도 확대 보기">
+	<div class="diagram-toolbar">
+		<button type="button" data-diagram-action="out" aria-label="흐름도 축소">−</button>
+		<output aria-live="polite">100%</output>
+		<button type="button" data-diagram-action="in" aria-label="흐름도 확대">+</button>
+		<button type="button" data-diagram-action="fit">화면에 맞춤</button>
+		<button type="button" data-diagram-action="reset">원래 크기</button>
+		<button type="button" data-diagram-action="close">닫기</button>
+	</div>
+	<div class="diagram-viewport" tabindex="0" role="region" aria-label="확대 흐름도, 스크롤하여 이동"></div>
+</dialog>
+<script is:inline type="module" src={viewerScript}></script>
+
+<style is:global>
+	.diagram-frame { margin-block: 2rem; }
+	.diagram-tools { display: flex; justify-content: space-between; align-items: center; gap: 1rem; color: var(--fg3); font-size: 0.8125rem; }
+	.diagram-tools button, .diagram-toolbar button { padding: 0.5rem 0.75rem; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--fg); font: inherit; cursor: pointer; }
+	.diagram-tools button:hover, .diagram-toolbar button:hover { background: var(--line); }
+	.diagram-toolbar button:disabled { opacity: 0.4; cursor: default; }
+	article .diagram-frame pre.mermaid { display: block; margin: 0.5rem 0 0; max-width: 100%; }
+	.diagram-frame pre.mermaid svg, .diagram-dialog pre.mermaid svg { display: block; width: calc(var(--diagram-width) * var(--diagram-scale, 1)); max-width: none !important; height: auto; margin-inline: auto; }
+	html.diagram-open { overflow: hidden; }
+	.diagram-dialog { width: calc(100vw - 2rem); max-width: none; height: calc(100dvh - 2rem); max-height: none; padding: 0; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); color: var(--fg); }
+	.diagram-dialog[open] { display: flex; flex-direction: column; }
+	.diagram-dialog::backdrop { background: rgb(0 0 0 / 75%); }
+	.diagram-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem; border-bottom: 1px solid var(--line); font-size: 0.875rem; }
+	.diagram-toolbar output { min-width: 3.5rem; text-align: center; font-variant-numeric: tabular-nums; }
+	.diagram-viewport { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; }
+	.diagram-dialog pre.mermaid { display: block; width: max-content; min-width: 100%; margin: 0; padding: 1rem; overflow: visible; box-sizing: border-box; }
+	@media (max-width: 40rem) { .diagram-dialog { width: 100vw; height: 100dvh; border-radius: 0; border: 0; } }
+</style>
