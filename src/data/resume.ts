@@ -50,12 +50,13 @@ export const activity: Entry[] = [
 	{
 		period: '2026. 3. ~ 현재',
 		title: '알고리즘 멘토',
-		aside: '강의 지원',
+		aside: '강의 자료 제작, 과제 채점',
 		desc: '경희대학교 SW중심대학사업단 KHU-SW멘토',
 	},
 	{
 		period: '2025. 9. ~ 현재',
 		title: 'HacKHU',
+		aside: '기술 파트 운영진',
 		desc: '경희대학교 해킹 동아리',
 	},
 	{
@@ -70,6 +71,17 @@ export const activity: Entry[] = [
 		desc: '경희대학교 구글 개발자 커뮤니티',
 		href: 'https://github.com/GDG-on-Campus-KHU',
 	},
+	{
+		period: '2023. 10. ~ 2025. 4.',
+		title: '대한민국 국방부',
+		aside: 'M/W 운용병',
+		desc: '통신 장비와 회선 운용, 구간별 장애 진단과 복구',
+	},
+	{
+		period: '2022. 3. ~ 현재',
+		title: 'Hacker',
+		desc: '경희대학교 소프트웨어융합대학 학술동아리',
+	},
 ];
 
 export const awards = [
@@ -81,17 +93,17 @@ export const awards = [
 	{
 		period: '2026. 5.',
 		title: '2026 경희대학교 봄 프로그래밍 경시대회',
-		aside: '우수상 (3등)',
+		aside: '우수상 (20명 중 3등)',
 	},
 	{
 		period: '2026. 5.',
 		title: '2026 SCSC computer programming contest Div.3',
-		aside: 'Furiosa Prize (4등)',
+		aside: 'Furiosa Prize (79명 중 4등)',
 	},
 	{
 		period: '2025. 10.',
 		title: '2025 경희대학교 가을 프로그래밍 경시대회',
-		aside: '장려상 (4등)',
+		aside: '장려상 (15팀 중 4등)',
 	},
 	{
 		period: '2022. 9.',
