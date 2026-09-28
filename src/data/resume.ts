@@ -87,17 +87,17 @@ export const awards = [
 	{
 		period: '2026. 5.',
 		title: '2026 경희대학교 봄 프로그래밍 경시대회',
-		aside: '우수상 (20명 중 3등)',
+		aside: '우수상 (3등)',
 	},
 	{
 		period: '2026. 5.',
 		title: '2026 SCSC computer programming contest Div.3',
-		aside: 'Furiosa Prize (79명 중 4등)',
+		aside: 'Furiosa Prize (4등)',
 	},
 	{
 		period: '2025. 10.',
 		title: '2025 경희대학교 가을 프로그래밍 경시대회',
-		aside: '장려상 (15팀 중 4등)',
+		aside: '장려상 (4등)',
 	},
 	{
 		period: '2022. 9.',
