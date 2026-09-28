@@ -395,18 +395,6 @@ const inBlog = path === '/blog' || path.startsWith('/posts');
 		stroke-linejoin: round;
 	}
 
-	/* PDF로 저장(window.print)할 때 사이트 껍데기는 빼고 본문만 남긴다 */
-	@media print {
-		.site-header,
-		.site-footer,
-		.no-print {
-			display: none !important;
-		}
-		main {
-			padding: 0;
-		}
-	}
-
 	main {
 		max-width: var(--measure);
 		margin: 0 auto;
