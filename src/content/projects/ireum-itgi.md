@@ -35,11 +35,6 @@ links:
     href: https://xn--ok0bv8s29khc.kr
   - label: GitHub
     href: https://github.com/kangkyunghyun/ireum-itgi
-cv:
-  - 법원 출생신고 통계로 실제 이름만 잇는 끝말잇기를 싱글, 협동, 대전 모드와 랭킹까지 혼자 개발해 운영
-  - FOR UPDATE 잠금 대기가 방을 굳게 하던 문제를 lock, statement, idle 타임아웃 3종으로 막고 일시적 DB 오류는 503과 retry-after로 구분해 응답
-  - 멱등 판정을 rate limit보다 앞에 두어 재시도 요청이 429를 받던 순서를 바로잡고, 대전방 폴링에 eventSeq 커서와 in-flight 가드를 추가
-  - Vercel Web Analytics, Amplitude, Sentry로 트래픽, 행동, 에러 관측을 나누고 개인정보 1년 보관 후 파기를 실제 배치 작업으로 구현
 ---
 
 ## 서비스

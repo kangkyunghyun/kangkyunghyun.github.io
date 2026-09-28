@@ -1,4 +1,4 @@
-// 포트폴리오(/)와 CV(/cv)가 같이 읽는 이력 정본. 여기 한 곳만 고친다.
+// 포트폴리오(/)가 읽는 이력 정본. 여기 한 곳만 고친다.
 import { getCollection } from 'astro:content';
 
 export const name = '강경현';
@@ -35,8 +35,6 @@ type Entry = {
 	aside?: string;
 	desc?: string;
 	href?: string;
-	/** CV에만 싣는 성과 bullet. 포트폴리오 타임라인에는 나오지 않는다 */
-	cv?: string[];
 };
 
 // title 은 조직·활동명, aside 는 그 안에서의 역할(없으면 비운다),
@@ -48,10 +46,6 @@ export const activity: Entry[] = [
 		aside: '17기 연수생',
 		desc: '과학기술정보통신부 SW 인재양성 사업',
 		href: 'https://swmaestro.ai/',
-		cv: [
-			'서류, 코딩테스트 2회, 심층 면접을 거쳐 17기 선발',
-			'3인 팀 프로젝트 마냑에서 백엔드와 인프라 담당',
-		],
 	},
 	{
 		period: '2026. 3. ~ 현재',

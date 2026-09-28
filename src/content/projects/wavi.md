@@ -32,11 +32,6 @@ links:
     href: https://github.com/WAVE-WAVI/WAVI-BE
   - label: 팀 저장소
     href: https://github.com/WAVE-WAVI
-cv:
-  - 6인 팀(백엔드 2, 프론트엔드 2, AI 1, 디자인 1)의 팀장 겸 백엔드 리드로 습관 도메인, 주간과 월간 리포트, Gemini 연동, CI/CD, EC2 배포를 담당
-  - 각각 다른 EC2에서 퍼블릭 REST로 통신하던 Spring Boot와 FastAPI를 Docker Compose로 한 인스턴스에 묶어 내부 통신으로 전환하고 main push 시 빌드부터 재기동까지 자동화
-  - 실패 사유를 failure_reason 테이블로 정규화해 AI가 실패 패턴을 집계할 수 있는 스키마 설계
-  - 경희대 재학생 6명에게 MVP 피드백을 받고 교내 공모전과 SW중심대학 연합 SW페스티벌에 출품
 ---
 
 ![WAVI](/images/wavi/cover.jpg)

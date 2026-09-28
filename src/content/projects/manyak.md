@@ -35,11 +35,6 @@ links:
     href: https://www.manyak.app
   - label: GitHub
     href: https://github.com/KIM-N-KANG/manyak-server
-cv:
-  - AI·SW 마에스트로 17기 3인 팀에서 API 서버(Kotlin, Spring Boot)와 운영 인프라(Terraform, AWS)를 담당
-  - catch-all에 걸려 500이 되던 표준 예외를 404, 405, 406, 415로 정정하고 Sentry 전송에서 제외해 봇의 Swagger 스캔이 만들던 5xx 알림 노이즈 제거
-  - AI 호출 두 종류가 공유하던 read timeout 15초를 storyline 30초, compile 120초로 분리하고 두 값이 독립인지 확인하는 회귀 테스트 추가
-  - 삭제 API에 빠져 있던 소유권 검증을 404 판정 후 403 순서로 추가하고, 크래시로 PENDING에 남은 요청을 복구할 때 AI 재호출과 재과금이 없도록 수정
 ---
 
 ## 서비스

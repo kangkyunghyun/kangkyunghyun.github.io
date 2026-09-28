@@ -24,10 +24,6 @@ links:
     href: https://addons.mozilla.org/ko/firefox/addon/boj-performance
   - label: GitHub
     href: https://github.com/kangkyunghyun/boj-performance
-cv:
-  - 백준 채점 현황에서 전체 제출자 분포 안의 내 코드 위치를 그래프로 보여 주는 확장을 혼자 개발해 Chrome, 웨일, Firefox 세 스토어 심사를 통과시켜 배포
-  - Chrome 설치 381건(운영 중단 이후 포함), 운영 중 주간 사용자 최고 59명, 웨일 다운로드 107건. 스토어 유입 세션의 41%가 백준 경유
-  - 진행 중인 대회에서 남의 제출 통계가 노출되던 문제를 contest_id 감지로 차단하고, 타 확장이 켜져 있어야 동작하던 의존을 요청 헤더 직접 구성으로 제거
 ---
 
 > BOJ 채점 서비스가 중단되어 **운영을 함께 중단했습니다.** 서비스가 돌아오면 호환성을 확인한 뒤 운영 재개 여부를 판단합니다.
