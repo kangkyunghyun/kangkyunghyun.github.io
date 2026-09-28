@@ -49,10 +49,17 @@ curl -s "localhost:9200/manyak-logs-local-*/_count?q=request_id:req_nofb"
 
 구성을 이렇게 바꾼다.
 
-```text
-before:  앱 → 도커 → Fluent Bit ────────────→ OpenSearch
-after:   앱 → 도커 → Fluent Bit → Vector → OpenSearch
-                                   ↑ 디스크 버퍼
+```mermaid
+flowchart TB
+    subgraph BEFORE["변경 전"]
+        direction LR
+        A1["앱"] --> D1["도커"] --> F1["Fluent Bit"] --> O1["OpenSearch"]
+    end
+    subgraph AFTER["변경 후"]
+        direction LR
+        A2["앱"] --> D2["도커"] --> F2["Fluent Bit"] --> V["Vector<br/>디스크 버퍼"] --> O2["OpenSearch"]
+    end
+    BEFORE ~~~ AFTER
 ```
 
 Vector 설정이다.
@@ -94,9 +101,9 @@ sinks:
 
 **`.pipeline = "vector"`**. 이 레코드가 Vector를 지났다는 표시다. 앞 글에서 "Fluent Bit이 정말 경로에 있나"를 증명할 때 쓴 것과 같은 수법으로 나중에 이 필드의 유무만 보면 경로를 확인할 수 있다.
 
-**`api_version: v7`**. OpenSearch는 Elasticsearch 7.10에서 갈라져 나왔다. `auto`로 두면 3.8.0이라는 버전 문자열을 ES 8로 오인해 요청 형식이 어긋날 수 있다.
+전송 요청 형식은 Elasticsearch 7 호환으로 명시했다. OpenSearch는 Elasticsearch 7.10에서 갈라져 나왔지만 버전을 자동 판별하게 두면 3.8.0이라는 문자열을 ES 8로 오인해 요청 형식이 어긋날 수 있다.
 
-**`buffer.type: disk`**. 이 파일의 핵심이다. `max_size`는 최소 허용치가 256MiB라 그보다 작게 주면 기동에 실패한다. `when_full: block`은 버퍼가 가득 차면 뒤로 밀어낸다는 뜻이다. `drop_newest`로 두면 조용히 버린다.
+전송하지 못한 로그는 디스크에 보관하고 버퍼가 차면 새 입력을 기다리게 했다. 새 로그를 버리는 방식보다 수집 속도를 늦추더라도 보관하는 쪽을 택했다. 디스크 버퍼의 최소 허용 크기는 256MiB이며 이보다 작게 설정하면 기동에 실패한다.
 
 Fluent Bit의 출력도 OpenSearch에서 Vector로 돌렸다.
 
@@ -194,7 +201,7 @@ sources:
     encoding: ndjson
 ```
 
-`Json_date_key false`는 Fluent Bit이 자기 시각 필드를 덧붙이지 않게 끄는 것이다. 우리 레코드에는 이미 `@timestamp`가 있고 그게 정본이다.
+로그 시각은 앱이 남긴 `@timestamp`를 기준으로 삼았다. Fluent Bit이 수집 시각을 별도 필드로 덧붙이지 않게 해 어떤 시각을 조회 기준으로 쓸지 혼동하지 않도록 했다.
 
 이번엔 됐다.
 
@@ -332,9 +339,13 @@ OpenSearch 진영에는 Data Prepper라는 도구가 있다. Vector와 **같은 
 
 네 편에 걸쳐 만든 것을 되짚으면 이렇다.
 
-```text
-앱 stdout → 도커 fluentd 드라이버 → Fluent Bit → Vector → OpenSearch → Dashboards
-                                    (수집)     (가공, 버퍼)   (저장)      (조회)
+```mermaid
+flowchart LR
+    A["앱 stdout"] --> D["도커 fluentd 드라이버"]
+    D --> F["Fluent Bit<br/>수집"]
+    F --> V["Vector<br/>가공, 버퍼"]
+    V --> O["OpenSearch<br/>저장"]
+    O --> B["Dashboards<br/>조회"]
 ```
 
 앞쪽 절반이 운영(ECS FireLens)과 같은 모양이라 로컬에서 검증한 파싱과 전송 설정이 그대로 넘어간다. 그게 로컬 스택을 운영과 같은 경로로 만든 이유다.

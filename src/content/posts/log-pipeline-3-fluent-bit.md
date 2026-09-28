@@ -12,10 +12,12 @@ tags: [백엔드, 모니터링]
 
 이것만 알면 나머지는 조립이다.
 
-```text
-INPUT  →  FILTER  →  OUTPUT
-어디서       어떻게       어디로
-가져올까     가공할까     보낼까
+```mermaid
+flowchart LR
+    subgraph FLUENTBIT["Fluent Bit"]
+        A["INPUT"] -->|"수집한 로그 전달"| B["FILTER"]
+        B -->|"가공한 로그 전달"| C["OUTPUT"]
+    end
 ```
 
 한 번에 셋을 다 맞추려다 어디서 틀렸는지 못 찾는 게 흔한 실패다. 그래서 **가장 단순한 것부터** 갔다. 가짜 로그를 만들어내는 `dummy` 입력으로 파이프라인을 먼저 검증한다.
@@ -45,7 +47,7 @@ INPUT  →  FILTER  →  OUTPUT
 몇 가지 주의점이 있다.
 
 - **`Host opensearch`**. `localhost`가 아니다. 컨테이너 안에서 `localhost`는 자기 자신을 가리킨다. Docker 네트워크 안에서는 서비스 이름이 곧 호스트 이름이다.
-- **`Suppress_Type_Name On`**. OpenSearch는 문서 타입(`_type`)을 쓰지 않는다. 켜 두지 않으면 bulk 요청에 `_type`이 실려 색인이 거절된다.
+- **문서 타입은 전송에서 뺀다.** OpenSearch가 사용하지 않는 `_type`을 bulk 요청에 실으면 색인이 거절된다.
 - **`Rate 1`**. 기본값(무제한)으로 두면 순식간에 수만 건이 쌓인다. 실제로 잠깐 놔뒀더니 1만 건이 넘었다.
 
 띄우고 확인했다.
@@ -77,7 +79,7 @@ manyak-logs-local-test               16
 
 **1. 앱이 컨테이너가 아니다.** 평소 개발은 `docker compose up -d`(postgres, redis) + `./gradlew bootRun`이다. Fluent Bit의 본업은 컨테이너 로그 수집인데 수집할 컨테이너가 없다.
 
-**2. 로컬 로그가 JSON이 아니다.** `logback-spring.xml`을 보면 JSON은 `prod`, `dev` 프로파일에만 붙고 `local`은 사람이 읽는 평문 패턴이다.
+**2. 로컬 로그가 JSON이 아니다.** `logback-spring.xml`을 보면 JSON은 운영과 개발서버 프로파일에만 붙고 `local`은 사람이 읽는 평문 패턴이다.
 
 2번부터 풀었다. `jsonlog`라는 프로파일을 하나 더해 평소엔 지금처럼 평문이고 필요할 때만 JSON이 되게 했다.
 
@@ -126,8 +128,13 @@ JSON 줄: 50      평문 줄: 0
 
 운영은 ECS Fargate이고 로그는 FireLens로 나간다. FireLens의 실체는 Fluent Bit이고 경로는 이렇다.
 
-```text
-앱 컨테이너 stdout → 도커 로그 드라이버 → Fluent Bit 사이드카
+```mermaid
+flowchart LR
+    subgraph APP["애플리케이션 컨테이너"]
+        A["stdout"]
+    end
+    A --> B["도커 로그 드라이버"]
+    B --> C["Fluent Bit 사이드카"]
 ```
 
 로컬에서 이걸 그대로 흉내 내려면 도커의 `fluentd` 로그 드라이버를 쓰면 된다. 파일을 `tail`하는 방식보다 운영에 훨씬 가깝다.
@@ -157,7 +164,7 @@ JSON 줄: 50      평문 줄: 0
 
 설계상 정한 것들.
 
-**`profiles: ["app"]`**. 평소 `up -d`에는 뜨지 않는다. 일상 개발과 테스트는 종전대로 `bootRun`을 쓰고 파이프라인을 확인할 때만 `--profile app`으로 켠다.
+앱 컨테이너는 로그 파이프라인을 확인할 때만 띄우도록 별도 프로파일로 묶었다. 일상 개발과 테스트는 종전대로 `bootRun`을 쓰고 수집 경로를 확인할 때만 `--profile app`으로 켠다.
 
 **이미지를 빌드하지 않는다**. 루트 Dockerfile은 컨테이너 안에서 Gradle 빌드를 다시 돌려 느리다. 로컬에서 만든 jar를 그대로 얹으면 `./gradlew bootJar`가 1초이고 컨테이너 기동은 수 초다.
 
@@ -237,9 +244,9 @@ manyak-logs-local-2026.08.19        146
     Time_Keep   On
 ```
 
-**`Reserve_Data On`이 중요하다.** `Off`면 파싱 결과만 남고 `container_name` 같은 도커 메타데이터가 사라진다. 어느 컨테이너 로그인지 알 수 없게 된다.
+JSON 본문을 파싱한 뒤에도 도커가 붙인 메타데이터는 보존해야 한다. 파싱 결과만 남기면 컨테이너 이름이 사라져 어느 컨테이너에서 나온 로그인지 알 수 없다.
 
-**`Time_Keep On`도 그렇다.** 파싱에 쓴 `@timestamp` 필드를 레코드에 남긴다. 앞 글에서 만든 인덱스 템플릿이 `@timestamp`를 `date`로 매핑해 두었으므로 실제 시간 해석은 OpenSearch가 한다. 즉 여기 `Time_Format`이 어긋나도 필드만 남으면 색인은 정상이다. 이중 안전장치다.
+앱이 남긴 시각도 파싱 후에 보존했다. 앞 글의 인덱스 템플릿은 `@timestamp`를 날짜로 해석하므로 Fluent Bit의 시간 형식 설정이 어긋나도 원래 필드가 남아 있으면 OpenSearch가 날짜로 색인한다.
 
 결과는 이렇다.
 
@@ -273,7 +280,7 @@ curl -s -o /dev/null \
   http://localhost:18080/api/v1/stories/simple/tags
 ```
 
-그리고 그 `request_id`로 찾았다.
+그 요청 ID로 관련 로그를 찾았다.
 
 ```bash
 curl -s "http://localhost:9200/manyak-logs-local-*/_search?q=request_id:req_demo_0001&pretty"
@@ -295,7 +302,7 @@ curl -s "http://localhost:9200/manyak-logs-local-*/_search?q=request_id:req_demo
 
 보낸 헤더가 그대로 필드로 남았다. `device_id_hash`를 보면 원본(`local-demo-device`)이 아니라 해시가 저장돼 있다. 식별자 원본이 로그에 남지 않게 필터가 해싱한 결과다.
 
-**이게 운영에서 오류를 쫓을 때 쓸 능력이다.** 사용자가 겪은 요청의 `request_id` 하나로 관련 로그를 전부 모을 수 있다.
+**이게 운영에서 오류를 쫓을 때 쓸 능력이다.** 사용자가 겪은 요청의 ID 하나로 관련 로그를 전부 모을 수 있다.
 
 ## Fluent Bit이 정말 경로에 있나
 

@@ -16,7 +16,7 @@ tags: [백엔드, 모니터링]
 
 1. Astronomy Shop에서 정상 주문을 한 번 만든다.
 2. 주문 요청의 트레이스를 찾아 서비스 호출 구조와 지연 시간을 확인한다.
-3. 같은 `traceId`를 가진 로그를 찾아 트레이스와 로그가 어떻게 연결되는지 확인한다.
+3. 같은 트레이스 ID를 가진 로그를 찾아 트레이스와 로그가 어떻게 연결되는지 확인한다.
 4. Feature Flag로 결제 실패를 주입한다.
 5. 실패한 트레이스에서 HTTP 500의 실제 원인을 찾는다.
 6. 장애 주입을 해제하고 주문과 결제 흐름이 정상으로 돌아왔는지 검증한다.
@@ -29,18 +29,15 @@ Astronomy Shop은 하나의 쇼핑 화면 뒤에서 여러 서비스가 역할�
 
 주문 한 건을 단순화하면 다음과 같은 구조다.
 
-```text
-브라우저
-  ↓
-frontend
-  ↓
-checkout (주문 전체 조율)
-  ├─ cart
-  ├─ product-catalog
-  ├─ currency
-  ├─ shipping
-  ├─ payment
-  └─ email
+```mermaid
+flowchart TD
+    B["브라우저"] --> F["frontend"] --> C["checkout<br/>주문 전체 조율"]
+    C --> CART["cart"]
+    C --> PRODUCT["product-catalog"]
+    C --> CURRENCY["currency"]
+    C --> SHIPPING["shipping"]
+    C --> PAYMENT["payment"]
+    C --> EMAIL["email"]
 ```
 
 `checkout`은 모든 일을 직접 처리하지 않는다. 장바구니 조회는 `cart`, 상품 정보는 `product-catalog`, 환율은 `currency`, 배송비 계산과 배송 처리는 `shipping`, 결제는 `payment`, 확인 메일은 `email`에 요청한다. 한 서비스의 구현과 배포를 독립적으로 관리할 수 있다는 장점이 있지만 사용자 요청 하나가 여러 네트워크 호출로 분산되므로 장애 원인을 찾기는 더 어려워진다.
@@ -216,13 +213,15 @@ Payment request failed. Invalid token. app.loyalty.level=gold
 
 스택 트레이스에는 `/usr/src/app/charge.js:37:13`도 기록되어 있었다. 이를 통해 다음과 같이 원인을 단계적으로 구분할 수 있었다.
 
-```text
-사용자 증상: 주문 요청 실패
-HTTP 계층: frontend POST /api/checkout → 500
-실패 서비스: payment
-실패 작업: PaymentService/Charge
-직접 원인: Invalid token 예외
-주입 원인: paymentFailure Feature Flag 100%
+```mermaid
+flowchart TD
+    B["브라우저"] -->|"주문 요청"| F["frontend"]
+    F -->|"POST /api/checkout"| C["checkout"]
+    C -->|"PaymentService/Charge"| P["payment"]
+    FLAG["paymentFailure Feature Flag"] -->|"100% 실패 주입"| P
+    P -->|"Invalid token 예외"| C
+    C -->|"HTTP 500"| F
+    F -->|"주문 실패"| B
 ```
 
 해당 payment span의 Logs 탭에는 `Charge request received.` 이후 `Payment request failed. Invalid token...` 경고가 같은 span과 연결되어 있었다. 트레이스는 실패 위치를 빠르게 좁혀 주고 예외 이벤트와 로그는 왜 실패했는지를 구체화했다.
@@ -241,7 +240,7 @@ flagd UI에서 `paymentFailure`를 다시 `off`로 바꾸고 새 주문을 만�
 
 ![장애 해제 후 정상으로 돌아온 payment 호출](/images/opensearch-astronomy-shop-trace-log-fault-lab/10-recovered-payment-trace.webp)
 
-정상 payment 구간을 자세히 보면 payment 서비스가 flagd의 `ResolveFloat`를 호출한 span도 확인할 수 있다. 즉, Feature Flag는 단순히 UI에만 존재하는 스위치가 아니라 실제 결제 요청 처리 과정에서 평가되고 있었다.
+정상 결제 구간에는 payment 서비스가 flagd에 설정값을 조회한 span도 남았다. 장애 주입 스위치가 실제 결제 요청 처리 중에 평가되는 것을 트레이스에서 확인했다.
 
 복구 검증에서는 컨테이너가 `Up`인지보다 실제 사용자 동작이 성공하고 새로운 트레이스의 오류 상태가 사라졌는지를 확인해야 한다. 이번에는 주문 완료 화면, checkout HTTP 200, payment span OK를 함께 확인했으므로 장애 해제 후 기능과 텔레메트리 모두 정상으로 돌아왔다고 판단할 수 있었다.
 
@@ -255,7 +254,7 @@ flagd UI에서 `paymentFailure`를 다시 `off`로 바꾸고 새 주문을 만�
 | 트레이스 | 실패한 주문은 어떤 서비스를 거쳤고 어느 호출에서 깨졌는가? |
 | 로그 | payment 서비스가 남긴 구체적인 오류 메시지는 무엇인가? |
 
-메트릭만으로는 개별 주문을 찾기 어렵고 로그만으로는 여러 서비스의 호출 관계를 복원하기 어렵다. 트레이스만으로도 오류 위치는 찾을 수 있지만 구체적인 애플리케이션 메시지가 부족할 수 있다. 세 신호가 `service.name`, `traceId`, `spanId` 같은 공통 문맥을 가지고 연결될 때 장애 조사 속도가 빨라진다.
+메트릭만으로는 개별 주문을 찾기 어렵고 로그만으로는 여러 서비스의 호출 관계를 복원하기 어렵다. 트레이스만으로도 오류 위치는 찾을 수 있지만 구체적인 애플리케이션 메시지가 부족할 수 있다. 서비스 이름과 트레이스 ID, span ID를 함께 남겨야 메트릭에서 발견한 이상을 개별 요청의 호출 관계와 로그까지 이어서 조사할 수 있다.
 
 ## 마무리
 

@@ -16,27 +16,29 @@ tags: [백엔드, 모니터링]
 
 [공식 저장소의 아키텍처 그림](https://github.com/opensearch-project/observability-stack)은 이 분기를 한눈에 보여준다. 애플리케이션과 AI 에이전트가 보낸 로그, 트레이스, 메트릭은 OTLP gRPC 4317 또는 HTTP 4318 포트로 Collector에 들어온다. Collector는 로그와 트레이스를 Data Prepper와 OpenSearch로 보내고 메트릭은 Compose에서 `prometheus`라는 서비스 이름으로 실행되는 Cortex에 보낸다. Data Prepper도 처리한 트레이스에서 요청률, 오류율, 지연 시간(RED) 메트릭을 만들어 Cortex에 전달한다. Dashboards는 OpenSearch의 로그와 트레이스 분석, Cortex의 인프라와 애플리케이션 메트릭을 한 UI에서 보여준다.
 
-```text
-예제 에이전트 / Canary
-        │ OTLP
-        ▼
-OpenTelemetry Collector :4317, :4318
-        │
-        ├─ traces, logs ──▶ Data Prepper :21890 ──▶ OpenSearch :9200
-        │                                              │
-        │                                              ▼
-        │                                  OpenSearch Dashboards :5601
-        │
-        └─ metrics ──────▶ Cortex(Prometheus 호환 API) :9090
-                                │
-                                ├─ recording / alert rules
-                                ▼
-                           Alertmanager :9093
+```mermaid
+flowchart LR
+    A["예제 에이전트 / Canary"] -->|"OTLP"| C["OpenTelemetry Collector<br/>:4317, :4318"]
+    C -->|"traces, logs"| D["Data Prepper<br/>:21890"]
+    D --> O["OpenSearch<br/>:9200"]
+    O --> B["OpenSearch Dashboards<br/>:5601"]
+    C -->|"metrics"| M["Cortex<br/>Prometheus 호환 API :9090"]
+    D -->|"RED metrics"| M
+    M -->|"recording / alert rules"| R["Alertmanager<br/>:9093"]
+    M --> B
 ```
 
 OpenTelemetry Collector는 애플리케이션이 보낸 텔레메트리의 진입점이다. 트레이스와 로그는 Data Prepper가 OpenSearch 문서 형태로 가공해 저장한다. 반면 메트릭은 이 Compose 구성에서 서비스 이름이 `prometheus`인 Cortex로 전송된다. 따라서 트레이스가 보이지 않을 때와 메트릭이 보이지 않을 때 살펴봐야 할 구성 요소가 다르다.
 
-실습 당시 주요 버전은 OpenSearch와 OpenSearch Dashboards 3.8.0, OpenTelemetry Collector Contrib 0.156.0, Data Prepper 2.16.0 SNAPSHOT 계열이었다. 버전에 따라 메트릭 이름이나 UI 위치가 달라질 수 있으므로 아래 화면과 다른 결과가 나오면 먼저 이미지 버전을 비교하는 편이 좋다.
+실습 당시 주요 버전은 다음과 같았다.
+
+| 구성 요소 | 버전 |
+| --- | --- |
+| OpenSearch와 OpenSearch Dashboards | 3.8.0 |
+| OpenTelemetry Collector Contrib | 0.156.0 |
+| Data Prepper | 2.16.0 SNAPSHOT 계열 |
+
+버전에 따라 메트릭 이름이나 UI 위치가 달라질 수 있으므로 아래 화면과 다른 결과가 나오면 먼저 이미지 버전을 비교하는 편이 좋다.
 
 ## OpenSearch부터 단독으로 시작하기
 

@@ -6,7 +6,16 @@ tags: [백엔드, 모니터링]
 
 앞선 두 글에서는 Spring Boot Actuator가 제공하는 `/actuator/prometheus`를 열고 카운터와 히스토그램 버킷을 직접 읽었다. 이번에는 메트릭을 Grafana Cloud에 저장하고 PromQL로 조회한 뒤, 요청량, 응답시간, 오류율을 한 화면에서 보는 RED 대시보드와 알림 규칙까지 만든다.
 
-이 글에서 사용한 환경은 Java 21, Kotlin 2.2.21, Spring Boot 4.0.6, Micrometer 1.16.5다. 애플리케이션은 IntelliJ에서 실행했고 PostgreSQL과 Redis는 Docker Compose로 띄웠다.
+이 글에서 사용한 환경은 다음과 같다.
+
+| 항목 | 환경 |
+| --- | --- |
+| Java | 21 |
+| Kotlin | 2.2.21 |
+| Spring Boot | 4.0.6 |
+| Micrometer | 1.16.5 |
+| 애플리케이션 실행 | IntelliJ |
+| PostgreSQL과 Redis 실행 | Docker Compose |
 
 ## Prometheus 서버 없는 구성
 
@@ -14,14 +23,17 @@ tags: [백엔드, 모니터링]
 
 보통 Prometheus는 이 주소를 일정 주기로 읽는 pull 방식을 사용한다. 이번 실습에서는 로컬 컴퓨터를 외부에 공개하지 않기 위해 Spring Boot가 OTLP로 Grafana Cloud에 메트릭을 밀어 넣는 push 방식을 선택했다.
 
-```text
-Spring Boot
-  ├─ /actuator/prometheus → 로컬에서 원문 확인
-  └─ Micrometer OTLP Registry
-          ↓ 10초마다 push
-     Grafana Cloud의 메트릭 저장소
-          ↓ PromQL
-     Explore / Dashboard / Alert
+```mermaid
+flowchart LR
+    subgraph SERVER["서버 서비스"]
+        A["Spring Boot"] --> B["/actuator/prometheus"]
+        A --> D["Micrometer OTLP Registry"]
+    end
+    subgraph GRAFANA["Grafana Cloud"]
+        E["메트릭 저장소"] -->|"PromQL"| F["Explore / Dashboard / Alert"]
+    end
+    U["로컬 클라이언트"] -->|"원문 조회"| B
+    D -->|"10초마다 push"| E
 ```
 
 따라서 Prometheus 형식과 PromQL은 그대로 사용하지만 로컬에 독립적인 Prometheus 프로세스는 실행하지 않는다. Grafana Cloud 안의 Prometheus 호환 저장소가 장기 보관과 조회를 담당한다.
@@ -100,7 +112,7 @@ to https://.../otlp/v1/metrics
 with resource attributes {service.name=manyak-server-local}
 ```
 
-이 로그는 세 가지를 알려준다. `OtlpMeterRegistry`가 생성됐고, 전송 주기는 10초이며, `service.name`이 `manyak-server-local`로 붙었다. 반대로 이 로그가 없다면 의존성 동기화, OTLP 설정, 환경변수 이름부터 확인해야 한다.
+이 로그에서 OTLP 전송이 시작됐고 주기가 10초이며 서비스 이름이 `manyak-server-local`로 붙은 것을 확인했다. 반대로 이 로그가 없다면 의존성 동기화, OTLP 설정, 환경변수 이름부터 확인해야 한다.
 
 Grafana의 범용 OpenTelemetry 연결 마법사에서는 “traces를 찾지 못했다”는 메시지가 나왔다. 이번 구성은 메트릭 Registry만 연결했으므로 정상적인 결과다. 메트릭, 로그, 트레이스는 모두 관측 데이터지만 서로 다른 종류이며 하나를 보냈다고 나머지도 자동 전송되지는 않는다.
 
@@ -316,7 +328,7 @@ clamp_min(
 
 현재 `/actuator/prometheus`는 로컬 프로필에서만 노출된다. OTLP push 방식에서는 Grafana Cloud가 이 주소에 접근할 필요가 없으므로 운영에서 공개할 이유도 없다. 운영에 Prometheus pull 방식을 도입한다면 관리망, 방화벽 또는 인증으로 엔드포인트 접근을 제한해야 한다.
 
-히스토그램은 p95를 계산할 수 있게 해주지만 버킷 수만큼 시계열도 늘린다. `user_id`, `story_id`, 실제 URL, 오류 메시지처럼 값의 종류가 계속 증가하는 데이터를 라벨에 넣으면 저장량과 비용이 급격히 커진다. HTTP 메트릭에는 템플릿화된 URI, 상태 코드, 메서드처럼 종류가 제한된 라벨을 사용하는 편이 맞다.
+히스토그램은 p95를 계산할 수 있게 해주지만 버킷 수만큼 시계열도 늘린다. 사용자 ID, 스토리 ID, 실제 URL, 오류 메시지처럼 값의 종류가 계속 증가하는 데이터를 라벨에 넣으면 저장량과 비용이 급격히 커진다. HTTP 메트릭에는 템플릿화된 URI, 상태 코드, 메서드처럼 종류가 제한된 라벨을 사용하는 편이 맞다.
 
 현재 대시보드는 로컬 인스턴스 하나를 대상으로 한다. 운영에서는 인스턴스별 상태, DB 커넥션 풀, JVM 메모리와 GC, No data 처리까지 추가해야 한다. 알림 임계값도 임의의 숫자를 그대로 사용하지 말고 실제 트래픽과 서비스 목표를 관찰한 뒤 조정해야 한다.
 

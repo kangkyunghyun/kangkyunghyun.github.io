@@ -8,11 +8,13 @@ tags: [백엔드, 모니터링]
 
 글에서 확인한 환경은 다음과 같다.
 
-- Java 21
-- Kotlin 2.2.21
-- Spring Boot 4.0.6
-- Gradle 9.5.1
-- Micrometer Prometheus Registry 1.16.5
+| 항목 | 환경 |
+| --- | --- |
+| Java | 21 |
+| Kotlin | 2.2.21 |
+| Spring Boot | 4.0.6 |
+| Gradle | 9.5.1 |
+| Micrometer Prometheus Registry | 1.16.5 |
 
 ## 메트릭 한 줄의 HELP, TYPE, 측정값
 

@@ -12,13 +12,13 @@ tags: [백엔드, 모니터링]
 
 이번 구성은 다음 환경에서 확인했다.
 
-```text
-Docker 29.4.0
-Docker Compose v5.1.2
-Prometheus v3.13.2
-Spring Boot 4.0.6
-Micrometer Prometheus Registry 1.16.5
-```
+| 항목 | 환경 |
+| --- | --- |
+| Docker | 29.4.0 |
+| Docker Compose | v5.1.2 |
+| Prometheus | v3.13.2 |
+| Spring Boot | 4.0.6 |
+| Micrometer Prometheus Registry | 1.16.5 |
 
 `manyak-infra`는 소스 코드를 직접 빌드하지 않고 GHCR에 배포된 `manyak-server:dev` 이미지를 실행한다. 서버 이미지에는 앞선 작업에서 추가한 Prometheus Registry와 로컬 전용 엔드포인트가 포함되어 있다.
 
@@ -26,10 +26,23 @@ Micrometer Prometheus Registry 1.16.5
 
 운영과 로컬은 메트릭 수집 방향부터 다르다.
 
-```text
-운영: manyak-server ── OTLP push ──▶ Grafana Cloud
-
-로컬: Prometheus ── HTTP scrape ──▶ manyak-server/actuator/prometheus
+```mermaid
+flowchart TB
+    subgraph PROD["운영"]
+        direction LR
+        subgraph SERVER_PROD["서버 서비스"]
+            PS["Micrometer OTLP Registry"]
+        end
+        PS -->|"OTLP push"| GC["Grafana Cloud"]
+    end
+    subgraph LOCAL["로컬"]
+        direction LR
+        subgraph SERVER_LOCAL["서버 서비스"]
+            LS["/actuator/prometheus"]
+        end
+        PR["Prometheus"] -->|"HTTP scrape"| LS
+    end
+    PROD ~~~ LOCAL
 ```
 
 운영에서는 `/actuator/prometheus`를 공개하지 않는다. 이 경로에는 JVM, HTTP 요청, 데이터베이스 커넥션 풀 같은 내부 상태가 포함되기 때문에 인증 없이 외부에 노출하면 안 된다. 공통 설정에서는 Prometheus export를 끄고 `application-local.yml`에서만 엔드포인트와 Registry를 활성화했다.
@@ -44,7 +57,7 @@ services:
       SPRING_PROFILES_ACTIVE: local
 ```
 
-기존에는 `spring.profiles.default: local` 설정 덕분에 프로파일을 생략해도 local로 실행됐다. 하지만 기본값이 바뀌면 Prometheus Target만 `404`나 `401`로 조용히 깨질 수 있다. 스크레이프 엔드포인트가 local 전용이라는 전제조건을 Compose에도 남겼다.
+수집 엔드포인트는 로컬에서만 열리므로 Compose에서도 로컬 프로파일을 명시했다. 지금은 생략해도 로컬로 실행되지만 기본값이 바뀌면 앱은 떠 있어도 수집 요청만 `404`나 `401`로 실패할 수 있기 때문이다.
 
 ## Docker Compose에 Prometheus 추가
 
@@ -124,7 +137,7 @@ scrape_configs:
         replacement: "$1"
 ```
 
-`scrape_interval`은 메트릭을 가져오는 주기이고 `evaluation_interval`은 recording rule을 다시 계산하는 주기다. 둘 다 15초로 설정했다.
+메트릭 수집과 미리 정의한 집계식의 재계산은 각각 15초마다 실행하도록 설정했다.
 
 Prometheus 컨테이너에서 `localhost`는 Prometheus 자신을 가리킨다. 같은 Compose 네트워크의 서버에는 Docker DNS가 제공하는 서비스 이름인 `manyak-server`로 접근해야 한다.
 
@@ -134,7 +147,7 @@ http://manyak-server:8080/actuator/prometheus
 
 반대로 호스트 브라우저는 Docker 내부 이름을 해석하지 못할 수 있다. 원본 메트릭을 직접 열 때는 게시 포트를 통해 `http://localhost:8080/actuator/prometheus`로 접근한다.
 
-`relabel_configs`에서는 수집한 시계열에 로컬 환경을 나타내는 라벨을 붙였다.
+운영 데이터와 구분할 수 있도록 수집한 시계열에 로컬 환경을 나타내는 라벨을 붙였다.
 
 ```text
 environment="local"

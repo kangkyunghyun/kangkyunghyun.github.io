@@ -22,11 +22,13 @@ tags: [백엔드, 모니터링]
 
 이 글의 명령어와 설정은 다음 환경에서 확인했다.
 
-- Java 21
-- Kotlin 2.2.21
-- Spring Boot 4.0.6
-- Micrometer Prometheus Registry 1.16.5
-- Gradle Kotlin DSL
+| 항목 | 환경 |
+| --- | --- |
+| Java | 21 |
+| Kotlin | 2.2.21 |
+| Spring Boot | 4.0.6 |
+| Micrometer Prometheus Registry | 1.16.5 |
+| 빌드 설정 | Gradle Kotlin DSL |
 
 ## 기존 도구의 한계
 
@@ -170,7 +172,7 @@ application-local.yml
 
 Actuator가 엔드포인트를 노출해도 Spring Security가 요청을 차단할 수 있다. 이 프로젝트는 일부 공개 경로를 먼저 허용하고 나머지 요청에는 인증을 요구한다.
 
-`SecurityConfig.kt`의 공개 경로에 `/actuator/prometheus`를 추가했다.
+Prometheus가 인증 정보 없이 수집할 수 있도록 보안 설정에서 `/actuator/prometheus` 접근을 허용했다.
 
 ```kotlin
 .requestMatchers(
@@ -181,7 +183,7 @@ Actuator가 엔드포인트를 노출해도 Spring Security가 요청을 차단�
 ).permitAll()
 ```
 
-`permitAll()`로 지정한 경로는 JWT나 로그인 정보 없이 요청할 수 있다. Actuator 노출 설정과 Spring Security 허용 설정은 역할이 다르다.
+수집 경로를 만드는 일과 그 경로에 접근을 허용하는 일은 별개다. Actuator에서 엔드포인트를 노출해도 Spring Security가 요청을 막으면 Prometheus는 읽지 못한다.
 
 - Actuator 노출 설정: 엔드포인트를 생성할지 결정한다.
 - Spring Security 설정: 생성된 엔드포인트에 누가 접근할지 결정한다.
