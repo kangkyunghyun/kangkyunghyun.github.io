@@ -54,7 +54,7 @@ VPC를 퍼블릭, 앱, DB 서브넷으로 나누고 앱 서브넷의 EC2 한 대
 
 Ver.2는 컨테이너 기반 운영 전환에 중점을 두었다.
 
-로그를 Fluent Bit으로 모아 OpenSearch에 보내기로 하면서 목표 구성이던 ECS Fargate로 옮기고 Fluent Bit은 FireLens로 붙였다. 데이터 계층은 그대로 두고 server, ai, FireLens를 태스크 하나에 담았다. 배포는 SSM에서 ECS `force-new-deployment`로 바꾸고 DB 비밀번호 재동기화도 EC2 스크립트에서 Lambda로 옮겼다. 전환이 끝난 뒤 EC2는 회수했다.
+로그를 Fluent Bit으로 모아 OpenSearch에 보내기로 하면서 목표 구성이던 ECS Fargate로 옮기고 Fluent Bit은 FireLens로 붙였다. 데이터 계층은 그대로 두고 server, ai, FireLens를 태스크 하나에 담았다. 배포는 SSM에서 ECS `force-new-deployment`로 바꾸고 DB 비밀번호 재동기화도 EC2 스크립트에서 Lambda로 옮겼다.
 
 ### Ver.3 서비스 분리
 
@@ -62,7 +62,7 @@ Ver.2는 컨테이너 기반 운영 전환에 중점을 두었다.
 
 Ver.3은 서비스 분리에 중점을 두었다.
 
-푸시 알림을 별도 서비스로 떼어 SQS와 DLQ로 server와 비동기로 연결했다. 내부 호출은 Cloud Map 사설 DNS로 하고 공개 ALB에서는 내부 API 경로를 막았다. ai도 server 태스크에서 별도 서비스로 분리해 server가 Cloud Map 주소로 동기 호출한다. 서비스마다 따로 늘릴 수 있고 server 태스크에 남은 AI 사이드카를 마저 빼면 AI 배포가 server를 재시작하지 않는다.
+푸시 알림을 별도 서비스로 떼어 SQS와 DLQ로 server와 비동기로 연결했다. 내부 호출은 Cloud Map 사설 DNS로 하고 공개 ALB에서는 내부 API 경로를 막았다. ai도 server 태스크에서 별도 서비스로 분리해 server가 Cloud Map 주소로 동기 호출한다. 서비스마다 따로 늘릴 수 있다.
 
 ### Ver.4 가용성 이중화
 
