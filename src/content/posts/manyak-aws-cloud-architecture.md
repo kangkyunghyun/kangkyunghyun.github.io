@@ -8,7 +8,7 @@ tags: [백엔드]
 
 ## 시스템 구성
 
-![현재 구성도. server, notification, ai, PDC 태스크가 2a와 2c에 하나씩 있고 NAT, RDS, Redis도 두 AZ에 나뉘어 있다](/images/manyak-aws-cloud-architecture/ver4.png)
+![현재 구성도. server, notification, ai, PDC 태스크가 2a와 2c에 하나씩 있고 2a에 Data Prepper 태스크가 있다. NAT, RDS, Redis도 두 AZ에 나뉘어 있다](/images/manyak-aws-cloud-architecture/ver5.png)
 
 마냑 운영 인프라는 AWS 서울 리전에서 동작하고 모든 리소스를 Terraform으로 관리한다. VPC는 두 AZ에 퍼블릭, 앱, DB 서브넷을 하나씩 둔다.
 
@@ -22,7 +22,7 @@ ALB와 NAT Gateway가 있다. NAT는 AZ마다 하나씩 두고 각 AZ의 앱 서
 
 ### 앱 레이어
 
-ECS Fargate 서비스 네 개가 두 AZ에 태스크를 하나씩 띄운다. server는 API 서버, ai는 스토리 생성과 채팅을 맡는 AI 서버, notification은 푸시 알림 서버, Grafana PDC는 운영 DB 통계를 Grafana Cloud로 조회하는 에이전트다. server, ai, notification은 CPU 사용률에 따라 태스크를 2개에서 4개까지 조정한다.
+ECS Fargate 서비스 네 개가 두 AZ에 태스크를 하나씩 띄운다. server는 API 서버, ai는 스토리 생성과 채팅을 맡는 AI 서버, notification은 푸시 알림 서버, Grafana PDC는 운영 DB 통계를 Grafana Cloud로 조회하는 에이전트다. server, ai, notification은 CPU 사용률에 따라 태스크를 2개에서 4개까지 조정한다. 트레이스를 모으는 Data Prepper는 Fargate Spot 태스크 하나로 띄운다.
 
 server가 ai를 부르는 동기 호출과 notification이 server를 부르는 내부 호출에는 Cloud Map 사설 DNS를 쓴다. server가 보내는 푸시 요청은 SQS 표준 큐를 거쳐 notification이 받고 다섯 번 실패한 메시지는 DLQ로 간다.
 
@@ -32,7 +32,7 @@ PostgreSQL은 RDS Multi-AZ로 2c에 대기본을 둔다. Redis는 ElastiCache �
 
 ### 관측과 운영
 
-각 태스크의 FireLens(Fluent Bit) 사이드카가 로그를 OpenSearch와 CloudWatch로 보낸다. 메트릭은 OTLP로 Grafana Cloud에 보내고 오류는 Sentry, LLM 호출은 Langfuse로 본다. RDS, Redis, SQS DLQ 경보는 CloudWatch에서 SNS로 알린다. DB 비밀번호가 로테이션되면 EventBridge가 5분마다 부르는 Lambda가 태스크를 다시 배포해 새 비밀번호를 읽게 한다.
+각 태스크의 FireLens(Fluent Bit) 사이드카가 로그를 OpenSearch와 CloudWatch로 보낸다. server, ai, notification은 스팬을 OTLP로 Data Prepper에 보내고 Data Prepper가 트레이스와 서비스 맵을 같은 OpenSearch에 쓴다. 메트릭은 OTLP로 Grafana Cloud에 보내고 오류는 Sentry, LLM 호출은 Langfuse로 본다. RDS, Redis, SQS DLQ 경보는 CloudWatch에서 SNS로 알린다. DB 비밀번호가 로테이션되면 EventBridge가 5분마다 부르는 Lambda가 태스크를 다시 배포해 새 비밀번호를 읽게 한다.
 
 ### 배포
 
@@ -71,3 +71,15 @@ Ver.3은 서비스 분리에 중점을 두었다.
 Ver.4는 가용성 이중화에 중점을 두었다.
 
 2a AZ 하나에 장애가 나도 서비스가 이어지도록 NAT를 AZ마다 두고 RDS를 Multi-AZ로 바꿨다. ECS 서비스는 두 AZ에 태스크를 하나씩 띄우고 CPU 사용률로 오토스케일링한다. Redis는 단일 노드를 데이터 이전 없이 복제 그룹의 Primary로 편입하고 2c에 Replica를 붙여 자동 장애 조치를 켰다. 강제 장애 조치로 확인한 전환 시간은 RDS 24초, Redis 19초다.
+
+### Ver.5 분산 추적
+
+![Ver.5 구성도. 2a 앱 서브넷에 Data Prepper 태스크가 추가되고 server, ai, notification에서 스팬이 모여 OpenSearch로 간다](/images/manyak-aws-cloud-architecture/ver5.png)
+
+Ver.5는 분산 추적에 중점을 두었다.
+
+server, ai, notification이 OpenTelemetry로 스팬을 만들어 OTLP로 보내고 서비스 경계는 W3C `traceparent`로 잇는다. HTTP 호출은 헤더에 싣고 SQS를 거치는 푸시 요청은 메시지 속성에 싣는다. OpenSearch의 Trace Analytics 화면은 트레이스마다 루트 스팬 이름이 채워진 스팬과 서비스 사이 호출 관계를 따로 요구하는데 이 둘은 Data Prepper가 만든다. 그래서 로그 수집기와 별도로 Data Prepper를 두고 로그와 같은 OpenSearch 도메인에 쓴다.
+
+수집기는 관리형 OpenSearch Ingestion 대신 Fargate Spot 태스크 하나로 직접 운영한다. 관리형은 최소 용량만 켜 둬도 서울 리전에서 월 약 194달러다. 앱은 스팬을 비동기로 모아 보내므로 수집기가 멈춰도 요청 처리에는 영향이 없고 그동안의 트레이스만 누락된다. Data Prepper는 상태를 유지하는 처리기라 한 트레이스의 스팬을 한 인스턴스에 모아야 하며 태스크를 늘리려면 인스턴스끼리 스팬을 넘겨주는 설정이 함께 필요하다. 지금은 하나로 두었다.
+
+채팅 한 턴을 추적하면 10.8초 중 ai가 65%를 차지하고 스트리밍이 끝난 뒤 순서대로 이어지는 판정 호출이 2.9초다. 서버 쪽 처리는 쿼리와 큐 대기를 합쳐도 수십 밀리초다.
