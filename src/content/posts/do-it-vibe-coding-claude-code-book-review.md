@@ -4,13 +4,15 @@ date: 2026-10-11
 tags: [서평]
 ---
 
-![『Do it! 바이브 코딩 + 클로드 코드』 표지](/images/do-it-vibe-coding-claude-code-book-review/cover.png)
+![직접 촬영한 『Do it! 바이브 코딩 + 클로드 코드』 표지](/images/do-it-vibe-coding-claude-code-book-review/book-photo.jpg)
 
 고경희 지음 · 이지스퍼블리싱 · [책 소개](https://www.easyspub.co.kr/20_Menu/BookView/PUB/905/PUB)
 
 > 출판사로부터 도서를 제공받아 작성한 서평입니다.
 
 ## 프로젝트를 만들며 배우는 기초
+
+![뉴스 대시보드, RSS 수집, AI 번역 실습과 깃 사용 과정을 담은 책 목차](/images/do-it-vibe-coding-claude-code-book-review/book-pages.jpg)
 
 『Do it! 바이브 코딩 + 클로드 코드』는 클로드 코드의 가장 기초적인 사용법을 익힌 뒤, 바로 프로젝트를 하나둘 만들어보며 배우는 책입니다. 필요한 기능을 먼저 전부 공부하기보다 무언가를 만드는 과정에서 익히도록 구성되어 있습니다. 깃도 그중 하나입니다. 프로젝트를 진행하면서 자연스럽게 깃 기능을 접할 수 있다는 점이 좋았습니다.
 
