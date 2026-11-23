@@ -42,7 +42,7 @@ type Entry = {
 export const activity: Entry[] = [
 	{
 		period: '2026. 4. ~ 현재',
-		title: 'AI·SW 마에스트로',
+		title: 'AI·SW마에스트로',
 		aside: '17기 연수생',
 		desc: '과학기술정보통신부 SW 인재양성 사업',
 		href: 'https://swmaestro.ai/',
