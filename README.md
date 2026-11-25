@@ -1,6 +1,6 @@
 # kangkyunghyun.github.io
 
-강경현의 포트폴리오 겸 기술 블로그. 개발하며 겪은 문제와 그때 내린 결정을 기록합니다.
+강경현의 기술 블로그. 개발하며 겪은 문제와 그때 내린 결정을 기록합니다. 이력서는 [/resume/](https://kangkyunghyun.github.io/resume/)에 있습니다.
 
 **<https://kangkyunghyun.github.io>**
 
@@ -10,14 +10,14 @@ Astro로 빌드하는 정적 사이트입니다. **런타임 의존성이 없고
 
 | 경로 | 내용 |
 | --- | --- |
-| `/` | 포트폴리오 — 프로젝트·기술 스택·활동·학력·자격·수상 |
-| `/blog` | 글 목록 |
+| `/` | 글 목록 |
+| `/resume/` | 이력서(정적 HTML, PDF 다운로드) |
 | `/posts/<파일명>` | 글 상세 |
-| `/projects/<파일명>` | 프로젝트 상세 |
 
 ```text
 src/content/posts/*.md       글
-src/content/projects/*.md    프로젝트 (메인 카드와 상세가 같은 파일을 읽음)
+src/content/projects/*.md    옛 프로젝트 글 (페이지 없음, 재료로 보관)
+public/resume/               이력서 공개본 (resume 레포에서 생성, 직접 수정 금지)
 src/content.config.ts        두 컬렉션의 프런트매터 스키마
 src/layouts/Base.astro       공통 셸과 전역 스타일 전부
 src/components/              Timeline · Icon · Toc

@@ -17,6 +17,8 @@ const postDates = new Map(
 
 // https://astro.build/config
 export default defineConfig({
+	// 옛 주소. 블로그 목록이 메인(/)으로 옮겨 왔다
+	redirects: { '/blog': '/' },
 	// 배포처 정해지면 여기만 바꾸면 됨 (canonical·RSS가 이 값을 씀)
 	site: 'https://kangkyunghyun.github.io',
 	integrations: [
@@ -26,19 +28,20 @@ export default defineConfig({
 			enableLog: false,
 		}),
 		sitemap({
+			// 이력서는 public/resume/ 정적 HTML이라 라우트가 아니다. 직접 넣는다
+			customPages: ['https://kangkyunghyun.github.io/resume/'],
 			filter(page) {
 				const path = new URL(page).pathname;
 				return (
 					path === '/' ||
-					path === '/blog/' ||
-					path.startsWith('/posts/') ||
-					path.startsWith('/projects/')
+					path === '/resume/' ||
+					path.startsWith('/posts/')
 				);
 			},
 			serialize(item) {
 				const path = new URL(item.url).pathname;
-				if (path === '/') return { ...item, changefreq: 'monthly', priority: 1 };
-				if (path === '/blog/') return { ...item, changefreq: 'weekly', priority: 0.9 };
+				if (path === '/') return { ...item, changefreq: 'weekly', priority: 1 };
+				if (path === '/resume/') return { ...item, changefreq: 'monthly', priority: 0.9 };
 				if (path.startsWith('/posts/')) {
 					return {
 						...item,

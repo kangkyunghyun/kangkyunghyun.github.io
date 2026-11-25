@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta name="description" content="강경현 백엔드 엔지니어 이력서">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>강경현 | 백엔드 엔지니어 이력서</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root { --accent: #2f8f5b; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { margin: 0; background: #f2f2f2; color: #111;
+    font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 10pt; line-height: 1.6; word-break: keep-all; }
+  .page { width: 210mm; height: 297mm; margin: 10mm auto; padding: 11mm 18mm 11mm; background: #fff; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,.08); }
+  a { color: inherit; text-decoration: none; }
+  h1 { margin: 0; font-size: 20pt; font-weight: 700; letter-spacing: -0.01em; }
+  h1 small { font-size: 11pt; font-weight: 500; color: #555; margin-left: 4px; }
+  .top { display: grid; grid-template-columns: 1fr auto 24mm; gap: 7mm; align-items: end; padding-bottom: 10px; border-bottom: 2px solid #111; }
+  .photo { width: 24mm; height: 31mm; object-fit: cover; border-radius: 3px; }
+  .role { margin-top: 3px; color: var(--accent); font-weight: 600; font-size: 10pt; }
+  .links { list-style: none; margin: 0; padding: 0; font-size: 9.2pt; display: flex; flex-direction: column; gap: 3px; }
+  .links li { display: flex; align-items: center; gap: 8px; margin: 0; }
+  .links svg { width: 13px; height: 13px; fill: #6b7280; flex: none; }
+  .links a { color: #1f2328; }
+  .links svg.line { fill: none; stroke: #6b7280; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .intro { margin: 8px 0 0; color: #333; }
+  h3 { margin: 10px 0 3px; font-size: 9.6pt; font-weight: 700; color: #333; }
+  .skill { display: grid; grid-template-columns: 96px 1fr; }
+  .skill .k { color: #666; font-weight: 600; }
+  .proj + .proj { margin-top: 10px; }
+  .stack { color: #777; font-size: 9pt; margin-top: 2px; }
+  .plinks { display: inline-flex; gap: 5px; margin: 0 6px 0 5px; vertical-align: -1px; }
+  .plinks svg { width: 12px; height: 12px; fill: #6b7280; display: block; }
+  .plinks { align-items: center; }
+  .plinks { gap: 9px; }
+  .proj > .row .name + .muted { margin-left: 4px; }
+  .plinks a { display: inline-flex; align-items: center; gap: 3px; color: #6b7280; font-size: 9pt; line-height: 1; text-decoration: none; }
+  .plinks svg { width: 11px; height: 11px; }
+  .stack a, .note a { color: var(--accent); }
+  .sep { color: #ccc; margin: 0 4px; }
+  .intro { font-size: 10.5pt; font-weight: 600; color: #222; }
+  .cont { margin-top: 0; }
+  .foot { margin-top: 16px; font-size: 8.4pt; color: #999; }
+  section { margin-top: 11px; }
+  h2 { margin: 0 0 6px; padding-bottom: 4px; font-size: 10pt; font-weight: 700; color: var(--accent); letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 1px solid #e3e5ea; }
+  .row { display: flex; justify-content: space-between; gap: 16px; }
+  .when { color: #888; white-space: nowrap; font-variant-numeric: tabular-nums; font-size: 9.2pt; }
+  .name { font-weight: 600; }
+  .muted { color: #666; }
+  .sub { color: #777; margin-left: 10px; }
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 9mm; }
+  .subline { display: block; color: #777; font-size: 9.2pt; }
+  .duo > section { margin-top: 11px; }
+  .note { color: #555; margin: 1px 0 6px; }
+  ul { margin: 0; padding-left: 14px; }
+  li { margin: 2px 0; }
+  li::marker { color: var(--accent); }
+  .rows .row + .row { margin-top: 2px; }
+  @page { size: A4; margin: 0; }
+  @media print { body { background: #fff; } .page { margin: 0; height: 296mm; box-shadow: none; break-after: page; } .page:last-of-type { break-after: auto; } }
+  @media screen and (max-width: 820px) { .page { width: auto; height: auto; margin: 0 0 12px; padding: 22px; } .row { flex-direction: column; gap: 0; } .top { grid-template-columns: 1fr 22mm; } }
+
+  .lead { margin: 1px 0 4px; color: #333; }
+  .task { margin-top: 5px; }
+  .tt { font-weight: 600; font-size: 9.8pt; color: #222; }
+  .task ul { margin-top: 1px; }
+  .plink { font-size: 9pt; margin: 0 0 2px; }
+  .plink a { color: var(--accent); }
+  .proj li b { font-weight: 600; }
+  /* 쪽마다 남는 여백을 간격으로 나눔(2026-11-25, 여백 없이 채우기) */
+  main.page:first-of-type .proj li { margin: 12px 0 }
+  main.page:nth-of-type(2) .proj li { margin: 8px 0; }
+  main.page:nth-of-type(2) > section + section { margin-top: 34px; }
+  section.first { margin-top: 0; }
+  .rows .subline + .row { margin-top: 4px; }
+
+  .dl { position: fixed; top: 16px; right: 16px; z-index: 10; padding: 8px 14px; border-radius: 8px;
+        background: #2f8f5b; color: #fff; font-size: 13px; font-weight: 600; text-decoration: none;
+        box-shadow: 0 1px 4px rgba(0,0,0,.15); }
+  .dl:hover { background: #26784c; }
+  @media print { .dl { display: none !important; } }
+  @media screen and (max-width: 820px) { .dl { position: static; display: block; margin: 12px; text-align: center; } }
+</style>
+</head>
+<body>
+<a class="dl" href="kang-kyunghyun-resume.pdf" download="강경현_이력서.pdf">PDF 다운로드</a>
+<main class="page">
+  <header class="top">
+    <div class="who">
+      <h1>강경현 <small>Kyunghyun Kang</small></h1>
+      <div class="role">Backend Engineer</div>
+      <p class="intro">아이디어를 사람들이 쓰는 서비스로 만들고,<br>쓰이는 동안 생기는 문제를 데이터로 찾아 고칩니다.</p>
+    </div>
+    <ul class="links">
+      <li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 14H1.75A1.75 1.75 0 0 1 0 12.25v-8.5C0 2.784.784 2 1.75 2ZM1.5 12.251c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V5.809L8.38 9.397a.75.75 0 0 1-.76 0L1.5 5.809v6.442Zm13-8.181v-.32a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25v.32L8 7.88Z"/></svg><a href="mailto:kangkh0906@gmail.com">kangkh0906@gmail.com</a></li>
+      <li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.03 16 3.61 12.406 0 7.984 0 3.563 0 0 3.61 0 8.031a7.88 7.88 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.25c-.219.094-.5.156-.75.156-1.031 0-1.64-.562-2.078-1.609-.172-.422-.36-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.86.313.452.64.655 1.031.655s.641-.14 1-.5c.266-.265.47-.5.657-.656"/></svg><a href="https://github.com/kangkyunghyun">kangkyunghyun</a></li>
+      <li><svg class="line" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg><a href="https://www.linkedin.com/in/kangkyunghyun">kangkyunghyun</a></li>
+    </ul>
+    <img class="photo" src="photo.jpg" alt="강경현 사진">
+  </header>
+
+  <section>
+    <h2>Projects</h2>
+    <div class="proj">
+      <div class="row"><span><span class="name">마냑</span> <span class="muted">Backend / Infra 전담, 3인 팀</span></span><span class="when">2026.04 – 현재</span></div>
+      <div class="plink"><a href="https://manyak.app">manyak.app</a><span class="sep">|</span><a href="https://play.google.com/store/apps/details?id=app.manyak">Google Play</a><span class="sep">|</span><a href="https://github.com/KIM-N-KANG/manyak-server">GitHub</a></div>
+      <p class="lead">키워드로 만든 이야기 속 주인공이 되어 AI와 채팅하는 스토리 서비스입니다. Spring Boot 서버, Next.js 관리자 웹과 AWS 인프라를 설계, 구축했습니다. 누적 가입 700+명, 게스트 포함 최대 MAU 3,941명 규모로 운영 중입니다.</p>
+      <ul>
+        <li><b>서버 증설 없이 동시 채팅 수용량을 약 25명 → 390명으로 늘렸습니다.</b> 부하 테스트에서 CPU와 DB는 여유로운데 응답이 밀리는 이유를 트레이스로 추적해, 채팅 턴이 스레드풀에서 기다리던 병목을 찾았습니다. 스레드풀이 대기열 100개가 다 차기 전에는 스레드를 4개만 쓰는 것이 원인이라, 기본 스레드 수를 최대값(64)과 같게 맞췄습니다.</li>
+        <li><b>서버, AI, 알림을 거치는 요청을 한 트레이스로 추적하게 했습니다.</b> 스레드 전환과 비동기 메시지에도 트레이스 컨텍스트를 넘기고, 로그, 메트릭과 함께 OpenSearch Observability Stack에서 보게 했습니다. 트레이스로 채팅 지연의 대부분이 AI 스트리밍(약 9초)임을 확인했고, 턴마다 56개씩 찍히던 DB 스팬을 쿼리 스팬만 남겨 줄였습니다.</li>
+        <li><b>경보가 못 잡는 오류 없는 지연을 4분 안에 찾는 장애 진단 에이전트를 만들었습니다.</b> 트레이스, 로그, 메트릭을 읽기 전용으로 조회해 원인과 코드 위치를 찾고, Slack 스레드로 보고해 바로 이어서 물어볼 수 있게 했습니다. 부하 테스트에서 찾은 병목 4건을 보관해 둔 기록으로 재현해 4건 모두 감지했습니다.</li>
+        <li><b>SSE 연결이 끊겨 응답을 못 받은 사용자가 재전송하면서 생기던 중복 저장/과금을 없앴습니다.</b> 생성 중 재요청은 락으로 막고, 생성 과정을 Redis Streams에 기록해 다시 연결하면 끊긴 응답을 처음부터 이어 받게 했습니다. 인터럽트(cancel(true))로는 생성이 멈추지 않아 끊긴 뒤에도 저장, 과금되던 문제는 취소와 저장 중 먼저 온 쪽만 처리되게(상태 CAS) 해 막았습니다.</li>
+        <li><b>실패하면 재시도 없이 사라지던 푸시 알림을 끝까지 전달하게 했습니다.</b> 트랜잭션 아웃박스와 SQS로 재시도하고, 알림을 별도 서비스로 분리해 FCM이 느려져도 채팅에 영향이 없게 했습니다. 알림 서비스를 멈춘 동안에도 스토리 생성은 그대로 응답했고, 다시 켜자 밀린 알림을 이어서 처리했습니다.</li>
+        <li><b>Redis 장애 조치 뒤 서버 재연결을 54초 → 33초로 줄였습니다.</b> 강제 장애 조치 실험에서 재연결 시도 간격이 0.4, 9, 28, 54초로 벌어지는 것을 찾고, 재연결 간격, 연결 타임아웃, 명령 타임아웃을 줄여 5xx 없이 복구되게 했습니다.</li>
+        <li><b>AWS 비용을 연 약 6,700달러 → 4,800달러로, 약 1,900달러 줄였습니다.</b> 다중 AZ는 유지한 채 7일 CPU와 메모리 사용량을 근거로 과하게 잡힌 태스크 사양을 줄이고, 비용이 낮은 Fargate Spot과 Graviton으로 서버를 옮겼습니다.</li>
+      </ul>
+      <div class="stack">Kotlin, Spring Boot, PostgreSQL, Redis, ECS Fargate, SQS, Terraform, OpenTelemetry</div>
+    </div>
+    <div class="proj">
+      <div class="row"><span><span class="name">LinKHU</span> <span class="muted">1인 개발 및 운영</span></span><span class="when">2026.02 – 현재</span></div>
+      <div class="plink"><a href="https://chromewebstore.google.com/detail/ihidkmjkpfphgljieecfcikljaopcldp">Chrome 웹 스토어</a><span class="sep">|</span><a href="https://github.com/kangkyunghyun/LinKHU">GitHub</a></div>
+      <p class="lead">경희대 웹서비스 257개를 검색과 단축키로 바로 여는 브라우저 확장입니다. 평일 DAU 100+ 규모로, 주간 사용자 149명 중 대부분이 평일마다 사용합니다. 주간 사용자는 2월 말 65명에서 두 배 넘게 늘었습니다.</p>
+      <ul>
+        <li><b>257개 교내 링크를 매일 자동 검사해 주소가 바뀐 곳을 GitHub 이슈로 받게 했습니다.</b> 해외 망을 막는 교내 사이트가 있어 국내에 늘 켜 둔 서버에서 돌리고, 이틀 넘게 실패한 곳만 이슈 하나로 모아 일시 장애로는 알리지 않게 했습니다.</li>
+        <li><b>목록 파일 하나만 고치면 검증부터 Chrome, Firefox 스토어 배포까지 이어지게 했습니다.</b> 검색 데이터, 다크 모드 아이콘, 지원 서비스 문서를 목록에서 생성하고, CI가 손으로 맞추다 생기던 불일치를 배포 전에 막아 혼자서도 운영할 수 있습니다. 테스트 125개가 매 배포를 검증하고, 외부 라이브러리 없이 운영합니다.</li>
+      </ul>
+      <div class="stack">JavaScript, GitHub Actions</div>
+    </div>
+  </section>
+</main>
+<main class="page">
+  <section class="first">
+    <div class="proj">
+      <div class="row"><span><span class="name">BOJ Performance</span> <span class="muted">1인 개발 및 운영</span></span><span class="when">2026.01 – 현재</span></div>
+      <div class="plink"><a href="https://chromewebstore.google.com/detail/boj-performance/bklabnmnfggmenngdnlndikconflcbij">Chrome 웹 스토어</a><span class="sep">|</span><a href="https://github.com/kangkyunghyun/boj-performance">GitHub</a></div>
+      <p class="lead">백준 채점 현황에서 내 코드의 실행 시간과 메모리가 최근 정답 제출 200건 중 상위 몇 %인지 분포 그래프로 보여 주는 브라우저 확장입니다. LeetCode에서 착안했습니다.</p>
+      <ul>
+        <li><b>다른 확장이 켜져 있을 때만 동작하던 문제를 사용자 피드백으로 찾아 해결했습니다.</b> 화면 조작은 정상이고 백준이 확장의 조회 요청에 빈 응답을 주는 것이 원인이라, 선언형 요청 규칙으로 Sec-Fetch 헤더를 페이지 이동 요청 값으로 바꿨습니다.</li>
+        <li><b>대회 공정성을 해친다는 사용자 피드백을 받고, 대회 중에는 통계를 보여 주지 않게 했습니다.</b> 대회 채점 현황 주소에는 대회 번호(contest_id)가 붙는다는 것을 찾아, 그 페이지에서는 확장이 동작하지 않게 했습니다.</li>
+        <li><b>백준 서버 부담을 줄이려고, 같은 문제를 다시 열 때는 새 제출만 받게 했습니다.</b> 받아 둔 표본의 가장 큰 제출 번호를 만나면 조회를 멈춰, 새 제출이 첫 페이지 안에 있으면 요청이 11번에서 2번으로 줄어듭니다.</li>
+      </ul>
+      <div class="stack">JavaScript, Chart.js</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Skills</h2>
+    <div class="rows">
+      <div class="skill"><span class="k">Backend</span><span>Kotlin, Spring Boot, JPA, PostgreSQL, Redis(Streams, Lua), OpenSearch</span></div>
+      <div class="skill"><span class="k">Infra</span><span>AWS(ECS Fargate, SQS), Kafka, Terraform, GitHub Actions, Docker</span></div>
+      <div class="skill"><span class="k">Observability</span><span>OpenTelemetry, OpenSearch Observability Stack, Prometheus, Sentry, k6</span></div>
+      <div class="skill"><span class="k">AI Tools</span><span>Claude Code, Codex</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Awards &amp; Competitions</h2>
+    <div class="rows">
+      <div class="row"><span>삼성전자 대학생 프로그래밍 챌린지(SCPC) 알고리즘 부문 본선 진출(진출자 130명)</span><span class="when">2026.08</span></div>
+      <div class="row"><span>SCSC 프로그래밍 경시대회 Div.3 Furiosa Prize(79명 중 4위)</span><span class="when">2026.05</span></div>
+      <div class="row"><span>경희대학교 봄 프로그래밍 경시대회 우수상(20명 중 3위)</span><span class="when">2026.05</span></div>
+      <div class="row"><span>경희대학교 가을 프로그래밍 경시대회 장려상(3인 팀, 15개 팀 중 4위)</span><span class="when">2025.10</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Activities</h2>
+    <div class="rows">
+      <div class="row"><span>경희대학교 알고리즘 수업 조교</span><span class="when">2026.03 – 현재</span></div>
+      <div class="subline">강의 자료 준비와 과제 채점</div>
+      <div class="row"><span>해킹/정보보안 동아리 HacKHU <span class="muted">기술 운영진</span></span><span class="when">2025.09 – 현재</span></div>
+      <div class="subline">DevSecOps 방식을 적용한 공식 웹사이트 개발 프로젝트 관리, 대학 연합 CTF 대회 운영 준비</div>
+      <div class="row"><span>GDG on Campus KHU <span class="muted">백엔드 멤버</span></span><span class="when">2025.09 – 2026.02</span></div>
+      <div class="subline">Spring, Google Cloud Platform 스터디</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Education</h2>
+    <div class="rows">
+      <div class="row"><span>경희대학교 컴퓨터공학과 <span class="muted">재학</span></span><span class="when">2022.03 – 2028.02</span></div>
+      <div class="subline">GPA 4.09/4.5<span class="sep">|</span>전액 장학금</div>
+      <div class="row"><span>AI·SW마에스트로 17기</span><span class="when">2026.04 – 현재</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Certifications</h2>
+    <div class="rows">
+      <div class="row"><span>TOPCIT<span class="sub">830점<span class="sep">|</span>수준 4</span></span><span class="when">2026.10</span></div>
+      <div class="row"><span>SQLD</span><span class="when">2026.03</span></div>
+      <div class="row"><span>정보처리기능사</span><span class="when">2023.04</span></div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

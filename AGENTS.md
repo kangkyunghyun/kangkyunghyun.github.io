@@ -1,15 +1,16 @@
 # kangkyunghyun.github.io
 
-강경현의 기술 블로그 겸 포트폴리오. 개발·기술 회고 위주. Astro + GitHub Pages.
+강경현의 기술 블로그. 개발·기술 회고 위주. Astro + GitHub Pages. 이력서는 `/resume/`에 정적 파일로 있다.
 
 제품·설계·운영 기준은 [spec/](spec/README.md)에 있다. 결정의 근거가 필요하면 [spec/3-2-DESIGN-DECISIONS.md](spec/3-2-DESIGN-DECISIONS.md)를 먼저 본다.
 
 ## 이 블로그의 규칙
 
-- **페이지 종류는 넷** — 포트폴리오(`/`) / 글 목록(`/blog`) / 글 상세(`/posts/<파일명>`) / 프로젝트 상세(`/projects/<파일명>`). 더 늘리지 않는다. 메인은 블로그가 아니라 포트폴리오이며, 이력은 한 페이지에서 끝나야 한다. 이력 데이터는 `src/data/resume.ts` 한 곳에 있다.
+- **페이지 종류는 셋** — 글 목록(`/`) / 글 상세(`/posts/<파일명>`) / 이력서(`/resume/`). 더 늘리지 않는다. 옛 `/blog`는 `/`로 넘긴다. 2026-11-26 포트폴리오 메인과 프로젝트 상세 페이지를 없앴다(이력서와 내용이 겹치고 갱신이 안 됨).
+- **`public/resume/`는 직접 고치지 않는다.** 원본은 비공개 레포 `kangkyunghyun/resume`의 `index.html`이고, 그 레포의 `.claude/skills/resume-writing/scripts/build-public.py`가 전화번호를 뺀 `index.html`과 사진을 여기 만든다. PDF(`kang-kyunghyun-resume.pdf`)는 그 HTML을 브라우저에서 인쇄해 넣는다. 글꼴은 이 페이지만 예외로 Pretendard CDN을 쓴다(원본과 똑같이 보이게).
 - **검증된 패키지로 몇 줄에 해결되면 의존성을 쓴다.** 클라이언트 JavaScript는 필요한 페이지에만 싣고 외부 호스트 요청은 만들지 않는다. 검색은 글이 30편 넘기 전엔 안 만들고 어드민·CMS는 두지 않는다. 마크다운 파일이 CMS다.
 - **분류는 `tags` 하나로만.** 카테고리는 쓰지 않는다. 둘 다 있으면 둘 다 관리 안 된다.
-- 글은 `src/content/posts/*.md`, 프로젝트는 `src/content/projects/*.md`. 스키마는 `src/content.config.ts`. 프로젝트는 메인 카드와 상세 페이지가 같은 파일 하나를 읽으므로 카드용 데이터를 따로 만들지 않는다.
+- 글은 `src/content/posts/*.md`. 스키마는 `src/content.config.ts`. `src/content/projects/*.md`는 페이지에 쓰지 않는 옛 프로젝트 글로, 포트폴리오 재료로만 남겨 둔다.
 - 사용자는 에디터를 열지 않는다. 글 요청이 오면 마크다운 작성부터 커밋·push까지 이쪽에서 한다.
 
 기존 블로그 <https://khyunx.tistory.com>(348편, 알고리즘·PS 위주)는 그대로 살아 있다. 옛 글을 옮길 때 티스토리 원문을 지우지 말고 본문만 이전 안내 링크로 갈아끼운다.
