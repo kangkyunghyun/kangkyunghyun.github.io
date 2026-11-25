@@ -10,7 +10,7 @@ export const GET: APIRoute = async ({ site }) => {
 	);
 
 	return rss({
-		title: '강경현 블로그',
+		title: '강경현 | 블로그',
 		description: '개발하며 겪은 문제와 그때 내린 결정을 기록합니다.',
 		site: origin,
 		xmlns: { atom: 'http://www.w3.org/2005/Atom' },
