@@ -319,7 +319,6 @@ const inBlog = path === '/' || path.startsWith('/posts');
 		max-width: var(--measure);
 		margin: 0 auto;
 		padding-bottom: 0.75rem;
-		border-bottom: 2px solid var(--fg);
 	}
 	/* 이력서 머리처럼 이름 + 영문 이름 */
 	.wordmark {
@@ -389,7 +388,7 @@ const inBlog = path === '/' || path.startsWith('/posts');
 	.site-footer {
 		margin-top: 4rem;
 		padding: 3.5rem var(--pad) 3rem;
-		border-top: 2px solid var(--fg);
+		border-top: 1px solid var(--line);
 	}
 	.site-footer .cols {
 		display: grid;
@@ -492,10 +491,8 @@ const inBlog = path === '/' || path.startsWith('/posts');
 		text-transform: uppercase;
 	}
 	/* 라운드 카드. 선 대신 면으로 구분한다 */
-	/* 카드는 면 없이 위아래 선으로만 묶는다 */
+	/* 카드는 면도 테두리도 없이, 행 사이 선으로만 나눈다 */
 	.card {
-		border-top: 1px solid var(--line);
-		border-bottom: 1px solid var(--line);
 		overflow: hidden;
 	}
 	/* 카드 안 행 사이 구분선. 카드 끝까지 닿지 않고
