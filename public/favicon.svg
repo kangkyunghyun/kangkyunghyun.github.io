@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <title>Kyunghyun Kang</title>
   <style>
-    .mark { stroke: #3182f6; }
+    .mark { stroke: #2f8f5b; }
     @media (prefers-color-scheme: dark) {
-      .mark { stroke: #4593fc; }
+      .mark { stroke: #5cc28a; }
     }
   </style>
   <g
