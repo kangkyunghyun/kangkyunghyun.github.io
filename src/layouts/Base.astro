@@ -491,8 +491,9 @@ const inBlog = path === '/' || path.startsWith('/posts');
 		text-transform: uppercase;
 	}
 	/* 라운드 카드. 선 대신 면으로 구분한다 */
-	/* 카드는 면도 테두리도 없이, 행 사이 선으로만 나눈다 */
+	/* 카드는 면 없이, 맨 위 선과 행 사이 선으로만 나눈다 */
 	.card {
+		border-top: 1px solid var(--line);
 		overflow: hidden;
 	}
 	/* 카드 안 행 사이 구분선. 카드 끝까지 닿지 않고
