@@ -7,8 +7,9 @@
 ## 이 블로그의 규칙
 
 - **페이지 종류는 셋** — 글 목록(`/`) / 글 상세(`/posts/<파일명>`) / 이력서(`/resume/`). 더 늘리지 않는다. 옛 `/blog`는 `/`로 넘긴다. 2026-11-26 포트폴리오 메인과 프로젝트 상세 페이지를 없앴다(이력서와 내용이 겹치고 갱신이 안 됨).
-- **`public/resume/`는 직접 고치지 않는다.** 원본은 비공개 레포 `kangkyunghyun/resume`의 `index.html`이고, 그 레포의 `.claude/skills/resume-writing/scripts/build-public.py`가 전화번호를 뺀 `index.html`과 사진을 여기 만든다. PDF(`kang-kyunghyun-resume.pdf`)는 그 HTML을 브라우저에서 인쇄해 넣는다. 글꼴은 이 페이지만 예외로 Pretendard CDN을 쓴다(원본과 똑같이 보이게).
+- **`public/resume/`는 직접 고치지 않는다.** 원본은 비공개 레포 `kangkyunghyun/resume`의 `index.html`이고, 그 레포의 `.claude/skills/resume-writing/scripts/build-public.py`가 원본과 같은 `index.html`(화면 전용 PDF 다운로드 버튼만 추가), 사진, `resume.pdf` 사본(`kang-kyunghyun-resume.pdf`)을 여기 만든다. 글꼴은 이 페이지만 예외로 Pretendard CDN을 쓴다(원본과 똑같이 보이게).
 - **검증된 패키지로 몇 줄에 해결되면 의존성을 쓴다.** 클라이언트 JavaScript는 필요한 페이지에만 싣고 외부 호스트 요청은 만들지 않는다. 검색은 글이 30편 넘기 전엔 안 만들고 어드민·CMS는 두지 않는다. 마크다운 파일이 CMS다.
+- **디자인은 이력서와 같은 결** (2026-11-26): 흰 바탕, 검은 글씨, 초록 포인트 `#2f8f5b` 하나. 회색 카드 면과 둥근 알약 대신 선으로 나눈다(머리 아래 굵은 선, 섹션 제목은 초록 대문자 + 가는 선). 색은 `Base.astro`의 변수만 바꾼다(`--blue`는 이름만 남은 초록).
 - **분류는 `tags` 하나로만.** 카테고리는 쓰지 않는다. 둘 다 있으면 둘 다 관리 안 된다.
 - 글은 `src/content/posts/*.md`. 스키마는 `src/content.config.ts`. `src/content/projects/*.md`는 페이지에 쓰지 않는 옛 프로젝트 글로, 포트폴리오 재료로만 남겨 둔다.
 - 사용자는 에디터를 열지 않는다. 글 요청이 오면 마크다운 작성부터 커밋·push까지 이쪽에서 한다.

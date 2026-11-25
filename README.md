@@ -17,7 +17,7 @@ Astro로 빌드하는 정적 사이트입니다. **런타임 의존성이 없고
 ```text
 src/content/posts/*.md       글
 src/content/projects/*.md    옛 프로젝트 글 (페이지 없음, 재료로 보관)
-public/resume/               이력서 공개본 (resume 레포에서 생성, 직접 수정 금지)
+public/resume/               이력서 공개본 (resume 레포에서 복사, 직접 수정 금지)
 src/content.config.ts        두 컬렉션의 프런트매터 스키마
 src/layouts/Base.astro       공통 셸과 전역 스타일 전부
 src/components/              Timeline · Icon · Toc

@@ -215,10 +215,11 @@ const schema = {
 		padding-bottom: 1.25rem;
 		border-bottom: 1px solid var(--line);
 	}
+	/* 이력서처럼 면 없이 글자와 초록 밑줄로만 고른 것을 보여 준다 */
 	.filters button {
-		padding: 0.45rem 0.95rem;
+		padding: 0.35rem 0.6rem;
 		border: 0;
-		border-radius: 999px;
+		border-radius: 0;
 		background: none;
 		color: var(--fg3);
 		font: inherit;
@@ -230,12 +231,11 @@ const schema = {
 			color 140ms ease;
 	}
 	.filters button:hover {
-		background: var(--line);
 		color: var(--fg);
 	}
 	.filters button[aria-pressed='true'] {
-		background: var(--fg);
-		color: var(--bg);
+		color: var(--accent);
+		box-shadow: inset 0 -2px 0 var(--accent);
 	}
 
 	.count {
@@ -250,11 +250,10 @@ const schema = {
 		grid-template-columns: minmax(0, 1fr) 9rem;
 		align-items: center;
 		gap: 1.5rem;
-		padding: 1.3rem 1.25rem;
-		transition: background 160ms ease;
+		padding: 1.3rem 0;
 	}
-	.row:hover {
-		background: color-mix(in srgb, var(--fg) 4%, var(--surface));
+	.row:hover .t {
+		color: var(--accent);
 	}
 	.row.off {
 		display: none;
@@ -269,6 +268,7 @@ const schema = {
 		min-width: 0;
 	}
 	.t {
+		transition: color 160ms ease;
 		font-size: 1.0625rem;
 		font-weight: 700;
 		letter-spacing: -0.028em;
@@ -295,19 +295,16 @@ const schema = {
 		font-variant-numeric: tabular-nums;
 	}
 	.tag {
-		padding: 0.1rem 0.45rem;
-		border-radius: 999px;
-		background: var(--line);
-		color: var(--fg3);
+		color: var(--accent);
 		font-size: 0.75rem;
-		font-weight: 500;
+		font-weight: 600;
 	}
 	.thumb {
 		width: 9rem;
 		height: 5.0625rem;
-		border-radius: 12px;
+		border-radius: var(--r);
 		overflow: hidden;
-		background: var(--surface);
+		background: var(--code-bg);
 	}
 	.thumb:empty {
 		background: none;
@@ -340,7 +337,7 @@ const schema = {
 		height: 2.25rem;
 		padding: 0 0.7rem;
 		border: 0;
-		border-radius: 999px;
+		border-radius: 0;
 		background: none;
 		color: var(--fg3);
 		font: inherit;
@@ -353,12 +350,11 @@ const schema = {
 			color 140ms ease;
 	}
 	.pagination button:hover:not(:disabled) {
-		background: var(--line);
 		color: var(--fg);
 	}
 	.pagination button[aria-current='page'] {
-		background: var(--fg);
-		color: var(--bg);
+		color: var(--accent);
+		box-shadow: inset 0 -2px 0 var(--accent);
 	}
 	.pagination button:disabled {
 		opacity: 0.35;
@@ -376,7 +372,7 @@ const schema = {
 		.row {
 			grid-template-columns: minmax(0, 1fr) 5.25rem;
 			gap: 0.9rem;
-			padding: 1.05rem 1.1rem;
+			padding: 1.05rem 0;
 		}
 		.thumb {
 			width: 5.25rem;

@@ -48,7 +48,6 @@ const connect = [
 		href: 'https://www.linkedin.com/in/kangkyunghyun/',
 		external: true,
 	},
-	{ icon: 'book', label: '이력서', href: '/resume/' },
 	{
 		icon: 'external',
 		label: '이전 블로그',
@@ -113,24 +112,7 @@ const inBlog = path === '/' || path.startsWith('/posts');
 	<body>
 		<header class="site-header">
 			<div class="bar">
-				<a href="/" class="wordmark" aria-label="Kyunghyun Kang">
-					<img
-						class="wordmark-mark"
-						src="/favicon.svg"
-						alt=""
-						width="24"
-						height="24"
-					/>
-					<span>yunghyun</span>
-					<img
-						class="wordmark-mark wordmark-mark-second"
-						src="/favicon.svg"
-						alt=""
-						width="24"
-						height="24"
-					/>
-					<span>ang</span>
-				</a>
+				<a href="/" class="wordmark">강경현<small>Kyunghyun Kang</small></a>
 				<nav>
 					{
 						nav.map((item) => {
@@ -196,11 +178,10 @@ const inBlog = path === '/' || path.startsWith('/posts');
 				<div>
 					<h2>Quick Links</h2>
 					<ul>
-						<li><a href="/#projects">Projects</a></li>
-						<li><a href="/#stacks">Technical Skills</a></li>
-						<li><a href="/#activity">Activities</a></li>
-						<li><a href="/#certifications">Certifications</a></li>
-						<li><a href="/#awards">Awards</a></li>
+						<li><a href="/">글 목록</a></li>
+						<li><a href="/resume/">이력서</a></li>
+						<li><a href="/resume/kang-kyunghyun-resume.pdf">이력서 PDF</a></li>
+						<li><a href="/rss.xml">RSS</a></li>
 					</ul>
 				</div>
 			</div>
@@ -249,48 +230,54 @@ const inBlog = path === '/' || path.startsWith('/posts');
 </html>
 
 <style is:global>
-	/* 토스 그레이 스케일 + 단일 블루 포인트.
-	   면과 면은 선이 아니라 배경색 차이로 나눈다 */
+	/* 이력서(/resume/)와 같은 결: 흰 바탕, 검은 글씨, 초록 포인트 하나.
+	   면은 회색 카드로 나누지 않고 선으로 나눈다.
+	   --blue 이름은 컴포넌트들이 쓰고 있어 남기고 값만 초록으로 둔다 */
 	:root {
 		--bg: #ffffff;
-		--surface: #f9fafb;
-		--fg: #191f28;
-		--fg2: #4e5968;
-		--fg3: #667080;
-		--line: #f2f4f6;
-		--blue: #3182f6;
-		--blue-strong: #1b64da;
-		--green: #166534;
-		--r: 18px;
+		--surface: #ffffff;
+		--code-bg: #f6f7f8;
+		--fg: #111111;
+		--fg2: #333333;
+		--fg3: #6b7280;
+		--line: #e3e5ea;
+		--accent: #2f8f5b;
+		--blue: #2f8f5b;
+		--blue-strong: #26784c;
+		--green: #2f8f5b;
+		--r: 4px;
 		--measure: 54rem;
 		--pad: clamp(1rem, 4vw, 1.5rem);
 	}
 	/* 다크 값은 두 번 쓴다. 하나는 OS 설정용(@media 안), 하나는 수동 선택용.
-	   @media 안의 규칙은 밖에서 재사용할 수 없어 합칠 방법이 없다.
 	   :not([data-theme='light']) 가 있어야 OS가 다크여도 수동 라이트가 이긴다 */
 	@media (prefers-color-scheme: dark) {
 		:root:not([data-theme='light']) {
-			--bg: #17171c;
-			--surface: #202127;
-			--fg: #f9fafb;
-			--fg2: #ced4da;
-			--fg3: #aab3bf;
-			--line: #33363f;
-			--blue: #4593fc;
-			--blue-strong: #4593fc;
-			--green: #4ade80;
+			--bg: #141518;
+			--surface: #141518;
+			--code-bg: #1e2024;
+			--fg: #f2f3f5;
+			--fg2: #d4d7dc;
+			--fg3: #9aa1ab;
+			--line: #2e3138;
+			--accent: #5cc28a;
+			--blue: #5cc28a;
+			--blue-strong: #5cc28a;
+			--green: #5cc28a;
 		}
 	}
 	:root[data-theme='dark'] {
-		--bg: #17171c;
-		--surface: #202127;
-		--fg: #f9fafb;
-		--fg2: #ced4da;
-		--fg3: #aab3bf;
-		--line: #33363f;
-		--blue: #4593fc;
-		--blue-strong: #4593fc;
-		--green: #4ade80;
+		--bg: #141518;
+		--surface: #141518;
+		--code-bg: #1e2024;
+		--fg: #f2f3f5;
+		--fg2: #d4d7dc;
+		--fg3: #9aa1ab;
+		--line: #2e3138;
+		--accent: #5cc28a;
+		--blue: #5cc28a;
+		--blue-strong: #5cc28a;
+		--green: #5cc28a;
 	}
 
 	*,
@@ -308,7 +295,7 @@ const inBlog = path === '/' || path.startsWith('/posts');
 			'Apple SD Gothic Neo', sans-serif;
 		font-size: 16px;
 		line-height: 1.7;
-		letter-spacing: -0.018em;
+		letter-spacing: -0.01em;
 		word-break: keep-all;
 		overflow-wrap: break-word;
 		-webkit-font-smoothing: antialiased;
@@ -320,7 +307,7 @@ const inBlog = path === '/' || path.startsWith('/posts');
 		position: sticky;
 		top: 0;
 		z-index: 10;
-		padding: 0.9rem var(--pad);
+		padding: 1rem var(--pad) 0;
 		background: color-mix(in srgb, var(--bg) 85%, transparent);
 		backdrop-filter: blur(16px);
 	}
@@ -331,45 +318,43 @@ const inBlog = path === '/' || path.startsWith('/posts');
 		gap: clamp(0.75rem, 4vw, 1.5rem);
 		max-width: var(--measure);
 		margin: 0 auto;
+		padding-bottom: 0.75rem;
+		border-bottom: 2px solid var(--fg);
 	}
+	/* 이력서 머리처럼 이름 + 영문 이름 */
 	.wordmark {
 		display: inline-flex;
-		align-items: center;
+		align-items: baseline;
+		gap: 0.4rem;
 		flex: none;
-		font-size: 1.0625rem;
+		font-size: 1.25rem;
 		font-weight: 700;
-		letter-spacing: -0.03em;
-		line-height: 1;
+		letter-spacing: -0.01em;
+		line-height: 1.2;
 		white-space: nowrap;
 	}
-	.wordmark-mark {
-		width: 1.45rem;
-		height: 1.45rem;
-		margin-inline: -0.16rem -0.12rem;
-		flex: none;
-	}
-	.wordmark-mark-second {
-		margin-left: 0.02rem;
+	.wordmark small {
+		color: var(--fg3);
+		font-size: 0.8125rem;
+		font-weight: 500;
 	}
 	.site-header nav {
 		display: flex;
 		gap: 0.35rem;
 	}
 	.navlink {
-		padding: 0.35rem 0.75rem;
-		border-radius: 999px;
+		padding: 0.35rem 0.6rem;
+		border-radius: var(--r);
 		color: var(--fg3);
 		font-size: 0.9375rem;
 		font-weight: 600;
 		transition: background 160ms ease, color 160ms ease;
 	}
 	.navlink:hover {
-		background: var(--surface);
-		color: var(--fg2);
+		color: var(--fg);
 	}
 	.navlink.on {
-		background: var(--surface);
-		color: var(--fg);
+		color: var(--accent);
 	}
 	.navlink.theme {
 		display: inline-flex;
@@ -381,7 +366,7 @@ const inBlog = path === '/' || path.startsWith('/posts');
 		cursor: pointer;
 	}
 	.navlink.theme:hover {
-		background: var(--surface);
+		color: var(--fg);
 	}
 	/* :not([hidden]) 이 없으면 display 가 hidden 속성을 덮어써 아이콘 3개가 다 보인다 */
 	.navlink.theme span:not([hidden]) {
@@ -404,7 +389,7 @@ const inBlog = path === '/' || path.startsWith('/posts');
 	.site-footer {
 		margin-top: 4rem;
 		padding: 3.5rem var(--pad) 3rem;
-		border-top: 1px solid var(--line);
+		border-top: 2px solid var(--fg);
 	}
 	.site-footer .cols {
 		display: grid;
@@ -437,6 +422,7 @@ const inBlog = path === '/' || path.startsWith('/posts');
 	}
 	.site-footer h2 {
 		margin: 0 0 0.9rem;
+		color: var(--accent);
 		font-size: 0.75rem;
 		font-weight: 700;
 		letter-spacing: 0.06em;
@@ -494,17 +480,22 @@ const inBlog = path === '/' || path.startsWith('/posts');
 
 	/* ── 공통 조각 ───────────────────────────── */
 	/* 카드 위에 붙는 작은 섹션 라벨 */
+	/* 이력서 섹션 제목과 같은 모양: 초록 대문자 + 아래 가는 선 */
 	.label {
 		margin: 2.75rem 0 0.7rem;
-		padding-left: 0.25rem;
-		color: var(--fg3);
-		font-size: 0.875rem;
+		padding-bottom: 0.35rem;
+		border-bottom: 1px solid var(--line);
+		color: var(--accent);
+		font-size: 0.8125rem;
 		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
 	}
 	/* 라운드 카드. 선 대신 면으로 구분한다 */
+	/* 카드는 면 없이 위아래 선으로만 묶는다 */
 	.card {
-		border-radius: var(--r);
-		background: var(--surface);
+		border-top: 1px solid var(--line);
+		border-bottom: 1px solid var(--line);
 		overflow: hidden;
 	}
 	/* 카드 안 행 사이 구분선. 카드 끝까지 닿지 않고
@@ -516,8 +507,8 @@ const inBlog = path === '/' || path.startsWith('/posts');
 		content: '';
 		position: absolute;
 		top: 0;
-		left: 1.25rem;
-		right: 1.25rem;
+		left: 0;
+		right: 0;
 		height: 1px;
 		background: var(--line);
 	}
@@ -562,7 +553,7 @@ const inBlog = path === '/' || path.startsWith('/posts');
 	}
 	pre {
 		padding: 1.1rem 1.25rem;
-		border-radius: 14px;
+		border-radius: var(--r);
 		overflow-x: auto;
 		font-size: 0.875rem;
 		line-height: 1.65;
@@ -571,7 +562,7 @@ const inBlog = path === '/' || path.startsWith('/posts');
 	/* astro.config.mjs 의 shiki 듀얼 테마에서 글자색만 가져오고,
 	   배경은 카드와 같은 면색을 유지한다 (테마 배경을 쓰면 면이 사라진다) */
 	.astro-code {
-		background: var(--surface) !important;
+		background: var(--code-bg) !important;
 	}
 	.astro-code,
 	.astro-code span {
@@ -585,17 +576,16 @@ const inBlog = path === '/' || path.startsWith('/posts');
 	}
 	:not(pre) > code {
 		padding: 0.15em 0.42em;
-		border-radius: 6px;
-		background: var(--line);
+		border-radius: var(--r);
+		background: var(--code-bg);
 		color: var(--fg2);
 		font-size: 0.875em;
 		letter-spacing: 0;
 	}
 	blockquote {
 		margin: 1.75rem 0;
-		padding: 1rem 1.25rem;
-		border-radius: 14px;
-		background: var(--surface);
+		padding: 0.25rem 1.1rem;
+		border-left: 3px solid var(--line);
 		color: var(--fg2);
 	}
 	blockquote p:last-child {
@@ -604,7 +594,7 @@ const inBlog = path === '/' || path.startsWith('/posts');
 	img {
 		max-width: 100%;
 		height: auto;
-		border-radius: 14px;
+		border-radius: var(--r);
 	}
 	hr {
 		margin: 2.75rem 0;
@@ -619,7 +609,7 @@ const inBlog = path === '/' || path.startsWith('/posts');
 		margin-bottom: 0.35rem;
 	}
 	li::marker {
-		color: var(--fg3);
+		color: var(--accent);
 	}
 	/* 표는 좁은 화면에서 표 안에서만 가로 스크롤되게 한다.
 	   그냥 두면 셀 최소폭 합이 뷰포트를 넘겨 페이지 전체가 밀린다.

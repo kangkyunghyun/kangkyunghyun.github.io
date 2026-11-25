@@ -104,8 +104,11 @@ const schema = {
 		margin-inline: auto;
 	}
 
+	/* 이력서 머리처럼 제목 아래 굵은 선 */
 	.head {
-		padding: clamp(2.5rem, 8vh, 4rem) 0.25rem 2rem;
+		margin-bottom: 2rem;
+		padding: clamp(2.5rem, 8vh, 4rem) 0 1.25rem;
+		border-bottom: 2px solid var(--fg);
 	}
 	.head h1 {
 		margin: 0;
@@ -122,11 +125,9 @@ const schema = {
 		font-size: 0.875rem;
 	}
 	.tag {
-		padding: 0.1rem 0.55rem;
-		border-radius: 999px;
-		background: var(--surface);
+		color: var(--accent);
 		font-size: 0.875rem;
-		font-weight: 500;
+		font-weight: 600;
 	}
 
 	article :global(> p:first-of-type) {
@@ -147,14 +148,15 @@ const schema = {
 		justify-content: center;
 		gap: 0.35rem;
 		padding: 1rem;
-		border-radius: 14px;
-		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--r);
 		color: var(--fg2);
-		transition: background 160ms ease;
+		transition: border-color 160ms ease, color 160ms ease;
 	}
 	.post-nav a:hover,
 	.back:hover {
-		background: color-mix(in srgb, var(--fg) 5%, var(--surface));
+		border-color: var(--accent);
+		color: var(--accent);
 	}
 	.post-nav .next {
 		grid-column: 2;
@@ -176,13 +178,13 @@ const schema = {
 		display: block;
 		margin-top: 0.75rem;
 		padding: 1rem;
-		border-radius: 14px;
-		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--r);
 		color: var(--fg2);
 		font-size: 0.9375rem;
 		font-weight: 600;
 		text-align: center;
-		transition: background 160ms ease;
+		transition: border-color 160ms ease, color 160ms ease;
 	}
 
 	@media (max-width: 40rem) {
